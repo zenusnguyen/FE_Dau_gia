@@ -1,0 +1,1 @@
+export  const backend_dev ='http://localhost:1337'

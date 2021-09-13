@@ -34,7 +34,7 @@ function App() {
           <Route path="/register">
             <RegisterPage />
           </Route>
-          <PrivateRoute component={<HomePage />} path="/home"></PrivateRoute>
+          <PrivateRoute component={HomePage} path="/home"></PrivateRoute>
         </Switch>
       </div>
     </Router>

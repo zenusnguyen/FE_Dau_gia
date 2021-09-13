@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Input, Form, message, Card } from "antd";
 import styles from "./index.css";
+import { register } from "../../services/register";
 
 export default function LoginPage() {
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    
+  const onFinish = async (values) => {
+    const res = await register(values);
+    console.log("res: ", res);
   };
 
   const onFinishFailed = (errorInfo) => {

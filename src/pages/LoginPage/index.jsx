@@ -1,10 +1,11 @@
 import React from "react";
 import { Button, Input, Form, message, Card } from "antd";
 import styles from "./index.css";
+import {login} from "../../services/login";
 
 export default function LoginPage() {
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const onFinish = async (values) => {
+    const res = await login(values);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -24,7 +25,7 @@ export default function LoginPage() {
         >
           <Form.Item
             label="Username"
-            name="username"
+            name="identifier"
             rules={[{ required: true, message: "Please input your username!" }]}
           >
             <Input />
