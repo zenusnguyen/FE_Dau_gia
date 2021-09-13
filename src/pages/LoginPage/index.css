@@ -1,0 +1,10 @@
+.formWrapper {
+  width: 400px;
+}
+.container {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
