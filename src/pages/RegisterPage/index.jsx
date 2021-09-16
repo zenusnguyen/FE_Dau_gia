@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, Input, Form, message, Card } from "antd";
+import { Button, Input, Form, message, Card, Image } from "antd";
 import styles from "./index.css";
 import { register } from "../../services/register";
+import LoginImage from "../../assets/Hero.png";
+import Brand from "../../assets/Brand.png";
 
 export default function LoginPage() {
   const onFinish = async (values) => {
@@ -12,20 +14,62 @@ export default function LoginPage() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const formLayout = "vertical";
+  const formItemLayout =
+    formLayout === "horizontal"
+      ? {
+          labelCol: {
+            span: 4,
+          },
+          wrapperCol: {
+            span: 14,
+          },
+        }
+      : null;
+  const buttonItemLayout =
+    formLayout === "horizontal"
+      ? {
+          wrapperCol: {
+            span: 14,
+            offset: 4,
+          },
+        }
+      : null;
   return (
     <div className="container">
-      <Card className="formWrapper">
+      <div className="imageWrapper">
+        <Image preview={false} src={LoginImage}></Image>
+      </div>
+      <div className="formWrapper">
+        <div className="brandWrapper">
+          <Image preview={false} src={Brand}></Image>
+
+          <div className="haveAnAccText">
+            Bạn đã có tài khoản ? <a href="#"> Đăng nhập</a>
+          </div>
+        </div>
+        <h1>Tạo tài khoản</h1>
+
         <Form
           name="basic"
           labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          initialValues={{ remember: true }}
+          wrapperCol={{ span: 24 }}
+          {...formItemLayout}
+          layout={formLayout}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item
-            label="Email"
+            label="Tên của bạn"
+            name="username"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Email của bạn"
             name="email"
             type="email"
             rules={[
@@ -39,15 +83,7 @@ export default function LoginPage() {
             <Input />
           </Form.Item>
           <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
+            label="Mật khẩu"
             name="password"
             rules={[{ required: true, message: "Please input your password!" }]}
           >
@@ -55,7 +91,7 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item
-            label="Confirm Password"
+            label="Nhập lại mật khẩu"
             name="confirmPassword"
             rules={[
               { required: true, message: "Please input your password!" },
@@ -70,13 +106,23 @@ export default function LoginPage() {
           >
             <Input.Password />
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              Submit
+          <Form.Item
+            label="Mã xác thực"
+            name="otp"
+            rules={[{ required: true, message: "Please input your otp!" }]}
+          >
+            <div className="otpWrapper">
+              <Input />
+              <Button className="otpBtn">Gửi mã</Button>
+            </div>
+          </Form.Item>
+          <Form.Item>
+            <Button className="btnSubmit" htmlType="submit">
+              Tạo tài khoản
             </Button>
           </Form.Item>
         </Form>
-      </Card>
+      </div>
     </div>
   );
 }
