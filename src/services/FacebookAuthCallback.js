@@ -1,0 +1,34 @@
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+
+function FacebookAuthCallback() {
+  const [auth, setAuth] = useState();
+  const location = useLocation();
+  useEffect(() => {
+    if (!location) {
+      return;
+    }
+    const { search } = location;
+    axios({
+      method: "GET",
+      url: `http://localhost:1337/auth/facebook/callback?${search}`,
+    })
+      .then((res) => res.data)
+      .then(setAuth);
+  }, [location]);
+
+  return (
+    <div>
+      {auth && (
+        <>
+          <div>Jwt: {auth.jwt}</div>
+          <div>User Id: {auth.user.id}</div>
+          <div>Provider: {auth.user.provider}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default FacebookAuthCallback;

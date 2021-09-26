@@ -5,6 +5,9 @@ import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import PrivateRoute from "./configs/PrivateRoute";
+import GoogleAuthCallback from "./services/GoogleAuthCallback";
+import FacebookAuthCallback from "./services/FacebookAuthCallback";
+
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
@@ -28,6 +31,12 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
           renders the first one that matches the current URL. */}
         <Switch>
+          <Route path="/auth/google/callback">
+            <GoogleAuthCallback />
+          </Route>
+          <Route path="/auth/facebook/callback">
+            <FacebookAuthCallback />
+          </Route>
           <Route path="/login">
             <LoginPage />
           </Route>

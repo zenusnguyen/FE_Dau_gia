@@ -11,11 +11,11 @@ export default function HomePage() {
     console.log("data: ", data);
   });
   const handleClick = () => {
-    socket.emit("join", { username, room }, (error) => {
-      if (error) {
-        alert(error);
-      }
-    });
+    // socket.emit("join", { username, room }, (error) => {
+    //   if (error) {
+    //     alert(error);
+    //   }
+    // });
   };
   return (
     <div>

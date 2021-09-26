@@ -24,3 +24,7 @@
   background-color: #0064d2 !important;
   color: #fff !important;
 }
+.socialWrapper {
+  display: flex;
+  flex-direction: column;
+}

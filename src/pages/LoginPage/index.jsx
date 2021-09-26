@@ -9,6 +9,9 @@ export default function LoginPage() {
   const onFinish = async (values) => {
     const res = await login(values);
   };
+  const responseGoogle = (response) => {
+    console.log(response);
+  };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
@@ -49,7 +52,6 @@ export default function LoginPage() {
           </div>
         </div>
         <h1>Đăng nhập</h1>
-
         <Form
           {...formItemLayout}
           layout={formLayout}
@@ -83,6 +85,25 @@ export default function LoginPage() {
           </Form.Item>
         </Form>
         <a>Tôi đã quên mật khẩu</a>
+        <div>Hoặc</div>
+        <div className="socialWrapper">
+          <Button
+            style={{ backgroundColor: "#1877F2", color: "#fff" }}
+            onClick={() =>
+              (window.location = "http://localhost:1337/connect/facebook")
+            }
+          >
+            Tiếp tục với Facebook
+          </Button>
+          <Button
+            style={{ marginTop: "16px" }}
+            onClick={() =>
+              (window.location = "http://localhost:1337/connect/google")
+            }
+          >
+            Tiếp tục với Google
+          </Button>
+        </div>
       </div>
     </div>
   );
