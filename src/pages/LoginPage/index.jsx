@@ -41,14 +41,14 @@ export default function LoginPage() {
   return (
     <div className="container">
       <div className="imageWrapper">
-        <Image preview={false} src={LoginImage}></Image>
+        <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
       <div className="formWrapper">
         <div className="brandWrapper">
           <Image preview={false} src={Brand}></Image>
 
           <div className="haveAnAccText">
-            Bạn là người mới ? <a href="#"> Đăng ký</a>
+            Bạn là người mới ? <a href="/register"> Đăng ký</a>
           </div>
         </div>
         <h1>Đăng nhập</h1>

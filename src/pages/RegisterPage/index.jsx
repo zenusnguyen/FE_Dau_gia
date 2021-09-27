@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Input, Form, message, Card, Image } from "antd";
 import styles from "./index.css";
 import { register } from "../../services/register";
 import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
+// import { loadReCaptcha, ReCaptcha } from "react-recaptcha-google";
+import ReCAPTCHA from 'react-grecaptcha'
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  // useEffect(() => {
+  //   loadReCaptcha();
+  // }, []);
+
   const onFinish = async (values) => {
     const res = await register(values);
     console.log("res: ", res);
@@ -13,6 +19,14 @@ export default function LoginPage() {
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+
+  const handleRecapchaCallback = (e) => {
+    console.log("e: ", e);
+  };
+
+  const handleExpiredCallback = (e) => {
+    console.log("e: ", e);
   };
 
   const formLayout = "vertical";
@@ -39,14 +53,14 @@ export default function LoginPage() {
   return (
     <div className="container">
       <div className="imageWrapper">
-        <Image preview={false} src={LoginImage}></Image>
+        <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
       <div className="formWrapper">
         <div className="brandWrapper">
           <Image preview={false} src={Brand}></Image>
 
           <div className="haveAnAccText">
-            Bạn đã có tài khoản ? <a href="#"> Đăng nhập</a>
+            Bạn đã có tài khoản ? <a href="/login"> Đăng nhập</a>
           </div>
         </div>
         <h1>Tạo tài khoản</h1>
@@ -116,6 +130,13 @@ export default function LoginPage() {
               <Button className="otpBtn">Gửi mã</Button>
             </div>
           </Form.Item>
+
+          <ReCAPTCHA
+                    sitekey="6LeTci8UAAAAAAZV-D4OGD9x7VJvBUQ8QJDT9N4X"
+                    callback={handleRecapchaCallback}
+                    expiredCallback={handleExpiredCallback}
+                    locale="en"
+                />
           <Form.Item>
             <Button className="btnSubmit" htmlType="submit">
               Tạo tài khoản
