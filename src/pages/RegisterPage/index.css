@@ -1,0 +1,33 @@
+.formWrapper {
+  padding: 48px;
+}
+.container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.imageWrapper {
+  display: flex;
+  flex: 6;
+}
+.brandWrapper {
+  display: flex;
+  flex: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 200px;
+}
+.btnSubmit {
+  width: 100%;
+  background-color: #0064d2 !important;
+  color: #fff !important;
+}
+.otpWrapper {
+  display: flex;
+  flex-direction: row;
+}
+.otpBtn {
+  margin-left: 14px;
+}
