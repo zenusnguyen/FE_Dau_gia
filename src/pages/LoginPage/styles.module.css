@@ -1,5 +1,6 @@
 .formWrapper {
-  padding: 48px;
+  width: 540px;
+  padding: 60px;
 }
 .container {
   display: flex;
@@ -9,8 +10,8 @@
 }
 
 .imageWrapper {
-  display: flex;
-  flex: 6;
+  /* display: flex;
+  flex: 5; */
 }
 .brandWrapper {
   display: flex;
@@ -23,4 +24,8 @@
   width: 100%;
   background-color: #0064d2 !important;
   color: #fff !important;
+}
+.socialWrapper {
+  display: flex;
+  flex-direction: column;
 }

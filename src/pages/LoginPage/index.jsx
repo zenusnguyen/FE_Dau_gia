@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Input, Form, message, Card, Image } from "antd";
-import styles from "./index.css";
+import styles from "./styles.module.css";
 import { login } from "../../services/login";
 import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
@@ -8,6 +8,9 @@ import Brand from "../../assets/Brand.png";
 export default function LoginPage() {
   const onFinish = async (values) => {
     const res = await login(values);
+  };
+  const responseGoogle = (response) => {
+    console.log(response);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -37,19 +40,18 @@ export default function LoginPage() {
       : null;
   return (
     <div className="container">
-      <div className="imageWrapper">
-        <Image preview={false} src={LoginImage}></Image>
+      <div className={styles.imageWrapper}>
+        <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
-      <div className="formWrapper">
-        <div className="brandWrapper">
+      <div className={styles.formWrapper}>
+        <div className={styles.brandWrapper}>
           <Image preview={false} src={Brand}></Image>
 
-          <div className="haveAnAccText">
-            Bạn là người mới ? <a href="#"> Đăng ký</a>
+          <div className={styles.haveAnAccText}>
+            Bạn là người mới ? <a href="/register"> Đăng ký</a>
           </div>
         </div>
         <h1>Đăng nhập</h1>
-
         <Form
           {...formItemLayout}
           layout={formLayout}
@@ -77,12 +79,31 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item>
-            <Button className="btnSubmit" htmlType="submit">
+            <Button className={styles.btnSubmit} htmlType="submit">
               Đăng nhập
             </Button>
           </Form.Item>
         </Form>
         <a>Tôi đã quên mật khẩu</a>
+        <div>Hoặc</div>
+        <div className={styles.socialWrapper}>
+          <Button
+            style={{ backgroundColor: "#1877F2", color: "#fff" }}
+            onClick={() =>
+              (window.location = "http://localhost:1337/connect/facebook")
+            }
+          >
+            Tiếp tục với Facebook
+          </Button>
+          <Button
+            style={{ marginTop: "16px" }}
+            onClick={() =>
+              (window.location = "http://localhost:1337/connect/google")
+            }
+          >
+            Tiếp tục với Google
+          </Button>
+        </div>
       </div>
     </div>
   );

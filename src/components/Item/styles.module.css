@@ -1,0 +1,17 @@
+.ItemContainer {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  box-sizing: border-box;
+  border-radius: 2px;
+  margin: 0px 20px;
+  padding: 20px;
+}
+.priceWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
