@@ -1,9 +1,11 @@
 import React from "react";
 import { Button, Input, Form, message, Card, Image } from "antd";
-import styles from "./index.css";
+import styles from "./styles.module.css";
 import { login } from "../../services/login";
 import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
+import Item from "../../components/Item";
+import Header from "../../components/Header";
 
 export default function LoginPage() {
   const onFinish = async (values) => {
@@ -40,14 +42,14 @@ export default function LoginPage() {
       : null;
   return (
     <div className="container">
-      <div className="imageWrapper">
+      {/* <div className={styles.imageWrapper}>
         <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
-      <div className="formWrapper">
-        <div className="brandWrapper">
+      <div className={styles.formWrapper}>
+        <div className={styles.brandWrapper}>
           <Image preview={false} src={Brand}></Image>
 
-          <div className="haveAnAccText">
+          <div className={styles.haveAnAccText}>
             Bạn là người mới ? <a href="/register"> Đăng ký</a>
           </div>
         </div>
@@ -79,14 +81,14 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item>
-            <Button className="btnSubmit" htmlType="submit">
+            <Button className= {styles.btnSubmit} htmlType="submit">
               Đăng nhập
             </Button>
           </Form.Item>
         </Form>
         <a>Tôi đã quên mật khẩu</a>
         <div>Hoặc</div>
-        <div className="socialWrapper">
+        <div className={styles.socialWrapper}>
           <Button
             style={{ backgroundColor: "#1877F2", color: "#fff" }}
             onClick={() =>
@@ -104,7 +106,16 @@ export default function LoginPage() {
             Tiếp tục với Google
           </Button>
         </div>
-      </div>
+      </div> */}
+      <Header></Header>
+      <Item
+        src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+        title="Taylor Swift - Fearless"
+        description="(Taylor's Version) (Metallic..."
+        price="1250000d"
+        timming="12d 8h 5m"
+        view="20"
+      ></Item>
     </div>
   );
 }

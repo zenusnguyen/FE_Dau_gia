@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { Button, Input, Form, message, Card, Image } from "antd";
-import styles from "./index.css";
+import styles from "./styles.module.css";
 import { register } from "../../services/register";
 import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
 // import { loadReCaptcha, ReCaptcha } from "react-recaptcha-google";
-import ReCAPTCHA from 'react-grecaptcha'
+import ReCAPTCHA from "react-grecaptcha";
 
 export default function RegisterPage() {
   // useEffect(() => {
@@ -51,15 +51,15 @@ export default function RegisterPage() {
         }
       : null;
   return (
-    <div className="container">
-      <div className="imageWrapper">
+    <div className={styles.container}>
+      <div className={styles.imageWrapper}>
         <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
-      <div className="formWrapper">
-        <div className="brandWrapper">
+      <div className={styles.formWrapper}>
+        <div className={styles.brandWrapper}>
           <Image preview={false} src={Brand}></Image>
 
-          <div className="haveAnAccText">
+          <div className={styles.haveAnAccText}>
             Bạn đã có tài khoản ? <a href="/login"> Đăng nhập</a>
           </div>
         </div>
@@ -125,20 +125,20 @@ export default function RegisterPage() {
             name="otp"
             rules={[{ required: true, message: "Please input your otp!" }]}
           >
-            <div className="otpWrapper">
+            <div className={styles.otpWrapper}>
               <Input />
-              <Button className="otpBtn">Gửi mã</Button>
+              <Button className={styles.otpBtn}>Gửi mã</Button>
             </div>
           </Form.Item>
 
           <ReCAPTCHA
-                    sitekey="6LeTci8UAAAAAAZV-D4OGD9x7VJvBUQ8QJDT9N4X"
-                    callback={handleRecapchaCallback}
-                    expiredCallback={handleExpiredCallback}
-                    locale="en"
-                />
+            sitekey="6LeTci8UAAAAAAZV-D4OGD9x7VJvBUQ8QJDT9N4X"
+            callback={handleRecapchaCallback}
+            expiredCallback={handleExpiredCallback}
+            locale="en"
+          />
           <Form.Item>
-            <Button className="btnSubmit" htmlType="submit">
+            <Button className={styles.btnSubmit} htmlType="submit">
               Tạo tài khoản
             </Button>
           </Form.Item>

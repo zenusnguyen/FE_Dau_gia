@@ -1,4 +1,4 @@
-import styles from "./App.css";
+import styles from "./styles.module.css";
 import io from "socket.io-client";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -7,13 +7,13 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import PrivateRoute from "./configs/PrivateRoute";
 import GoogleAuthCallback from "./services/GoogleAuthCallback";
 import FacebookAuthCallback from "./services/FacebookAuthCallback";
-import { loadReCaptcha } from "react-recaptcha-google";
+// import { loadReCaptcha } from "react-recaptcha-google";
 import React, { useEffect } from "react";
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
-  useEffect(() => loadReCaptcha(), []);
+  // useEffect(() => loadReCaptcha(), []);
   return (
     <div className="appWrapper">
       <Router>
