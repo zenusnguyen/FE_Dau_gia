@@ -39,7 +39,7 @@ export default function LoginPage() {
         }
       : null;
   return (
-    <div className="container">
+    <div className={styles.container}>
       <div className={styles.imageWrapper}>
         <Image preview={false} width={900} src={LoginImage}></Image>
       </div>
