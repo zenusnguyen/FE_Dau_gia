@@ -1,0 +1,47 @@
+.slide {
+   margin-bottom: 40px;
+}
+
+.slide a {
+   color: #000;
+   max-width: 1280px;
+}
+
+.slide a:hover {
+   color: #000;
+}
+
+.title {
+   margin-bottom: 20px;
+}
+
+.list:hover .arrow {
+   display: flex;
+}
+
+.item {
+   /* margin: 0 5px; */
+}
+
+.arrow {
+   cursor: pointer;
+   position: absolute;
+   top: 50%;
+   width: 32px;
+   height: 32px;
+   border: 1px solid #d9d9d9;
+   z-index: 10;
+   align-items: center;
+   justify-content: center;
+   background-color: #fff;
+   display: none;
+   border-radius: 2px;
+}
+
+.next {
+   right: 0px;
+}
+
+.prev {
+   left: 0px;
+}
