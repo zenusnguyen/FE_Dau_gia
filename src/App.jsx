@@ -13,30 +13,36 @@ import React, { useEffect } from "react";
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
-  // useEffect(() => loadReCaptcha(), []);
-  return (
-    <div className="appWrapper">
-      <Router>
-        <div className="container">
-          <Switch>
-            <Route path="/auth/google/callback">
-              <GoogleAuthCallback />
-            </Route>
-            <Route path="/auth/facebook/callback">
-              <FacebookAuthCallback />
-            </Route>
-            <Route path="/login">
-              <LoginPage />
-            </Route>
-            <Route path="/register">
-              <RegisterPage />
-            </Route>
-            <PrivateRoute component={HomePage} path="/home"></PrivateRoute>
-          </Switch>
-        </div>
-      </Router>
-    </div>
-  );
+   // useEffect(() => loadReCaptcha(), []);
+   return (
+      <div className={styles.appWrapper}>
+         <Router>
+            <div className={styles.container}>
+               <Switch>
+                  <Route path="/auth/google/callback">
+                     <GoogleAuthCallback />
+                  </Route>
+                  <Route path="/auth/facebook/callback">
+                     <FacebookAuthCallback />
+                  </Route>
+                  <Route path="/login">
+                     <LoginPage />
+                  </Route>
+                  <Route path="/register">
+                     <RegisterPage />
+                  </Route>
+                  <Route path="/" exact>
+                     <HomePage />
+                  </Route>
+                  <PrivateRoute
+                     component={HomePage}
+                     path="/home"
+                  ></PrivateRoute>
+               </Switch>
+            </div>
+         </Router>
+      </div>
+   );
 }
 
 export default App;

@@ -1,9 +1,14 @@
 .CategoryItem {
-  width: 240px;
-  height: 190px;
-  background: #fafafa;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+   width: 240px;
+   height: 190px;
+   background: #fafafa;
+   border-radius: 2px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+}
+
+.image {
+   margin-bottom: 20px;
 }
