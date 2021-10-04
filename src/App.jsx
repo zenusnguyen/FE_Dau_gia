@@ -9,40 +9,44 @@ import GoogleAuthCallback from "./services/GoogleAuthCallback";
 import FacebookAuthCallback from "./services/FacebookAuthCallback";
 // import { loadReCaptcha } from "react-recaptcha-google";
 import React, { useEffect } from "react";
+import Header from "./components/Header";
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
-   // useEffect(() => loadReCaptcha(), []);
-   return (
+  // useEffect(() => loadReCaptcha(), []);
+  return (
+    <div>
       <div className={styles.appWrapper}>
-         <Router>
-            <div className={styles.container}>
-               <Switch>
-                  <Route path="/auth/google/callback">
-                     <GoogleAuthCallback />
-                  </Route>
-                  <Route path="/auth/facebook/callback">
-                     <FacebookAuthCallback />
-                  </Route>
-                  <Route path="/login">
-                     <LoginPage />
-                  </Route>
-                  <Route path="/register">
-                     <RegisterPage />
-                  </Route>
-                  <Route path="/" exact>
-                     <HomePage />
-                  </Route>
-                  <PrivateRoute
+        <Router>
+          <div className={styles.container}>
+            <Header></Header>
+            <Switch>
+              <Route path="/auth/google/callback">
+                <GoogleAuthCallback />
+              </Route>
+              <Route path="/auth/facebook/callback">
+                <FacebookAuthCallback />
+              </Route>
+              <Route path="/login">
+                <LoginPage />
+              </Route>
+              <Route path="/register">
+                <RegisterPage />
+              </Route>
+              <Route path="/" exact>
+                <HomePage />
+              </Route>
+              {/* <PrivateRoute
                      component={HomePage}
                      path="/home"
-                  ></PrivateRoute>
-               </Switch>
-            </div>
-         </Router>
+                  ></PrivateRoute> */}
+            </Switch>
+          </div>
+        </Router>
       </div>
-   );
+    </div>
+  );
 }
 
 export default App;
