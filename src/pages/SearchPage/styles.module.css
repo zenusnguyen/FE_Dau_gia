@@ -1,0 +1,16 @@
+.searchPageContainer {
+   max-width: 1440px;
+   padding: 38px 80px 74px;
+}
+
+@media only screen and (max-width: 768px) {
+   .searchPage {
+      padding: 38px 40px 74px;
+   }
+}
+
+@media only screen and (max-width: 350px) {
+   .searchPage {
+      padding: 38px 10px 74px;
+   }
+}

@@ -9,6 +9,7 @@ import GoogleAuthCallback from "./services/GoogleAuthCallback";
 import FacebookAuthCallback from "./services/FacebookAuthCallback";
 // import { loadReCaptcha } from "react-recaptcha-google";
 import React, { useEffect } from "react";
+import SearchPage from "./pages/SearchPage";
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
@@ -33,6 +34,9 @@ function App() {
                   </Route>
                   <Route path="/" exact>
                      <HomePage />
+                  </Route>
+                  <Route path="/search" exact>
+                     <SearchPage />
                   </Route>
                   <PrivateRoute
                      component={HomePage}

@@ -60,7 +60,7 @@ export default function ProductSlide(props) {
    return (
       <div className={styles.slide}>
          <div className={styles.title}>
-            <Text.h2 title={title}></Text.h2>
+            <Text.h3 title={title} />
          </div>
          <Slider {...settings} className={styles.list}>
             {products.map((product) => (
@@ -68,7 +68,6 @@ export default function ProductSlide(props) {
                   <Link to={`/product/${product.id}`}>
                      <Item
                         title={product.title}
-                        description={product.description}
                         price={product.price}
                         view={product.view}
                         timming={product.timming}

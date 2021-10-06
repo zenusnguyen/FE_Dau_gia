@@ -7,9 +7,9 @@ export default function CategoryItem(props) {
    return (
       <div className={styles.CategoryItem} {...props}>
          <div className={styles.image}>
-            <Image src={props?.src} width={80}></Image>
+            <Image src={props?.src} width={80} preview={false}></Image>
          </div>
-         <Text.h2 title={props?.title}></Text.h2>
+         <Text.h3 title={props?.title} />
       </div>
    );
 }
