@@ -25,7 +25,7 @@ const gray = () => {
 };
 
 // eslint-disable-next-line no-undef
-export default Colors = {
+export const Colors = {
   red,
   blue,
   green,

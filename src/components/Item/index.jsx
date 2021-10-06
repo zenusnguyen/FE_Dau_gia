@@ -11,7 +11,7 @@ export default function Item(props) {
          <Image width={props?.width || 200} src={src} alt={title}></Image>
          <div className={styles.name}>
             <Text.body title={title}></Text.body>
-            <Text.body title={description}></Text.body>
+            {/* <Text.body title={description}></Text.body> */}
          </div>
          <div className={styles.priceWrapper}>
             <Text.h2 title={price}></Text.h2>

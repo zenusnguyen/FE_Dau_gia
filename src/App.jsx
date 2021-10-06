@@ -10,6 +10,7 @@ import FacebookAuthCallback from "./services/FacebookAuthCallback";
 // import { loadReCaptcha } from "react-recaptcha-google";
 import React, { useEffect } from "react";
 import Header from "./components/Header";
+import ProductDetail from "./pages/ProductDetailPage";
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
@@ -30,6 +31,9 @@ function App() {
               </Route>
               <Route path="/login">
                 <LoginPage />
+              </Route>
+              <Route path="/product">
+                <ProductDetail />
               </Route>
               <Route path="/register">
                 <RegisterPage />
