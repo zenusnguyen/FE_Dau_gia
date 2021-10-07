@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import PrivateRoute from "./configs/PrivateRoute";
 import GoogleAuthCallback from "./services/GoogleAuthCallback";
@@ -29,6 +30,9 @@ function App() {
                      </Route>
                      <Route path="/login">
                         <LoginPage />
+                     </Route>
+                     <Route path="/product">
+                        <ProductDetailPage />
                      </Route>
                      <Route path="/register">
                         <RegisterPage />
