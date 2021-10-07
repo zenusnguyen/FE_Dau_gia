@@ -4,9 +4,11 @@ import Text from "../Text";
 import { Image, Button, Divider, Badge } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
 
 export default function ProductItem(props) {
    const {
+      id,
       title,
       price,
       timming,
@@ -34,7 +36,9 @@ export default function ProductItem(props) {
                />
                <div className={styles.info}>
                   <div className={styles.name}>
-                     <Text.h3 title={title}></Text.h3>
+                     <Link to={`/product/${id}`} style={{ color: "#333" }}>
+                        <Text.h3 title={title}></Text.h3>
+                     </Link>
                   </div>
                   <Divider style={{ margin: "20px 0" }} />
                   <div className={styles.infoCenter}>

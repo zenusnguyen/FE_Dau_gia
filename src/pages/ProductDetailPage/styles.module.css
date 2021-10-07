@@ -1,0 +1,65 @@
+.subImageGroup {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+.subImage {
+  margin-bottom: 20px;
+}
+.itemWrapper {
+  display: flex;
+  flex-direction: row;
+}
+.itemDetail {
+  display: flex;
+  flex-direction: row;
+}
+.mainImage {
+}
+.itemDescription {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  width: 500px;
+}
+.collapsedWrapper {
+  margin-top: 24px;
+}
+
+.silderWrapper {
+  margin-top: 24px;
+}
+.tag {
+  margin-left: 12px;
+}
+.seller {
+  width: 240px;
+  height: 84px;
+  background: #fafafa;
+  border-radius: 2px;
+  padding: 16px;
+}
+
+.buttonGroup {
+  margin-top: 24px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.auction {
+  background-color: #e53238;
+  color: #fff;
+}
+
+.buyNow {
+  background-color: #0064d2;
+  color: #fff;
+}
+
+.autoAuction {
+  background-color: #f5af02;
+  color: #fff;
+}
+.like {
+}
