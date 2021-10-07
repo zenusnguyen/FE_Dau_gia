@@ -98,24 +98,7 @@ export default function SearchPage() {
           </div>
           <ProductList products={products} />
           <div className={styles.contentBottom}>
-            <div className={styles.filter}>
-              <Button
-                style={{
-                  borderTopRightRadius: "0",
-                  borderBottomRightRadius: "0",
-                }}
-              >
-                <Text.caption title="Thời gian kết thúc giảm dần" />
-              </Button>
-              <Button
-                style={{
-                  borderTopLeftRadius: "0",
-                  borderBottomLeftRadius: "0",
-                }}
-              >
-                <Text.caption title="Giá tăng dần" />
-              </Button>
-            </div>
+            
             <Pagination defaultCurrent={1} total={50} />
           </div>
         </div>
