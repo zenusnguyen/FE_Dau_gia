@@ -11,6 +11,8 @@ import FacebookAuthCallback from "./services/FacebookAuthCallback";
 // import { loadReCaptcha } from "react-recaptcha-google";
 import React, { useEffect } from "react";
 import SearchPage from "./pages/SearchPage";
+import Header from "./components/Header"
+
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
@@ -18,7 +20,9 @@ function App() {
    // useEffect(() => loadReCaptcha(), []);
    return (
       <div>
+         
          <div className={styles.appWrapper}>
+         <Header></Header>
             <Router>
                <div className={styles.container}>
                   <Switch>
