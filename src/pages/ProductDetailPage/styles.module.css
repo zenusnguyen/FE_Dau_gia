@@ -48,18 +48,18 @@
   justify-content: space-between;
 }
 .auction {
-  background-color: #e53238;
-  color: #fff;
+  background-color: #e53238 !important;
+  color: #fff !important;
 }
 
 .buyNow {
-  background-color: #0064d2;
-  color: #fff;
+  background-color: #0064d2 !important;
+  color: #fff !important; 
 }
 
 .autoAuction {
-  background-color: #f5af02;
-  color: #fff;
+  background-color: #f5af02 !important;
+  color: #fff !important; 
 }
 .like {
 }
