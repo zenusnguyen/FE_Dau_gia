@@ -10,7 +10,7 @@ export default function CategoryList(props) {
    return (
       <div className={styles.categoryList}>
          <div className={styles.title}>
-            <Text.h2 title={title}></Text.h2>
+            <Text.h3 title={title} />
          </div>
          <ul className={styles.list}>
             {categories.map((category) => (

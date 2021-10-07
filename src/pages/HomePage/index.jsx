@@ -39,8 +39,7 @@ export default function HomePage() {
    const products = [
       {
          id: "1",
-         title: "Taylor Swift - Frealess",
-         description: "(Taylor's Version) (Metallic...",
+         title: "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
          price: "1.250.000đ",
          view: "20",
          timming: "12d 8h 5m",
@@ -49,8 +48,7 @@ export default function HomePage() {
       },
       {
          id: "2",
-         title: "Taylor Swift - Frealess",
-         description: "(Taylor's Version) (Metallic...",
+         title: "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
          price: "1.250.000đ",
          view: "20",
          timming: "12d 8h 5m",
@@ -59,8 +57,7 @@ export default function HomePage() {
       },
       {
          id: "3",
-         title: "Taylor Swift - Frealess",
-         description: "(Taylor's Version) (Metallic...",
+         title: "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
          price: "1.250.000đ",
          view: "20",
          timming: "12d 8h 5m",
@@ -69,8 +66,7 @@ export default function HomePage() {
       },
       {
          id: "4",
-         title: "Taylor Swift - Frealess",
-         description: "(Taylor's Version) (Metallic...",
+         title: "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
          price: "1.250.000đ",
          view: "20",
          timming: "12d 8h 5m",
@@ -79,8 +75,7 @@ export default function HomePage() {
       },
       {
          id: "5",
-         title: "Taylor Swift - Frealess",
-         description: "(Taylor's Version) (Metallic...",
+         title: "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
          price: "1.250.000đ",
          view: "20",
          timming: "12d 8h 5m",

@@ -1,0 +1,11 @@
+.productListContainer {
+}
+
+.productListContainer .list {
+   list-style: none;
+   padding: 0;
+}
+
+.productListContainer .item {
+   margin-bottom: 16px;
+}
