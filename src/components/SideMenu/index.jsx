@@ -32,7 +32,7 @@ export default function SideMenu({ handleClick, currentKey }) {
       <SubMenu key="4" icon={<MailOutlined />} title="Quản lý sản phẩm">
         <Menu.Item key="5">Thêm sản phẩm</Menu.Item>
         <Menu.Item key="6">Tôi đăng bán</Menu.Item>
-        <Menu.Item key="7">tôi đấu giá</Menu.Item>
+        <Menu.Item key="7">Tôi đấu giá</Menu.Item>
       </SubMenu>
       <Menu.Item icon={<HeartOutlined />} key="8">
         Danh sách yêu thích

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.css";
 import ProductImage from "../../assets/product.svg";
-import ProfileProductItem from "../../components/ProfileProductItem";
+import ProductItem from "../../components/ProductItem";
+import { PageHeader, Button, Radio } from "antd";
 const products = [
   {
     id: "5",
@@ -35,12 +36,32 @@ const products = [
   },
 ];
 
-export default function ProductManagement() {
+export default function AuctionPage() {
+  const options = [
+    { label: "Tất cả", value: "all" },
+    { label: "Hết hạn", value: "expired" },
+    { label: "Còn hạn", value: "due" },
+  ];
+
+  const [currentValue, setCurrentValue] = useState("");
   return (
     <div className={styles.container}>
+      <PageHeader
+        title={"Tôi đấu giá"}
+        extra={[
+          <Radio.Group
+            options={options}
+            onChange={() => {}}
+            value={currentValue}
+            optionType="button"
+            buttonStyle="solid"
+          />,
+        ]}
+      ></PageHeader>
+
       <div>
         {products.map((product) => (
-          <ProfileProductItem
+          <ProductItem
             key={product.id}
             id={product.id}
             title={product.title}
