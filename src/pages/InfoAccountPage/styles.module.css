@@ -1,0 +1,25 @@
+.infoAccoutPage {
+   padding: 20px 30px;
+   width: 560px;
+}
+
+.infoAccoutPage .note {
+   margin: 20px 0;
+}
+
+.infoAccoutPage .form {
+   margin-top: 20px;
+   padding-right: 80px;
+}
+
+.infoAccoutPage .btn {
+   cursor: pointer;
+   width: 240px;
+   height: 40px;
+   color: #fff;
+   background: #0064d2;
+   border: 1px solid #0064d2;
+   box-sizing: border-box;
+   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+   border-radius: 2px;
+}
