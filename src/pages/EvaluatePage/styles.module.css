@@ -1,0 +1,19 @@
+.evaluatePage {
+   padding: 20px 30px;
+   width: 100%;
+}
+
+.evaluatePage .percent {
+   width: 128px;
+   height: 72px;
+   background: #fafafa;
+   border-radius: 2px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 20px 0;
+}
+
+.evaluatePage .table {
+   padding-right: 80px;
+}
