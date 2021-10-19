@@ -6,6 +6,7 @@ import AuctionPage from "../AuctionPage";
 import LikePage from "../LikePage";
 import InfoAccountPage from "../InfoAccountPage";
 import EvaluatePage from "../EvaluatePage";
+import AddProductPage from "../AddProductPage";
 
 export default function ProfileManagement() {
    const [currentKey, setCurrentKey] = useState("4");
@@ -16,9 +17,8 @@ export default function ProfileManagement() {
             return <InfoAccountPage />;
          case "2":
             return <EvaluatePage />;
-         case "3":
-            // code block
-            break;
+         case "5":
+            return <AddProductPage />;
          case "6":
             return <SalePage></SalePage>;
          case "7":

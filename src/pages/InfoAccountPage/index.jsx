@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
 import styles from "./styles.module.css";
 import Text from "../../components/Text";
-import { Divider, Form, Input } from "antd";
+import moment from "moment";
+import { Divider, Form, Input, DatePicker } from "antd";
 
 export default function InfoAccountPage(props) {
    const [form] = Form.useForm();
+
+   const dateFormat = "DD/MM/YYYY";
 
    const data = {
       email: "zenus@gmail.com",
@@ -16,7 +19,7 @@ export default function InfoAccountPage(props) {
       form.setFieldsValue({
          email: data.email,
          name: data.name,
-         birthDay: new Date(data.birthDay).toISOString().split("T")[0],
+         birthDay: moment(data.birthDay),
       });
    }, []);
 
@@ -40,9 +43,6 @@ export default function InfoAccountPage(props) {
                onFinish={onFinish}
                onFinishFailed={onFinishFailed}
                autoComplete="off"
-               initialValues={{
-                  remember: true,
-               }}
             >
                <div>
                   <div style={{ marginBottom: "8px" }}>
@@ -63,46 +63,51 @@ export default function InfoAccountPage(props) {
                   <div style={{ marginBottom: "8px" }}>
                      <label htmlFor="name" className={styles.inputLabel}>
                         <Text.caption title="Tên" />
-                     </label>{" "}
-                     <Form.Item
-                        name="name"
-                        rules={[
-                           { required: true, message: "Tên không được trống!" },
-                        ]}
-                     >
-                        <Input placeholder="Nhập tên" />
-                     </Form.Item>
+                     </label>
                   </div>
+                  <Form.Item
+                     name="name"
+                     rules={[
+                        { required: true, message: "Tên không được trống!" },
+                     ]}
+                  >
+                     <Input placeholder="Nhập tên" />
+                  </Form.Item>
                </div>
                <div>
                   <div style={{ marginBottom: "8px" }}>
-                     <label htmlFor="birthDay" className={styles.inputLabel}>
+                     <label className={styles.inputLabel}>
                         <Text.caption title="Ngày sinh" />
-                     </label>{" "}
-                     <Form.Item
-                        name="birthDay"
-                        rules={[
-                           { required: true, message: "Ngày sinh trống!" },
-                        ]}
-                     >
-                        <Input placeholder="Ngày sinh" type="date" />
-                     </Form.Item>
+                     </label>
                   </div>
+                  <Form.Item
+                     name="birthDay"
+                     rules={[
+                        {
+                           required: true,
+                           message: "Ngày sinh không được trống!",
+                        },
+                     ]}
+                  >
+                     <DatePicker
+                        format={dateFormat}
+                        style={{ width: "100%" }}
+                        placeholder="Chọn ngày sinh"
+                     />
+                  </Form.Item>
                </div>
                <div>
                   <div style={{ marginBottom: "8px" }}>
                      <label htmlFor="oldPassword" className={styles.inputLabel}>
                         <Text.caption title="Mật khẩu cũ" />
-                     </label>{" "}
-                     <Form.Item
-                        name="oldPassword"
-                        rules={[
-                           { required: true, message: "Mật khẩu củ trống!" },
-                        ]}
-                     >
-                        <Input.Password placeholder="Nhập mật khẩu cũ" />
-                     </Form.Item>
+                     </label>
                   </div>
+                  <Form.Item
+                     name="oldPassword"
+                     rules={[{ required: true, message: "Mật khẩu củ trống!" }]}
+                  >
+                     <Input.Password placeholder="Nhập mật khẩu cũ" />
+                  </Form.Item>
                </div>
                <div>
                   <div style={{ marginBottom: "8px" }}>
