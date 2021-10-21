@@ -12,7 +12,7 @@ export default function InfoAccountPage(props) {
    const data = {
       email: "zenus@gmail.com",
       name: "Nguyễn Việt Anh",
-      birthDay: "1998-01-01",
+      birthDay: "01-01-1998",
    };
 
    useEffect(() => {
@@ -25,6 +25,7 @@ export default function InfoAccountPage(props) {
 
    const onFinish = (values) => {
       console.log("Success:", values);
+      console.log(values.birthDay.format(dateFormat));
    };
 
    const onFinishFailed = (errorInfo) => {
