@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./styles.module.css";
 import ProductImage from "../../assets/product.svg";
 import ProductItem from "../../components/ProductItem";
-import { PageHeader, Button, Radio } from "antd";
+import { PageHeader, Radio } from "antd";
 const products = [
   {
     id: "5",
