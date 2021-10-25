@@ -1,7 +1,7 @@
-import { backend_dev } from "../constants";
+import { BACKEND_DOMAIN } from "../constants";
 
 export async function login(data) {
-  const url = `${backend_dev}/auth/local`;
+  const url = `${BACKEND_DOMAIN}/auth/local`;
 
   const response = await fetch(url, {
     method: "POST",

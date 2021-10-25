@@ -1,7 +1,7 @@
-import { backend_dev } from "../constants";
+import { BACKEND_DOMAIN } from "../constants";
 
 export async function register(data) {
-  const url = `${backend_dev}/auth/local/register`;
+  const url = `${BACKEND_DOMAIN}/auth/local/register`;
 
   const response = await fetch(url, {
     method: "POST",

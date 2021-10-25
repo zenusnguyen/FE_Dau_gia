@@ -1,1 +1,1 @@
-export  const backend_dev ='http://localhost:1337'
+export const BACKEND_DOMAIN = "http://localhost:1337";

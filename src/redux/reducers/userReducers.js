@@ -8,7 +8,9 @@ const initialState = {
 const userStoreReducer = (state = initialState, action) => {
   switch (action.type) {
     case USER_ACTIONS.LOGIN: {
-      return { ...state, user: action.payload };
+      const user = localStorage.getItem("user");
+      const userData = JSON.parse(user);
+      return { ...state, user: userData };
     }
     case USER_ACTIONS.LOGIN: {
       localStorage.removeItem("user");
