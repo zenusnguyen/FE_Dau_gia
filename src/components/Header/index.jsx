@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 import Search from "../SearchBar";
 import { ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
 import Text from "../Text";
+import { useHistory } from "react-router-dom";
 
 const options = [
   {
@@ -77,6 +78,12 @@ export default function Header(props) {
   function onChange(value) {
     console.log(value);
   }
+  const history = useHistory();
+  console.log('useHistory(): ', useHistory());
+  function handleClick() {
+    history.push("/home");
+  }
+
   const isSigned = false;
   return (
     <div className={styles.headerContainer}>
@@ -89,15 +96,15 @@ export default function Header(props) {
 
       <Search></Search>
 
-      <Button icon={<SmileOutlined></SmileOutlined>}>
-        {isSigned ? (
-          <Dropdown overlay={menu} placement="bottomLeft" arrow>
-            <Button>anonymous</Button>
-          </Dropdown>
-        ) : (
+      {isSigned ? (
+        <Dropdown overlay={menu} placement="bottomLeft" arrow>
+          <Button>anonymous</Button>
+        </Dropdown>
+      ) : (
+        <Button onClick={handleClick} icon={<SmileOutlined></SmileOutlined>}>
           <Text.body title="Đăng nhập"></Text.body>
-        )}
-      </Button>
+        </Button>
+      )}
       <Button icon={<ShoppingCartOutlined></ShoppingCartOutlined>}>
         0 Sản phẩm
       </Button>

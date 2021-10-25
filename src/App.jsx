@@ -19,10 +19,10 @@ const STRAPI_ENDPOINT = "http://localhost:1337";
 function App() {
   // useEffect(() => loadReCaptcha(), []);
   return (
-    <div>
-      <div className={styles.appWrapper}>
-        <Header></Header>
-        <Router>
+    <Router>
+      <div>
+        <div className={styles.appWrapper}>
+          <Header></Header>
           <div className={styles.container}>
             <Switch>
               <Route path="/auth/google/callback">
@@ -52,9 +52,9 @@ function App() {
               <PrivateRoute component={HomePage} path="/home"></PrivateRoute>
             </Switch>
           </div>
-        </Router>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 
