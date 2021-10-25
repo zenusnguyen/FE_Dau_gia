@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import { Button, Image, Cascader, Dropdown, Menu } from "antd";
 import Logo from "../../assets/Brand.png";
@@ -6,6 +7,9 @@ import Search from "../SearchBar";
 import { ShoppingCartOutlined, SmileOutlined } from "@ant-design/icons";
 import Text from "../Text";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/actions/userActions";
+import { isLogin } from "../../utilities/isLogin";
 
 const options = [
   {
@@ -42,49 +46,42 @@ const options = [
   },
 ];
 
-const menu = (
-  <Menu>
-    <Menu.Item>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.antgroup.com"
-      >
-        1st menu item
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.aliyun.com"
-      >
-        2nd menu item
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.luohanacademy.com"
-      >
-        3rd menu item
-      </a>
-    </Menu.Item>
-  </Menu>
-);
-
 export default function Header(props) {
+  const { user } = useSelector((state) => state.user);
+
+  const dispatch = useDispatch();
+
   function onChange(value) {
     console.log(value);
   }
   const history = useHistory();
-  console.log('useHistory(): ', useHistory());
+  console.log("useHistory(): ", useHistory());
   function handleClick() {
-    history.push("/home");
+    history.push("/login");
   }
 
-  const isSigned = false;
+  const menu = (
+    <Menu>
+      <Menu.Item>
+        <a target="_blank">1st menu item</a>
+      </Menu.Item>
+      <Menu.Item>
+        <a target="_blank">2nd menu item</a>
+      </Menu.Item>
+      <Menu.Item>
+        <a
+          onClick={() => {
+            console.log("??");
+            dispatch(logout());
+          }}
+          target="_blank"
+        >
+          Đăng xuất
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <div className={styles.headerContainer}>
       <Image preview={false} src={Logo}></Image>
@@ -96,7 +93,7 @@ export default function Header(props) {
 
       <Search></Search>
 
-      {isSigned ? (
+      {isLogin ? (
         <Dropdown overlay={menu} placement="bottomLeft" arrow>
           <Button>anonymous</Button>
         </Dropdown>

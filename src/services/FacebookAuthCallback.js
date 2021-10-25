@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
+const NGROK_URL = "localhost:1337";
+
 function FacebookAuthCallback() {
   const [auth, setAuth] = useState();
   const location = useLocation();
@@ -10,12 +12,16 @@ function FacebookAuthCallback() {
       return;
     }
     const { search } = location;
+    console.log("search: ", search);
     axios({
       method: "GET",
-      url: `http://localhost:1337/auth/facebook/callback?${search}`,
-    })
-      .then((res) => res.data)
-      .then(setAuth);
+      url: `${NGROK_URL}/auth/facebook/callback?${search}`,
+    }).then((res) => {
+      console.log("res.data: ", res.data);
+      return res.data;
+    });
+
+    console.log("auth: ", auth);
   }, [location]);
 
   return (

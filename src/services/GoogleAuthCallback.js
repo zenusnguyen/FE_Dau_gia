@@ -4,9 +4,7 @@ import axios from "axios";
 
 function GoogleAuthCallback() {
   const [auth, setAuth] = useState();
-  console.log("auth: ", auth);
   const location = useLocation();
-  console.log("location: ", location);
   useEffect(() => {
     if (!location) {
       return;

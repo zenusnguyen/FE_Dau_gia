@@ -1,3 +1,4 @@
+/* eslint-disable no-duplicate-case */
 import { USER_ACTIONS } from "../actions/userActions";
 
 const initialState = {
@@ -10,6 +11,7 @@ const userStoreReducer = (state = initialState, action) => {
       return { ...state, user: action.payload };
     }
     case USER_ACTIONS.LOGIN: {
+      localStorage.removeItem("user");
       return { ...state, user: {} };
     }
     default:

@@ -1,7 +1,6 @@
 import { backend_dev } from "../constants";
 
 export async function register(data) {
-  console.log("data: ", data);
   const url = `${backend_dev}/auth/local/register`;
 
   const response = await fetch(url, {

@@ -49,7 +49,9 @@ function App() {
               <Route path="/profile" exact>
                 <ProfileManagement />
               </Route>
-              <PrivateRoute component={HomePage} path="/home"></PrivateRoute>
+              <Route path="/home">
+                <HomePage />
+              </Route>
             </Switch>
           </div>
         </div>

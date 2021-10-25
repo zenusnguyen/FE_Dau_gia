@@ -1,7 +1,6 @@
 import { backend_dev } from "../constants";
 
 export async function login(data) {
-  console.log("data: ", data);
   const url = `${backend_dev}/auth/local`;
 
   const response = await fetch(url, {
@@ -21,9 +20,8 @@ export async function login(data) {
   const result = await response.json();
 
   setTimeout(() => {
-    console.log("result: ", result);
     localStorage.setItem("user", JSON.stringify(result));
-  }, 1000);
+  }, 100);
 
   return result;
 }
