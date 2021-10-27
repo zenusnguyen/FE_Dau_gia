@@ -1,109 +1,75 @@
 import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import { socket } from "../../services/socket";
-import { Button } from "antd";
 import SlideProduct from "../../components/SlideProduct";
 import CategoryList from "../../components/CategoryList";
-import Smartphone from "../../assets/smartphone.svg";
-import Vase from "../../assets/vase.svg";
-import EarthGlobe from "../../assets/earth-globe.svg";
-import Jacket from "../../assets/jacket.svg";
-import ArtBook from "../../assets/art-book.svg";
-import ProductImage from "../../assets/product.svg";
-import { getAll } from "../../services/productApi";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { getAll as getAllProduct } from "../../services/productApi";
+import { getAll as getAllCategory } from "../../services/categoryApi";
 
 export default function HomePage() {
-  const username = "anh";
-  const room = "1";
-  const [products, setProducts] = useState([]);
+   const username = "anh";
+   const room = "1";
+   const [products, setProducts] = useState([]);
+   const [categories, setCategories] = useState([]);
+   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetch() {
-      const data = await getAll();
-      console.log("data: ", data);
-      setProducts(data);
-    }
-    fetch();
-  }, []);
-  //  socket.on("welcome", (data) => {
-  //     console.log("data: ", data);
-  //  });
+   useEffect(() => {
+      async function fetch() {
+         Promise.all([getAllProduct(), getAllCategory()]).then((values) => {
+            console.log(values[0]);
+            setProducts(values[0]);
+            setCategories(values[1]);
+            setIsLoading(false);
+         });
+      }
+      fetch();
+   }, []);
+   //  socket.on("welcome", (data) => {
+   //     console.log("data: ", data);
+   //  });
 
-  const handleClick = () => {
-    // socket.emit("join", { username, room }, (error) => {
-    //   if (error) {
-    //     alert(error);
-    //   }
-    // });
-  };
-  const categories = [
-    { id: "1", name: "Điện tử", src: Smartphone },
-    { id: "2", name: "Bách hóa", src: Vase },
-    { id: "3", name: "Thời trang", src: Jacket },
-    { id: "4", name: "Nhà sách", src: ArtBook },
-    { id: "5", name: "Quốc tế", src: EarthGlobe },
-  ];
+   const handleClick = () => {
+      // socket.emit("join", { username, room }, (error) => {
+      //   if (error) {
+      //     alert(error);
+      //   }
+      // });
+   };
 
-  // const products = [
-  //   {
-  //     id: "1",
-  //     title:
-  //       "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-  //     price: "1.250.000đ",
-  //     view: "20",
-  //     timming: "12d 8h 5m",
-  //     src: ProductImage,
-  //     width: 240,
-  //   },
-  //   {
-  //     id: "2",
-  //     title:
-  //       "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-  //     price: "1.250.000đ",
-  //     view: "20",
-  //     timming: "12d 8h 5m",
-  //     src: ProductImage,
-  //     width: 240,
-  //   },
-  //   {
-  //     id: "3",
-  //     title:
-  //       "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-  //     price: "1.250.000đ",
-  //     view: "20",
-  //     timming: "12d 8h 5m",
-  //     src: ProductImage,
-  //     width: 240,
-  //   },
-  //   {
-  //     id: "4",
-  //     title:
-  //       "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-  //     price: "1.250.000đ",
-  //     view: "20",
-  //     timming: "12d 8h 5m",
-  //     src: ProductImage,
-  //     width: 240,
-  //   },
-  //   {
-  //     id: "5",
-  //     title:
-  //       "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-  //     price: "1.250.000đ",
-  //     view: "20",
-  //     timming: "12d 8h 5m",
-  //     src: ProductImage,
-  //     width: 240,
-  //   },
-  // ];
+   return (
+      <div className={styles.homeContainer}>
+         {isLoading ? (
+            <div
+               style={{
+                  width: "100%",
+                  minHeight: "75vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+               }}
+            >
+               <Spin
+                  indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+               />
+            </div>
+         ) : (
+            <div>
+               <CategoryList
+                  title="Danh mục sản phẩm"
+                  categories={categories}
+               />
+               <SlideProduct title="Sắp kết thúc" products={products} />
+               <SlideProduct
+                  title="Nhiều lượt ra giá nhất"
+                  products={products}
+               />
+               <SlideProduct title="Giá cao nhất" products={products} />
+            </div>
+         )}
 
-  return (
-    <div className={styles.homeContainer}>
-      <CategoryList title="Danh mục sản phẩm" categories={categories} />
-      <SlideProduct title="Sắp kết thúc" products={products} />
-      <SlideProduct title="Nhiều lượt ra giá nhất" products={products} />
-      <SlideProduct title="Giá cao nhất" products={products} />
-      {/* <Button onClick={handleClick}>connect</Button> */}
-    </div>
-  );
+         {/* <Button onClick={handleClick}>connect</Button> */}
+      </div>
+   );
 }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 import CategoryItem from "../CategoryItem";
 import Text from "../Text/";
+import { BACKEND_DOMAIN } from "../../constants";
 
 export default function CategoryList(props) {
    const { title, categories } = props;
@@ -16,7 +17,10 @@ export default function CategoryList(props) {
             {categories.map((category) => (
                <li className={styles.item} key={category.id}>
                   <Link to={`/category/${category.id}`}>
-                     <CategoryItem title={category.name} src={category.src} />
+                     <CategoryItem
+                        title={category.name}
+                        src={`${BACKEND_DOMAIN}${category.image.src}`}
+                     />
                   </Link>
                </li>
             ))}

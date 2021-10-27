@@ -5,7 +5,7 @@ export const getAll = () => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items`,
+         url: `${BACKEND_DOMAIN}/categories`,
       })
          .then((res) => {
             resolve(res?.data);
