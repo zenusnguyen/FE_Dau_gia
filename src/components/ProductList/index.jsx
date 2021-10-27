@@ -9,19 +9,7 @@ export default function ProductList(props) {
          <ul className={styles.list}>
             {products.map((product) => (
                <li className={styles.item} key={product.id}>
-                  <ProductItem
-                     id={product.id}
-                     title={product.title}
-                     price={product.price}
-                     view={product.view}
-                     timming={product.timming}
-                     src={product.src}
-                     width={product.width}
-                     bidder={product.bidder}
-                     postingDate={product.postingDate}
-                     auctionMoney={product.auctionMoney}
-                     buyNow={product.buyNow}
-                  />
+                  <ProductItem product={product} />
                </li>
             ))}
          </ul>

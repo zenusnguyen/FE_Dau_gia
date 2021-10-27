@@ -1,24 +1,30 @@
 /* eslint-disable react/jsx-pascal-case */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Text from "../Text";
 import { Image, Button, Divider, Badge } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
+import { BACKEND_DOMAIN } from "../../constants";
+import moment from "moment";
 
 export default function ProductItem(props) {
-   const {
-      id,
-      title,
-      price,
-      timming,
-      view,
-      src,
-      bidder,
-      postingDate,
-      buyNow,
-      auctionMoney,
-   } = props;
+   const { product } = props;
+   const [timeRemaining, setTimeRemaining] = useState("");
+
+   useEffect(() => {
+      const currentTime = moment();
+      const endTime = moment(product.postingDate).add(5, "day");
+      // console.log(endTime.diff(currentTime, "minutes"));
+      const hours = endTime.diff(currentTime, "hours");
+      const day = endTime.diff(currentTime, "days");
+      if (day > 0) {
+         setTimeRemaining(`${day}d ${hours - 24 * day}h`);
+      } else {
+         setTimeRemaining(`${hours}h`);
+      }
+   }, [product]);
+
    return (
       <div {...props} className={styles.productItemContainer}>
          <Badge.Ribbon
@@ -30,14 +36,16 @@ export default function ProductItem(props) {
             <div className={styles.productItem}>
                <Image
                   width={props?.width || 200}
-                  src={src}
-                  alt={title}
+                  src={`${BACKEND_DOMAIN}${product.images[0]}`}
                   preview={false}
                />
                <div className={styles.info}>
                   <div className={styles.name}>
-                     <Link to={`/product/${id}`} style={{ color: "#333" }}>
-                        <Text.h3 title={title}></Text.h3>
+                     <Link
+                        to={`/product/${product.id}`}
+                        style={{ color: "#333" }}
+                     >
+                        <Text.h3 title={product.title}></Text.h3>
                      </Link>
                   </div>
                   <Divider style={{ margin: "20px 0" }} />
@@ -58,10 +66,17 @@ export default function ProductItem(props) {
                      </div>
                      <div className={styles.infoCenterValue}>
                         <div>
-                           <Text.h2 title={price} />
+                           <Text.h2
+                              title={`${product.currentPrice
+                                 .toString()
+                                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
+                           />
                         </div>
                         <div>
-                           <Text.h3 title={timming} style={{ color: "red" }} />
+                           <Text.h3
+                              title={timeRemaining}
+                              style={{ color: "red" }}
+                           />
                         </div>
                      </div>
                   </div>
@@ -82,16 +97,16 @@ export default function ProductItem(props) {
                      </div>
                      <div className={styles.infoCenterValue}>
                         <div className={styles.hightBidder}>
-                           <Text.bodyHighlight title={bidder.name} />
-                           <p className={styles.percent}>
+                           <Text.bodyHighlight title={product.currentOrderId} />
+                           {/* <p className={styles.percent}>
                               <Text.caption
                                  title={`${bidder.percent}%`}
                                  style={{ color: "#fff" }}
                               />
-                           </p>
+                           </p> */}
                         </div>
                         <div className={styles.view}>
-                           <Text.bodyHighlight title={`${view} Lượt`} />
+                           <Text.bodyHighlight title={`${product.view} Lượt`} />
                         </div>
                      </div>
                   </div>
@@ -108,10 +123,14 @@ export default function ProductItem(props) {
                         }}
                      >
                         <Text.bodyHighlight
-                           title={`Đấu giá - ${auctionMoney}`}
+                           title={`Đấu giá - ${(
+                              product.currentPrice + product.rating
+                           )
+                              .toString()
+                              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
                         />
                      </Button>
-                     {buyNow && (
+                     {product.maxPrice && (
                         <Button
                            type="primary"
                            className={styles.action}
@@ -119,7 +138,11 @@ export default function ProductItem(props) {
                               height: "40px",
                            }}
                         >
-                           <Text.bodyHighlight title={`Mua ngay - ${buyNow}`} />
+                           <Text.bodyHighlight
+                              title={`Mua ngay - ${product.maxPrice
+                                 .toString()
+                                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
+                           />
                         </Button>
                      )}
                      <Button
@@ -138,7 +161,11 @@ export default function ProductItem(props) {
                         title="Sản phẩm này được đăng tải ngày"
                         style={{ color: "#919293", marginBottom: "6px" }}
                      />
-                     <Text.bodyHighlight title={`${postingDate}`} />
+                     <Text.bodyHighlight
+                        title={`${moment(product.postingDate).format(
+                           "DD-MM-YYYY HH:mm"
+                        )}`}
+                     />
                   </div>
                </div>
             </div>

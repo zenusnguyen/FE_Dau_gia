@@ -1,0 +1,41 @@
+.searchPageContainer {
+   max-width: 1440px;
+   padding: 38px 80px 74px;
+}
+
+.searchPageContainer .center {
+   display: flex;
+}
+
+.searchPageContainer .content {
+}
+
+.searchPage .top,
+.searchPage .contentBottom {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.searchPage .top {
+   margin-bottom: 24px;
+}
+
+.searchPage .contentBottom {
+   margin-top: 24px;
+   display: flex;
+   justify-content: flex-end !important;
+   width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+   .searchPage {
+      padding: 38px 40px 74px;
+   }
+}
+
+@media only screen and (max-width: 350px) {
+   .searchPage {
+      padding: 38px 10px 74px;
+   }
+}

@@ -13,3 +13,29 @@ export const getAll = () => {
          .catch((err) => reject(err));
    });
 };
+
+export const getBySubCategory = (subId, pageNumber) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/sub-category/${subId}/page/${pageNumber}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getCountBySub = (subId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/sub-category/${subId}/count`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};

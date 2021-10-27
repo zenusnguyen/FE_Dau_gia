@@ -3,10 +3,9 @@ import styles from "./styles.module.css";
 import { socket } from "../../services/socket";
 import SlideProduct from "../../components/SlideProduct";
 import CategoryList from "../../components/CategoryList";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 import { getAll as getAllProduct } from "../../services/productApi";
 import { getAll as getAllCategory } from "../../services/categoryApi";
+import LoadingPage from "../LoadingPage";
 
 export default function HomePage() {
    const username = "anh";
@@ -41,19 +40,7 @@ export default function HomePage() {
    return (
       <div className={styles.homeContainer}>
          {isLoading ? (
-            <div
-               style={{
-                  width: "100%",
-                  minHeight: "75vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-               }}
-            >
-               <Spin
-                  indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-               />
-            </div>
+            <LoadingPage />
          ) : (
             <div>
                <CategoryList

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import { Button, Image, Cascader, Dropdown, Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Logo from "../../assets/Brand.png";
 import styles from "./styles.module.css";
 import "./style.css";
@@ -18,6 +18,7 @@ export default function Header(props) {
    const [isLoading, setIsLoading] = useState(true);
    const { user } = useSelector((state) => state.user);
    const dispatch = useDispatch();
+   const history = useHistory();
 
    useEffect(() => {
       const fetchData = async () => {
@@ -38,7 +39,7 @@ export default function Header(props) {
    }, []);
 
    function onChange(value) {
-      console.log(value);
+      history.push(`/category/${value[0]}/sub/${value[1]}/page/1`);
    }
 
    const menu = (
