@@ -44,7 +44,7 @@ function App() {
                      <Route path="/" exact>
                         <HomePage />
                      </Route>
-                     <Route path="/search" exact>
+                     <Route path="/search/:searchWord/page/:pageNumber" exact>
                         <SearchPage />
                      </Route>
                      <Route

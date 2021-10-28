@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 import { socket } from "../../services/socket";
 import SlideProduct from "../../components/SlideProduct";
 import CategoryList from "../../components/CategoryList";
-import { getAll as getAllProduct } from "../../services/productApi";
+import { getAll as getAllProduct, search } from "../../services/productApi";
 import { getAll as getAllCategory } from "../../services/categoryApi";
 import LoadingPage from "../LoadingPage";
 
@@ -16,6 +16,8 @@ export default function HomePage() {
 
    useEffect(() => {
       async function fetch() {
+         const test = await search();
+         console.log("Search", test);
          Promise.all([getAllProduct(), getAllCategory()]).then((values) => {
             console.log(values[0]);
             setProducts(values[0]);

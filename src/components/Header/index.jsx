@@ -42,6 +42,10 @@ export default function Header(props) {
       history.push(`/category/${value[0]}/sub/${value[1]}/page/1`);
    }
 
+   function onSearch(keyWord) {
+      history.push(`/search/${keyWord}/page/1`);
+   }
+
    const menu = (
       <Menu>
          <Menu.Item>
@@ -94,7 +98,7 @@ export default function Header(props) {
                   />
                </div>
                <div className={styles.search}>
-                  <Search></Search>
+                  <Search onSearch={onSearch}></Search>
                </div>
                {isLogin ? (
                   <Dropdown overlay={menu} placement="bottomLeft" arrow>
