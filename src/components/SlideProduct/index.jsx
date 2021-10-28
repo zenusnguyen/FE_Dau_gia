@@ -66,14 +66,7 @@ export default function ProductSlide(props) {
             {products.map((product) => (
                <div className={styles.item} key={product.id}>
                   <Link to={`/product/${product.id}`}>
-                     <Item
-                        title={product.title}
-                        startPrice={`${product.startPrice}đ`}
-                        view={product.view}
-                        images={product.images}
-                        width={product.width}
-                        createdAt={product.createdAt}
-                     />
+                     <Item product={product} />
                   </Link>
                </div>
             ))}

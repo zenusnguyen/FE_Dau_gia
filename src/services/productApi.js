@@ -40,6 +40,45 @@ export const getCountBySub = (subId) => {
    });
 };
 
+export const getViewDesc = () => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/view/desc`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getPriceDesc = () => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/price/desc`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getPostDateAsc = () => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/post-date/asc`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const search = (keyWord, pageNumber) => {
    return new Promise((resolve, reject) => {
       axios({

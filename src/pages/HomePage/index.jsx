@@ -3,41 +3,40 @@ import styles from "./styles.module.css";
 import { socket } from "../../services/socket";
 import SlideProduct from "../../components/SlideProduct";
 import CategoryList from "../../components/CategoryList";
-import { getAll as getAllProduct, search } from "../../services/productApi";
+import {
+   getAll as getAllProduct,
+   search,
+   getViewDesc,
+   getPriceDesc,
+   getPostDateAsc,
+} from "../../services/productApi";
 import { getAll as getAllCategory } from "../../services/categoryApi";
 import LoadingPage from "../LoadingPage";
 
 export default function HomePage() {
-   const username = "anh";
-   const room = "1";
-   const [products, setProducts] = useState([]);
+   const [productsDescView, setProductsDescView] = useState([]);
+   const [productsDescPrice, setProductsDescPrice] = useState([]);
+   const [productsDescPostDate, setProductsDescPostDate] = useState([]);
    const [categories, setCategories] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
       async function fetch() {
-         const test = await search();
-         console.log("Search", test);
-         Promise.all([getAllProduct(), getAllCategory()]).then((values) => {
-            console.log(values[0]);
-            setProducts(values[0]);
-            setCategories(values[1]);
+         Promise.all([
+            getAllCategory(),
+            getViewDesc(),
+            getPriceDesc(),
+            getPostDateAsc(),
+         ]).then((values) => {
+            setCategories(values[0]);
             setIsLoading(false);
+            setProductsDescView(values[1]);
+            setProductsDescPrice(values[2]);
+            setProductsDescPostDate(values[3]);
          });
       }
       fetch();
    }, []);
-   //  socket.on("welcome", (data) => {
-   //     console.log("data: ", data);
-   //  });
-
-   const handleClick = () => {
-      // socket.emit("join", { username, room }, (error) => {
-      //   if (error) {
-      //     alert(error);
-      //   }
-      // });
-   };
 
    return (
       <div className={styles.homeContainer}>
@@ -49,16 +48,20 @@ export default function HomePage() {
                   title="Danh mục sản phẩm"
                   categories={categories}
                />
-               <SlideProduct title="Sắp kết thúc" products={products} />
+               <SlideProduct
+                  title="Sắp kết thúc"
+                  products={productsDescPostDate}
+               />
                <SlideProduct
                   title="Nhiều lượt ra giá nhất"
-                  products={products}
+                  products={productsDescView}
                />
-               <SlideProduct title="Giá cao nhất" products={products} />
+               <SlideProduct
+                  title="Giá cao nhất"
+                  products={productsDescPrice}
+               />
             </div>
          )}
-
-         {/* <Button onClick={handleClick}>connect</Button> */}
       </div>
    );
 }

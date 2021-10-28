@@ -16,7 +16,9 @@ export default function CategoryList(props) {
          <ul className={styles.list}>
             {categories.map((category) => (
                <li className={styles.item} key={category.id}>
-                  <Link to={`/category/${category.id}`}>
+                  <Link
+                     to={`/category/${category.id}/sub/${category.subCategory[0].id}/page/1`}
+                  >
                      <CategoryItem
                         title={category.name}
                         src={`${BACKEND_DOMAIN}${category.image.src}`}

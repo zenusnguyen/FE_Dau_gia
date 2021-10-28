@@ -11,11 +11,12 @@ import moment from "moment";
 export default function ProductItem(props) {
    const { product } = props;
    const [timeRemaining, setTimeRemaining] = useState("");
+   const [isNew, setIsNew] = useState(true);
 
    useEffect(() => {
       const currentTime = moment();
       const endTime = moment(product.postingDate).add(5, "day");
-      // console.log(endTime.diff(currentTime, "minutes"));
+      const minutes = endTime.diff(currentTime, "minutes");
       const hours = endTime.diff(currentTime, "hours");
       const day = endTime.diff(currentTime, "days");
       if (day > 0) {
@@ -23,6 +24,13 @@ export default function ProductItem(props) {
       } else {
          setTimeRemaining(`${hours}h`);
       }
+      const hoursAgo = currentTime.diff(moment(product.postingDate), "hours");
+      const minutesAgo = currentTime.diff(
+         moment(product.postingDate),
+         "minutes"
+      );
+      console.log(minutesAgo - hoursAgo * 60);
+      if (minutesAgo - hoursAgo * 60 >= 30) setIsNew(false);
    }, [product]);
 
    return (
@@ -31,7 +39,10 @@ export default function ProductItem(props) {
             text="Sản phẩm mới"
             color="red"
             placement="start"
-            style={{ fontFamily: "Work Sans, sans-serif" }}
+            style={{
+               fontFamily: "Work Sans, sans-serif",
+               display: isNew ? "block" : "none",
+            }}
          >
             <div className={styles.productItem}>
                <Image
