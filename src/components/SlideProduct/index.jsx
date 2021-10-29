@@ -33,7 +33,7 @@ export default function ProductSlide(props) {
       infinite: true,
       speed: 500,
       autoplay: true,
-      slidesToShow: 4,
+      slidesToShow: products.length > 4 ? 4 : products.length,
       slidesToScroll: 1,
       variableWidth: true,
       nextArrow: <SampleNextArrow />,
@@ -42,18 +42,21 @@ export default function ProductSlide(props) {
          {
             breakpoint: 1360,
             settings: {
-               slidesToShow: 3,
+               slidesToShow: products.length > 4 ? 3 : products.length,
             },
          },
          {
             breakpoint: 1035,
             settings: {
-               slidesToShow: 2,
+               slidesToShow: products.length > 4 ? 2 : products.length,
             },
          },
          {
             breakpoint: 450,
-            settings: { slidesToShow: 1, variableWidth: false },
+            settings: {
+               slidesToShow: products.length > 4 ? 1 : products.length,
+               variableWidth: false,
+            },
          },
       ],
    };

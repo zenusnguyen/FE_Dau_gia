@@ -35,7 +35,7 @@ function App() {
                      <Route path="/login">
                         <LoginPage />
                      </Route>
-                     <Route path="/product">
+                     <Route path="/product/:productId">
                         <ProductDetailPage />
                      </Route>
                      <Route path="/register">

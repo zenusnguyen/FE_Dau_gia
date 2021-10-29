@@ -24,13 +24,11 @@ export default function ProductItem(props) {
       } else {
          setTimeRemaining(`${hours}h`);
       }
-      const hoursAgo = currentTime.diff(moment(product.postingDate), "hours");
       const minutesAgo = currentTime.diff(
          moment(product.postingDate),
          "minutes"
       );
-      console.log(minutesAgo - hoursAgo * 60);
-      if (minutesAgo - hoursAgo * 60 >= 30) setIsNew(false);
+      if (minutesAgo >= 30) setIsNew(false);
    }, [product]);
 
    return (
@@ -108,7 +106,9 @@ export default function ProductItem(props) {
                      </div>
                      <div className={styles.infoCenterValue}>
                         <div className={styles.hightBidder}>
-                           <Text.bodyHighlight title={product.currentOrderId} />
+                           <Text.bodyHighlight
+                              title={product.currentBidder.name}
+                           />
                            {/* <p className={styles.percent}>
                               <Text.caption
                                  title={`${bidder.percent}%`}
@@ -144,9 +144,11 @@ export default function ProductItem(props) {
                      {product.maxPrice && (
                         <Button
                            type="primary"
-                           className={styles.action}
+                           className={`${styles.action} ${styles.primary}`}
                            style={{
                               height: "40px",
+                              backgroundColor: "#0064D2",
+                              borderColor: "#0064D2",
                            }}
                         >
                            <Text.bodyHighlight

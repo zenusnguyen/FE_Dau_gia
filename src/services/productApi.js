@@ -14,6 +14,19 @@ export const getAll = () => {
    });
 };
 
+export const get = (id) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/${id}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const getBySubCategory = (subId, pageNumber) => {
    return new Promise((resolve, reject) => {
       axios({
@@ -97,6 +110,19 @@ export const getCountSearch = (searchWord) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items/search/${searchWord}/count`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getAllHistory = (productID) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/price-histories/product/${productID}`,
       })
          .then((res) => {
             resolve(res?.data);
