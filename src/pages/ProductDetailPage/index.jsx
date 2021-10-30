@@ -95,6 +95,8 @@ export default function ItemDetailPage({ data }) {
             setTimeRemaining(`${hours} hours left`);
          }
 
+         console.log(allHistory);
+
          const historiesData = allHistory.map((history, i) => {
             return {
                key: i.toString(),

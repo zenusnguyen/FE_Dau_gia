@@ -3,8 +3,12 @@ import React, { useEffect, useState } from "react";
 import Text from "../Text";
 import "./style.css";
 import { useSelector } from "react-redux";
-import { Image, Button, Divider, Badge, Modal } from "antd";
-import { HeartOutlined } from "@ant-design/icons";
+import { Image, Button, Divider, Badge, Modal, Input, Radio } from "antd";
+import {
+   HeartOutlined,
+   LikeOutlined,
+   DislikeOutlined,
+} from "@ant-design/icons";
 import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
@@ -12,6 +16,7 @@ import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import moment from "moment";
 
 export default function ProductItem(props) {
+   const { TextArea } = Input;
    const { user } = useSelector((state) => state.user);
    const { product, callBackUnLike } = props;
    const [isLike, setIsLike] = useState(product.isLike);
@@ -19,6 +24,7 @@ export default function ProductItem(props) {
    const [isNew, setIsNew] = useState(true);
    const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
    const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
+   const [isModalEvaluateVisible, setIsModalEvaluateVisible] = useState(false);
 
    useEffect(() => {
       const currentTime = moment();
@@ -116,10 +122,14 @@ export default function ProductItem(props) {
                            />
                         </div>
                         <div>
-                           <Text.h3
-                              title={timeRemaining}
-                              style={{ color: "red" }}
-                           />
+                           {product.status === "processing" ? (
+                              <Text.h3
+                                 title={timeRemaining}
+                                 style={{ color: "red" }}
+                              />
+                           ) : (
+                              <Text.h3 title="Đã kết thúc" />
+                           )}
                         </div>
                      </div>
                   </div>
@@ -140,9 +150,11 @@ export default function ProductItem(props) {
                      </div>
                      <div className={styles.infoCenterValue}>
                         <div className={styles.hightBidder}>
-                           <Text.bodyHighlight
-                              title={product.currentBidder.name}
-                           />
+                           {product.bidder && (
+                              <Text.bodyHighlight
+                                 title={product.currentBidder.name}
+                              />
+                           )}
                            {/* <p className={styles.percent}>
                               <Text.caption
                                  title={`${bidder.percent}%`}
@@ -157,61 +169,77 @@ export default function ProductItem(props) {
                   </div>
                </div>
                <div className={styles.actions}>
-                  <div>
-                     <Button
-                        onClick={() => setIsModalAuctionVisible(true)}
-                        type="primary"
-                        className={`${styles.action} ${styles.danger}`}
-                        style={{
-                           backgroundColor: "#E53238",
-                           borderColor: "#E53238",
-                           height: "40px",
-                        }}
-                     >
-                        <Text.bodyHighlight
-                           title={`Đấu giá - ${(
-                              product.currentPrice + product.rating
-                           )
-                              .toString()
-                              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
-                        />
-                     </Button>
-                     {product.maxPrice && (
+                  {product.status === "processing" ? (
+                     <div>
                         <Button
-                           onClick={() => setIsModalBuyVisible(true)}
+                           onClick={() => setIsModalAuctionVisible(true)}
                            type="primary"
-                           className={`${styles.action} ${styles.primary}`}
+                           className={`${styles.action} ${styles.danger}`}
                            style={{
+                              backgroundColor: "#E53238",
+                              borderColor: "#E53238",
                               height: "40px",
-                              backgroundColor: "#0064D2",
-                              borderColor: "#0064D2",
                            }}
                         >
                            <Text.bodyHighlight
-                              title={`Mua ngay - ${product.maxPrice
+                              title={`Đấu giá - ${(
+                                 product.currentPrice + product.rating
+                              )
                                  .toString()
                                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
                            />
                         </Button>
-                     )}
-                     <Button
-                        onClick={onLikeClick}
-                        className={
-                           isLike
-                              ? `${styles.action} ${styles.like}`
-                              : `${styles.action} `
-                        }
-                        style={{
-                           height: "40px",
-                        }}
-                     >
-                        <HeartOutlined />
-                        <Text.bodyHighlight
-                           title={isLike ? `Đã Yêu thích` : `Yêu thích`}
-                        />
-                     </Button>
-                  </div>
-
+                        {product.maxPrice && (
+                           <Button
+                              onClick={() => setIsModalBuyVisible(true)}
+                              type="primary"
+                              className={`${styles.action} ${styles.primary}`}
+                              style={{
+                                 height: "40px",
+                                 backgroundColor: "#0064D2",
+                                 borderColor: "#0064D2",
+                              }}
+                           >
+                              <Text.bodyHighlight
+                                 title={`Mua ngay - ${product.maxPrice
+                                    .toString()
+                                    .replace(
+                                       /(\d)(?=(\d{3})+(?!\d))/g,
+                                       "$1."
+                                    )}đ`}
+                              />
+                           </Button>
+                        )}
+                        <Button
+                           onClick={onLikeClick}
+                           className={
+                              isLike
+                                 ? `${styles.action} ${styles.like}`
+                                 : `${styles.action} `
+                           }
+                           style={{
+                              height: "40px",
+                           }}
+                        >
+                           <HeartOutlined />
+                           <Text.bodyHighlight
+                              title={isLike ? `Đã Yêu thích` : `Yêu thích`}
+                           />
+                        </Button>
+                     </div>
+                  ) : (
+                     <div>
+                        <Button
+                           onClick={() => setIsModalEvaluateVisible(true)}
+                           className={`${styles.action} `}
+                           style={{
+                              height: "40px",
+                           }}
+                        >
+                           <Text.bodyHighlight title="Đánh giá người bán" />
+                        </Button>
+                     </div>
+                  )}
                   <div className={styles.postingDate}>
                      <Text.caption
                         title="Sản phẩm này được đăng tải ngày"
@@ -234,7 +262,7 @@ export default function ProductItem(props) {
             okText={<Text.caption title="Đồng ý" />}
             cancelText={<Text.caption title="Hủy" />}
          >
-            <Text.bodyHighlight
+            <Text.caption
                title={`Bạn sẽ mua mặt hàng này với giá ${product.maxPrice
                   .toString()
                   .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ?`}
@@ -248,7 +276,7 @@ export default function ProductItem(props) {
             okText={<Text.caption title="Đồng ý" />}
             cancelText={<Text.caption title="Hủy" />}
          >
-            <Text.bodyHighlight
+            <Text.caption
                title={`Bạn sẽ ra giá ${(product.currentPrice + product.rating)
                   .toString()
                   .replace(
@@ -256,6 +284,33 @@ export default function ProductItem(props) {
                      "$1."
                   )}đ cho mặt hàng này?`}
             />
+         </Modal>
+         <Modal
+            title={<Text.bodyHighlight title="Đánh giá người bán" />}
+            visible={isModalEvaluateVisible}
+            onOk={() => {}}
+            onCancel={() => setIsModalEvaluateVisible(false)}
+            okText={<Text.caption title="Gửi đánh giá" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.caption title="Bạn thích trải nghiệm mua hàng này chứ?" />
+            <div>
+               <Radio.Group
+                  defaultValue="a"
+                  style={{ marginTop: "8px", marginBottom: "28px" }}
+               >
+                  <Radio.Button value="a" style={{ marginRight: "20px" }}>
+                     <LikeOutlined />
+                     <Text.caption title="  Thích (+1)" />
+                  </Radio.Button>
+                  <Radio.Button value="b">
+                     <DislikeOutlined />
+                     <Text.caption title="  Không thích (-1)" />
+                  </Radio.Button>
+               </Radio.Group>
+            </div>
+            <Text.caption title="Nhận xét(không bắt buộc)" />
+            <TextArea rows={4} style={{ marginTop: "8px" }} />
          </Modal>
       </div>
    );

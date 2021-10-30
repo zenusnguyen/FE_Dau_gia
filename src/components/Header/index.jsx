@@ -54,9 +54,9 @@ export default function Header(props) {
             </a>
          </Menu.Item>
          <Menu.Item>
-            <a target="_blank">
+            <Link to="/">
                <Text.caption title="Quản lý sản phẩm" />
-            </a>
+            </Link>
          </Menu.Item>
          <Menu.Item>
             <Link to="/profile/like-list">

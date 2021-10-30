@@ -5,15 +5,18 @@ import Text from "../../components/Text";
 import { useSelector } from "react-redux";
 import { getAllLike } from "../../services/productApi";
 import { Empty } from "antd";
+import LoadingPage from "../LoadingPage";
 
 export default function LikePage() {
    const { user } = useSelector((state) => state.user);
    const [products, setProducts] = useState([]);
+   const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
       const fetchData = async () => {
          const productsLike = await getAllLike(user.id);
          setProducts(productsLike);
+         setIsLoading(false);
       };
       fetchData();
    }, [user.id]);
@@ -27,26 +30,32 @@ export default function LikePage() {
    return (
       <div className={styles.container}>
          <Text.h3 title="Danh sách yêu thích" />
-         {products.length > 0 ? (
-            <ul className={styles.productList}>
-               {products.map((product) => (
-                  <li className={styles.productItem} key={product.id}>
-                     <ProductItem
-                        product={product}
-                        callBackUnLike={callBackUnLike}
-                     />
-                  </li>
-               ))}
-            </ul>
+         {isLoading ? (
+            <LoadingPage />
          ) : (
-            <Empty
-               style={{
-                  top: "50%",
-                  position: "absolute",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-               }}
-            />
+            <div>
+               {products.length > 0 ? (
+                  <ul className={styles.productList}>
+                     {products.map((product) => (
+                        <li className={styles.productItem} key={product.id}>
+                           <ProductItem
+                              product={product}
+                              callBackUnLike={callBackUnLike}
+                           />
+                        </li>
+                     ))}
+                  </ul>
+               ) : (
+                  <Empty
+                     style={{
+                        top: "50%",
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                     }}
+                  />
+               )}
+            </div>
          )}
       </div>
    );

@@ -131,6 +131,58 @@ export const getAllLike = (bidderId) => {
    });
 };
 
+export const getAllAuctionProcessing = (bidderId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/auction/processing/${bidderId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getAllAuctionSold = (bidderId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/auction/sold/${bidderId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getAllSellProcessing = (sellerId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/sell/processing/${sellerId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const getAllSellSold = (sellerId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/sell/sold/${sellerId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const getAllHistory = (productID) => {
    return new Promise((resolve, reject) => {
       axios({
