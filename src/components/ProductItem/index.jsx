@@ -1,17 +1,24 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from "react";
 import Text from "../Text";
-import { Image, Button, Divider, Badge } from "antd";
+import "./style.css";
+import { useSelector } from "react-redux";
+import { Image, Button, Divider, Badge, Modal } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
+import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import moment from "moment";
 
 export default function ProductItem(props) {
-   const { product } = props;
+   const { user } = useSelector((state) => state.user);
+   const { product, callBackUnLike } = props;
+   const [isLike, setIsLike] = useState(product.isLike);
    const [timeRemaining, setTimeRemaining] = useState("");
    const [isNew, setIsNew] = useState(true);
+   const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
+   const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
 
    useEffect(() => {
       const currentTime = moment();
@@ -20,9 +27,21 @@ export default function ProductItem(props) {
       const hours = endTime.diff(currentTime, "hours");
       const day = endTime.diff(currentTime, "days");
       if (day > 0) {
-         setTimeRemaining(`${day}d ${hours - 24 * day}h`);
+         if (day < 3) {
+            if (day === 0) {
+               if (hours === 0) {
+                  setTimeRemaining(`${minutes} minutes left`);
+               } else {
+                  setTimeRemaining(`${hours} hours left`);
+               }
+            } else {
+               setTimeRemaining(`${day} days left`);
+            }
+         } else {
+            setTimeRemaining(`${day}d ${hours - 24 * day}h`);
+         }
       } else {
-         setTimeRemaining(`${hours}h`);
+         setTimeRemaining(`${hours} hours left`);
       }
       const minutesAgo = currentTime.diff(
          moment(product.postingDate),
@@ -30,6 +49,22 @@ export default function ProductItem(props) {
       );
       if (minutesAgo >= 30) setIsNew(false);
    }, [product]);
+
+   const onLikeClick = () => {
+      setIsLike(!isLike);
+      if (!isLike) {
+         addWatch(product.id, user.id);
+      } else {
+         delWatch(product.id, user.id);
+         if (callBackUnLike) {
+            callBackUnLike(product.id);
+         }
+      }
+   };
+
+   const handleBuyClick = () => {};
+
+   const handleAuctionClick = () => {};
 
    return (
       <div {...props} className={styles.productItemContainer}>
@@ -46,7 +81,6 @@ export default function ProductItem(props) {
                <Image
                   width={props?.width || 200}
                   src={`${BACKEND_DOMAIN}${product.images[0]}`}
-                  preview={false}
                />
                <div className={styles.info}>
                   <div className={styles.name}>
@@ -125,6 +159,7 @@ export default function ProductItem(props) {
                <div className={styles.actions}>
                   <div>
                      <Button
+                        onClick={() => setIsModalAuctionVisible(true)}
                         type="primary"
                         className={`${styles.action} ${styles.danger}`}
                         style={{
@@ -143,6 +178,7 @@ export default function ProductItem(props) {
                      </Button>
                      {product.maxPrice && (
                         <Button
+                           onClick={() => setIsModalBuyVisible(true)}
                            type="primary"
                            className={`${styles.action} ${styles.primary}`}
                            style={{
@@ -159,13 +195,20 @@ export default function ProductItem(props) {
                         </Button>
                      )}
                      <Button
-                        className={styles.action}
+                        onClick={onLikeClick}
+                        className={
+                           isLike
+                              ? `${styles.action} ${styles.like}`
+                              : `${styles.action} `
+                        }
                         style={{
                            height: "40px",
                         }}
                      >
                         <HeartOutlined />
-                        <Text.bodyHighlight title={`Yêu thích`} />
+                        <Text.bodyHighlight
+                           title={isLike ? `Đã Yêu thích` : `Yêu thích`}
+                        />
                      </Button>
                   </div>
 
@@ -183,6 +226,37 @@ export default function ProductItem(props) {
                </div>
             </div>
          </Badge.Ribbon>
+         <Modal
+            title={<Text.bodyHighlight title="Xác nhận mua hàng" />}
+            visible={isModalBuyVisible}
+            onOk={() => {}}
+            onCancel={() => setIsModalBuyVisible(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.bodyHighlight
+               title={`Bạn sẽ mua mặt hàng này với giá ${product.maxPrice
+                  .toString()
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ?`}
+            />
+         </Modal>
+         <Modal
+            title={<Text.bodyHighlight title="Xác nhận ra giá" />}
+            visible={isModalAuctionVisible}
+            onOk={() => {}}
+            onCancel={() => setIsModalAuctionVisible(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.bodyHighlight
+               title={`Bạn sẽ ra giá ${(product.currentPrice + product.rating)
+                  .toString()
+                  .replace(
+                     /(\d)(?=(\d{3})+(?!\d))/g,
+                     "$1."
+                  )}đ cho mặt hàng này?`}
+            />
+         </Modal>
       </div>
    );
 }

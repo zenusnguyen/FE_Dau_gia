@@ -1,83 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
-import ProductImage from "../../assets/product.svg";
 import ProductItem from "../../components/ProductItem";
-import { PageHeader, Button, Radio } from "antd";
-const products = [
-  {
-    id: "5",
-    title:
-      "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-    price: "1.250.000đ",
-    view: "20",
-    timming: "12d 8h 5m",
-    src: ProductImage,
-    width: 240,
-    bidder: { name: "***Anh", percent: 80 },
-    postingDate: "02/09/2021 10:30",
-    auctionMoney: "1.300.000đ",
-    buyNow: "1.500.000đ",
-    status: "processing",
-  },
-  {
-    id: "5",
-    title:
-      "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-    price: "1.250.000đ",
-    view: "20",
-    timming: "12d 8h 5m",
-    src: ProductImage,
-    width: 240,
-    bidder: { name: "***Anh", percent: 80 },
-    postingDate: "02/09/2021 10:30",
-    auctionMoney: "1.300.000đ",
-    buyNow: null,
-    status: "sold",
-  },
-];
+import Text from "../../components/Text";
+import { useSelector } from "react-redux";
+import { getAllLike } from "../../services/productApi";
+import { Empty } from "antd";
 
 export default function LikePage() {
-  const options = [
-    { label: "Tất cả", value: "all" },
-    { label: "Hết hạn", value: "expired" },
-    { label: "Còn hạn", value: "due" },
-  ];
+   const { user } = useSelector((state) => state.user);
+   const [products, setProducts] = useState([]);
 
-  const [currentValue, setCurrentValue] = useState("");
-  return (
-    <div className={styles.container}>
-      <PageHeader
-        title={"Tôi đấu giá"}
-        extra={[
-          <Radio.Group
-            options={options}
-            onChange={() => {}}
-            value={currentValue}
-            optionType="button"
-            buttonStyle="solid"
-          />,
-        ]}
-      ></PageHeader>
+   useEffect(() => {
+      const fetchData = async () => {
+         const productsLike = await getAllLike(user.id);
+         setProducts(productsLike);
+      };
+      fetchData();
+   }, [user.id]);
 
-      <div>
-        {products.map((product) => (
-          <ProductItem
-            key={product.id}
-            id={product.id}
-            title={product.title}
-            price={product.price}
-            view={product.view}
-            timming={product.timming}
-            src={product.src}
-            width={product.width}
-            bidder={product.bidder}
-            postingDate={product.postingDate}
-            auctionMoney={product.auctionMoney}
-            buyNow={product.buyNow}
-            status={product?.status}
-          />
-        ))}
+   const callBackUnLike = (productId) => {
+      const index = products.findIndex((product) => product.id === productId);
+      products.splice(index, 1);
+      setProducts([...products]);
+   };
+
+   return (
+      <div className={styles.container}>
+         <Text.h3 title="Danh sách yêu thích" />
+         {products.length > 0 ? (
+            <ul className={styles.productList}>
+               {products.map((product) => (
+                  <li className={styles.productItem} key={product.id}>
+                     <ProductItem
+                        product={product}
+                        callBackUnLike={callBackUnLike}
+                     />
+                  </li>
+               ))}
+            </ul>
+         ) : (
+            <Empty
+               style={{
+                  top: "50%",
+                  position: "absolute",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+               }}
+            />
+         )}
       </div>
-    </div>
-  );
+   );
 }

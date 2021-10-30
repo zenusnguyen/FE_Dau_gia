@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import SideMenu from "../../components/SideMenu";
 import styles from "./styles.module.css";
 import SalePage from "../SalePage";
@@ -7,9 +8,19 @@ import LikePage from "../LikePage";
 import InfoAccountPage from "../InfoAccountPage";
 import EvaluatePage from "../EvaluatePage";
 import AddProductPage from "../AddProductPage";
+import LoadingPage from "../LoadingPage";
 
 export default function ProfileManagement() {
-   const [currentKey, setCurrentKey] = useState("4");
+   const { page } = useParams();
+   const [currentKey, setCurrentKey] = useState("1");
+   const [isLoading, setIsLoading] = useState(true);
+
+   useEffect(() => {
+      if (page === "like-list") {
+         setCurrentKey("8");
+      }
+      setIsLoading(false);
+   }, [page]);
 
    const renderComponent = () => {
       switch (currentKey) {
@@ -32,8 +43,17 @@ export default function ProfileManagement() {
 
    return (
       <div className={styles.container}>
-         <SideMenu handleClick={setCurrentKey}></SideMenu>
-         {renderComponent()}
+         {isLoading ? (
+            <LoadingPage />
+         ) : (
+            <div className={styles.content}>
+               <SideMenu
+                  handleClick={setCurrentKey}
+                  currentKey={currentKey}
+               ></SideMenu>
+               {renderComponent()}
+            </div>
+         )}
       </div>
    );
 }

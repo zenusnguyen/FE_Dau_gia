@@ -67,6 +67,11 @@
    margin-bottom: 20px;
 }
 
+.productItemContainer .like {
+   color: #0064d2;
+   border-color: #0064d2;
+}
+
 .productItemContainer .action.danger:hover {
    background-color: #f3595e !important;
 }

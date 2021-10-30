@@ -53,7 +53,7 @@ function App() {
                      >
                         <ProductListPage />
                      </Route>
-                     <Route path="/profile" exact>
+                     <Route path="/profile/:page" exact>
                         <ProfileManagement />
                      </Route>
                      <Route path="/home">

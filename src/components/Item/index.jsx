@@ -15,18 +15,19 @@ export default function Item(props) {
       const currentTime = moment();
       const endTime = moment(product.postingDate).add(5, "day");
       const hours = endTime.diff(currentTime, "hours");
+      const minutes = endTime.diff(currentTime, "minutes");
       const day = endTime.diff(currentTime, "days");
       if (day > 0) {
          setTimeRemaining(`${day}d ${hours - 24 * day}h`);
       } else {
-         setTimeRemaining(`${hours}h`);
+         setTimeRemaining(`${hours}h ${minutes - 60 * hours}m`);
       }
    }, [product]);
 
    return (
       <div {...props} className={styles.ItemContainer}>
          <Image
-            width={props?.width || 200}
+            width={props?.width || 240}
             src={`${BACKEND_DOMAIN}${product.images[0]}`}
             alt={product.title}
             preview={false}

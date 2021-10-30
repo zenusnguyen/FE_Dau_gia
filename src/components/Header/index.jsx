@@ -59,9 +59,9 @@ export default function Header(props) {
             </a>
          </Menu.Item>
          <Menu.Item>
-            <a target="_blank">
+            <Link to="/profile/like-list">
                <Text.caption title="Danh sách yêu thích" />
-            </a>
+            </Link>
          </Menu.Item>
          <Menu.Item>
             <a
@@ -110,7 +110,7 @@ export default function Header(props) {
                         }}
                      >
                         <SmileOutlined style={{ fontSize: "35px" }} />
-                        <Text.caption title="Nguyễn Việt Anh" />
+                        <Text.caption title={user.name} />
                      </Button>
                   </Dropdown>
                ) : (

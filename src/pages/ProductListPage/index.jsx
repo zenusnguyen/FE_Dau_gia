@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { Pagination, Breadcrumb } from "antd";
 import { useParams, useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Menu } from "antd";
 import ProductList from "../../components/ProductList";
 import Text from "../../components/Text";
@@ -9,9 +10,11 @@ import LoadingPage from "../LoadingPage";
 import { Empty } from "antd";
 import { getAll as getAllCategory } from "../../services/categoryApi";
 import { getBySubCategory, getCountBySub } from "../../services/productApi";
+import { getByBidder } from "../../services/wathApi";
 
 export default function ProductListPage() {
    const history = useHistory();
+   const { user } = useSelector((state) => state.user);
    const { categoryId, subId, pageNumber } = useParams();
    const { SubMenu } = Menu;
    const [categoryOptions, setCategoryOptions] = useState([]);
@@ -27,6 +30,7 @@ export default function ProductListPage() {
             getBySubCategory(subId, pageNumber),
             getAllCategory(),
             getCountBySub(subId),
+            getByBidder(user.id),
          ]).then((values) => {
             const currentCategory = values[1].find(
                (category) => category.id === categoryId
@@ -34,20 +38,33 @@ export default function ProductListPage() {
             const currentSub = currentCategory.subCategory.find(
                (sub) => sub.id === subId
             );
+            const allLike = values[3].map((like) => like.productId);
+            const products = values[0].map((value) => {
+               if (allLike.includes(value.id)) {
+                  return {
+                     ...value,
+                     isLike: true,
+                  };
+               } else {
+                  return {
+                     ...value,
+                     isLike: false,
+                  };
+               }
+            });
             setBreadcrumb([currentCategory.name, currentSub.name]);
             setCategoryOptions(values[1]);
-            setItems(values[0]);
+            setItems(products);
             setToTalPage(values[2]);
             setIsLoading(false);
          });
       };
       fetchData();
-   }, [subId, categoryId, currentPage, pageNumber]);
+   }, [subId, categoryId, currentPage, pageNumber, user.id]);
 
    const handleMenuClick = (e) => {
-      history.push(
-         `/category/${e.keyPath[1]}/sub/${e.keyPath[0]}/page/${currentPage}`
-      );
+      setCurrentPage(1);
+      history.push(`/category/${e.keyPath[1]}/sub/${e.keyPath[0]}/page/1`);
    };
 
    const handlePageChange = (pageNumber) => {
@@ -74,7 +91,11 @@ export default function ProductListPage() {
                <div className={styles.center}>
                   <Menu
                      onClick={handleMenuClick}
-                     style={{ width: 255, marginRight: "25px" }}
+                     style={{
+                        width: 255,
+                        marginRight: "25px",
+                        minHeight: "50vh",
+                     }}
                      mode="inline"
                      defaultSelectedKeys={[subId]}
                      defaultOpenKeys={[categoryId]}

@@ -4,42 +4,17 @@ import styles from "./styles.module.css";
 import { useParams } from "react-router-dom";
 import { Breadcrumb, Image, Divider, Tag, Collapse, Button } from "antd";
 import Text from "../../components/Text";
-import ProductImage from "../../assets/product.svg";
 import SlideProduct from "../../components/SlideProduct";
 import { HeartOutlined } from "@ant-design/icons";
 import { get, getAllHistory } from "../../services/productApi";
+import { getById } from "../../services/categoryApi";
+import { getByBidder } from "../../services/wathApi";
+import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import moment from "moment";
 import { BACKEND_DOMAIN } from "../../constants";
-import { Table, Space } from "antd";
+import { Table } from "antd";
+import { useSelector } from "react-redux";
 import LoadingPage from "../LoadingPage";
-
-const DATA = {
-   id: "1",
-   title: "Taylor Swift - Fearless (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-   description: `"Fearless was an album full of magic and curiosity, the bliss and devastation of youth. It was the diary of the adventures and explorations of a teenage girl who was learning tiny lessons with every new crack in the facade of the fairytale ending she'd been shown in the movies. I'm thrilled to tell you that my new version of Fearless is done and will be with you soon. It's called Fearless (Taylor's Version) and it includes 26 songs." - Taylor Swift. Includes 6 unreleased tracks. Gold 3 LP.`,
-   price: "1.250.000đ",
-   view: "20",
-   timming: "12d 8h 5m",
-   images: [ProductImage, ProductImage, ProductImage, ProductImage],
-   width: 240,
-   history: [
-      {
-         time: "01/10/2021",
-         buyer: "Anh Nguyen",
-         price: " 12500000d",
-      },
-      {
-         time: "01/10/2021",
-         buyer: "Anh Nguyen",
-         price: " 12500000d",
-      },
-      {
-         time: "01/10/2021",
-         buyer: "Anh Nguyen",
-         price: " 12500000d",
-      },
-   ],
-};
 
 const columnsTable = [
    {
@@ -62,12 +37,15 @@ const columnsTable = [
 const { Panel } = Collapse;
 
 export default function ItemDetailPage({ data }) {
+   const { user } = useSelector((state) => state.user);
    const { productId } = useParams();
    const [product, setProduct] = useState({});
    const [currentImage, setCurrentImage] = useState(0);
    const [isLoading, setIsLoading] = useState(true);
    const [timeRemaining, setTimeRemaining] = useState("");
    const [histories, setHistories] = useState([]);
+   const [breadcrumb, setBreadcrumb] = useState([]);
+   const [isLike, setIsLike] = useState(false);
 
    const SubImage = ({ src, index }) => {
       return (
@@ -84,7 +62,15 @@ export default function ItemDetailPage({ data }) {
    useEffect(() => {
       const fetchData = async () => {
          const productRes = await get(productId);
+         const currentCategory = await getById(productRes.categoryID);
          const allHistory = await getAllHistory(productId);
+         const allLike = await getByBidder(user.id);
+         const likes = allLike.map((like) => like.productId);
+         if (likes.includes(productRes.id)) {
+            setIsLike(true);
+         } else {
+            setIsLike(false);
+         }
          setProduct(productRes);
          const currentTime = moment();
          const endTime = moment(productRes.postingDate).add(5, "day");
@@ -92,19 +78,21 @@ export default function ItemDetailPage({ data }) {
          const hours = endTime.diff(currentTime, "hours");
          const day = endTime.diff(currentTime, "days");
          if (day > 0) {
-            setTimeRemaining(`${day}d ${hours - 24 * day}h`);
-         } else if (day < 3) {
-            if (day === 0) {
-               if (hours === 0) {
-                  setTimeRemaining(`${minutes} minutes left`);
+            if (day < 3) {
+               if (day === 0) {
+                  if (hours === 0) {
+                     setTimeRemaining(`${minutes} minutes left`);
+                  } else {
+                     setTimeRemaining(`${hours} hours left`);
+                  }
                } else {
-                  setTimeRemaining(`${hours} hours left`);
+                  setTimeRemaining(`${day} days left`);
                }
             } else {
-               setTimeRemaining(`${day} days left`);
+               setTimeRemaining(`${day}d ${hours - 24 * day}h`);
             }
          } else {
-            setTimeRemaining(`${hours}h`);
+            setTimeRemaining(`${hours} hours left`);
          }
 
          const historiesData = allHistory.map((history, i) => {
@@ -118,6 +106,16 @@ export default function ItemDetailPage({ data }) {
             };
          });
 
+         const currentSub = currentCategory.subCategory.find(
+            (subCategory) => subCategory.id === productRes.subCategoryId
+         );
+
+         setBreadcrumb([
+            currentCategory.name,
+            currentSub.name,
+            productRes.title,
+         ]);
+
          setHistories(historiesData);
 
          setIsLoading(false);
@@ -129,6 +127,16 @@ export default function ItemDetailPage({ data }) {
    const onImageClick = (index) => {
       setCurrentImage(index);
    };
+
+   const onLikeClick = () => {
+      setIsLike(!isLike);
+      if (!isLike) {
+         addWatch(productId, user.id);
+      } else {
+         delWatch(productId, user.id);
+      }
+   };
+
    function callback(key) {}
    return (
       <div className={styles.container}>
@@ -136,6 +144,16 @@ export default function ItemDetailPage({ data }) {
             <LoadingPage />
          ) : (
             <div>
+               <Breadcrumb style={{ marginBottom: "30px" }}>
+                  <Breadcrumb.Item>
+                     <Text.caption title="Trang chủ" />
+                  </Breadcrumb.Item>
+                  {breadcrumb.map((item) => (
+                     <Breadcrumb.Item>
+                        <Text.caption title={item} />
+                     </Breadcrumb.Item>
+                  ))}
+               </Breadcrumb>
                <div className={styles.itemWrapper}>
                   <div className={styles.imageGroup}>
                      <div className={styles.subImageGroup}>
@@ -288,10 +306,15 @@ export default function ItemDetailPage({ data }) {
                                  <Text.bodyHighlight title="Đấu giá tự động" />
                               </Button>
                               <Button
+                                 onClick={() => onLikeClick()}
                                  icon={<HeartOutlined />}
-                                 className={styles.like}
+                                 className={isLike ? styles.liked : styles.like}
                               >
-                                 <Text.bodyHighlight title={`Yêu thích`} />
+                                 <Text.bodyHighlight
+                                    title={
+                                       isLike ? "Đã Yêu thích" : `Yêu thích`
+                                    }
+                                 />
                               </Button>
                            </div>
                            <div className={styles.postingDate}>

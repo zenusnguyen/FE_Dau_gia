@@ -118,6 +118,19 @@ export const getCountSearch = (searchWord) => {
    });
 };
 
+export const getAllLike = (bidderId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items/like/${bidderId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const getAllHistory = (productID) => {
    return new Promise((resolve, reject) => {
       axios({

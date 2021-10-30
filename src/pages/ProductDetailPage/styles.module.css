@@ -124,6 +124,12 @@
    height: 40px !important;
 }
 
+.liked {
+   height: 40px !important;
+   color: #0064d2 !important;
+   border-color: #0064d2 !important;
+}
+
 .postingDate {
    margin-top: 20px;
 }
