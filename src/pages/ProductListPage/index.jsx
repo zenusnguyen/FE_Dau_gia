@@ -60,7 +60,7 @@ export default function ProductListPage() {
          });
       };
       fetchData();
-   }, [subId, categoryId, currentPage, pageNumber, user.id]);
+   }, [subId, categoryId, currentPage, pageNumber, user?.user?.id]);
 
    const handleMenuClick = (e) => {
       setCurrentPage(1);
