@@ -12,16 +12,20 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const history = useHistory();
   const { user } = useSelector((state) => state.user);
-  console.log("user: ", user);
 
   const onFinish = async (values) => {
-    const res = await login(values);
-    if (res.jwt) {
-      dispatch(reduxLogin(res));
-      console.log("??");
-      history.push("/home");
-    } else {
-      /// show message err
+    try {
+      const res = await login(values);
+      if (res.jwt) {
+        dispatch(reduxLogin(res));
+        console.log("??");
+        history.push("/home");
+      } else {
+        /// show message err
+        message.warn("Đăng nhập thất bại");
+      }
+    } catch (err) {
+      console.log("err: ", err);
     }
   };
   const responseGoogle = (response) => {

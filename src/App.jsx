@@ -14,57 +14,59 @@ import React, { useEffect } from "react";
 import SearchPage from "./pages/SearchPage";
 import Header from "./components/Header";
 import ProfileManagement from "./pages/ProfileManagement";
+import EvaluatePage from "./pages/EvaluatePage";
 
 const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
-   // useEffect(() => loadReCaptcha(), []);
-   return (
-      <Router>
-         <div>
-            <div className={styles.appWrapper}>
-               <Header></Header>
-               <div className={styles.container}>
-                  <Switch>
-                     <Route path="/auth/google/callback">
-                        <GoogleAuthCallback />
-                     </Route>
-                     <Route path="/auth/facebook/callback">
-                        <FacebookAuthCallback />
-                     </Route>
-                     <Route path="/login">
-                        <LoginPage />
-                     </Route>
-                     <Route path="/product/:productId">
-                        <ProductDetailPage />
-                     </Route>
-                     <Route path="/register">
-                        <RegisterPage />
-                     </Route>
-                     <Route path="/" exact>
-                        <HomePage />
-                     </Route>
-                     <Route path="/search/:searchWord/page/:pageNumber" exact>
-                        <SearchPage />
-                     </Route>
-                     <Route
-                        path="/category/:categoryId/sub/:subId/page/:pageNumber"
-                        exact
-                     >
-                        <ProductListPage />
-                     </Route>
-                     <Route path="/profile/:page" exact>
-                        <ProfileManagement />
-                     </Route>
-                     <Route path="/home">
-                        <HomePage />
-                     </Route>
-                  </Switch>
-               </div>
-            </div>
-         </div>
-      </Router>
-   );
+  // useEffect(() => loadReCaptcha(), []);
+  return (
+    <Router>
+      <div>
+        <div className={styles.appWrapper}>
+          <Header></Header>
+          <div className={styles.container}>
+            <Switch>
+              <Route path="/auth/google/callback">
+                <GoogleAuthCallback />
+              </Route>
+              <Route path="/auth/facebook/callback">
+                <FacebookAuthCallback />
+              </Route>
+              <Route path="/login">
+                <LoginPage />
+              </Route>
+              <Route path="/product/:productId">
+                <ProductDetailPage />
+              </Route>
+              <Route path="/register">
+                <RegisterPage />
+              </Route>
+              <Route path="/" exact>
+                <HomePage />
+              </Route>
+              <Route path="/search/:searchWord/page/:pageNumber" exact>
+                <SearchPage />
+              </Route>
+              <Route
+                path="/category/:categoryId/sub/:subId/page/:pageNumber"
+                exact
+              >
+                <ProductListPage />
+              </Route>
+              <Route path="/profile/:page" exact>
+                <ProfileManagement />
+              </Route>
+
+              <Route path="/home">
+                <HomePage />
+              </Route>
+            </Switch>
+          </div>
+        </div>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
