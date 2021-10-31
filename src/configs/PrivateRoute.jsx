@@ -3,7 +3,6 @@ import { Route, Redirect } from "react-router-dom";
 import { isLogin } from "../utilities/isLogin";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  console.log("isLogin(): ", isLogin());
   return (
     // Show the component only when the user is logged in
     // Otherwise, redirect the user to /signin page
@@ -11,6 +10,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={(props) =>
         isLogin() ? <Component {...props} /> : <Redirect to="/login" />
+        
       }
     />
   );

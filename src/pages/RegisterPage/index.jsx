@@ -6,15 +6,26 @@ import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
 // import { loadReCaptcha, ReCaptcha } from "react-recaptcha-google";
 import ReCAPTCHA from "react-grecaptcha";
+import { useHistory } from "react-router-dom";
 
 export default function RegisterPage() {
   // useEffect(() => {
   //   loadReCaptcha();
   // }, []);
+  const history = useHistory();
 
   const onFinish = async (values) => {
-    const res = await register(values);
-    console.log("res: ", res);
+    try {
+      const res = await register(values);
+      if (res.jwt) {
+        message.success("Đăng ký thành công");
+        setTimeout(() => {
+          history.push("/home");
+        }, 1000);
+      }
+    } catch (err) {
+      message.warn(err.message);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

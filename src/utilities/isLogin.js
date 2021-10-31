@@ -1,6 +1,5 @@
 export function isLogin() {
   const user = localStorage.getItem("user");
-  const userData = JSON.parse(user)
-  console.log('userData: ', userData);
+  const userData = JSON.parse(user);
   return userData?.jwt !== undefined ? true : false;
 }

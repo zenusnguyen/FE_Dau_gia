@@ -4,10 +4,29 @@ import styles from "./styles.module.css";
 import { login } from "../../services/login";
 import LoginImage from "../../assets/Hero.png";
 import Brand from "../../assets/Brand.png";
+import { useHistory } from "react-router-dom";
+import { login as reduxLogin } from "../../redux/actions/userActions";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { user } = useSelector((state) => state.user);
+
   const onFinish = async (values) => {
-    const res = await login(values);
+    try {
+      const res = await login(values);
+      if (res.jwt) {
+        dispatch(reduxLogin(res));
+        console.log("??");
+        history.push("/home");
+      } else {
+        /// show message err
+        message.warn("Đăng nhập thất bại");
+      }
+    } catch (err) {
+      console.log("err: ", err);
+    }
   };
   const responseGoogle = (response) => {
     console.log(response);

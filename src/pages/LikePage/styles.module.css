@@ -1,5 +1,15 @@
-.container{
-    display:flex;
-    flex-direction: column;
-    justify-content: flex-start;
+.container {
+   padding: 5px 30px;
+   width: 100%;
+   position: relative;
+}
+
+.productList {
+   margin-top: 20px;
+   padding: 0;
+}
+
+.productItem {
+   margin-bottom: 16px;
+   list-style: none;
 }

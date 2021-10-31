@@ -1,9 +1,35 @@
 .headerContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0 80px;
-  justify-content: space-between;
-  height: 100px;
-  width: 1440px;
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   padding: 0 80px;
+   justify-content: space-between;
+   height: 100px;
+   width: 1440px;
+}
+
+.search {
+   margin: 0 10px 0 10px;
+}
+
+.cascader {
+   color: #333 !important;
+   background: transparent !important;
+   width: 120px !important;
+}
+
+.headerContainer .cascader .ant-input {
+   border: none !important;
+}
+.cascaderLabel {
+   position: absolute;
+   top: 50%;
+   right: 40px;
+   transform: translateY(-50%);
+   cursor: pointer;
+}
+
+.login {
+   display: flex;
+   align-items: center;
 }

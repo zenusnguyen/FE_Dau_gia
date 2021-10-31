@@ -1,83 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import ProductImage from "../../assets/product.svg";
-import ProfileProductItem from "../../components/ProfileProductItem";
-import { PageHeader, Button, Radio } from "antd";
-const products = [
-  {
-    id: "5",
-    title:
-      "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-    price: "1.250.000đ",
-    view: "20",
-    timming: "12d 8h 5m",
-    src: ProductImage,
-    width: 240,
-    bidder: { name: "***Anh", percent: 80 },
-    postingDate: "02/09/2021 10:30",
-    auctionMoney: "1.300.000đ",
-    buyNow: "1.500.000đ",
-    status: "processing",
-  },
-  {
-    id: "5",
-    title:
-      "Taylor Swift - Frealess (Taylor's Version) (Metallic Gold Vinyl) [3LP]",
-    price: "1.250.000đ",
-    view: "20",
-    timming: "12d 8h 5m",
-    src: ProductImage,
-    width: 240,
-    bidder: { name: "***Anh", percent: 80 },
-    postingDate: "02/09/2021 10:30",
-    auctionMoney: "1.300.000đ",
-    buyNow: null,
-    status: "sold",
-  },
-];
+import SellProductItem from "../../components/SellProductItem";
+import { useSelector } from "react-redux";
+import { Radio, Empty } from "antd";
+import Text from "../../components/Text";
+import LoadingPage from "../LoadingPage";
+import {
+   getAllSellProcessing,
+   getAllSellSold,
+} from "../../services/productApi";
 
 export default function SalePage() {
-  const options = [
-    { label: "Tất cả", value: "all" },
-    { label: "Hết hạn", value: "expired" },
-    { label: "Còn hạn", value: "due" },
-  ];
+   const { user } = useSelector((state) => state.user);
+   const [isLoading, setIsLoading] = useState(true);
+   const [products, setProducts] = useState([]);
 
-  const [currentValue, setCurrentValue] = useState("");
-  return (
-    <div className={styles.container}>
-      <PageHeader
-        title={"Tôi đăng bán"}
-        extra={[
-          <Radio.Group
-            options={options}
-            onChange={() => {}}
-            value={currentValue}
-            optionType="button"
-            buttonStyle="solid"
-          />,
-        ]}
-      ></PageHeader>
+   const [currentTab, setCurrentTab] = useState("a");
 
-      <div>
-        {products.map((product) => (
-          <ProfileProductItem
-            key={product.id}
-            id={product.id}
-            title={product.title}
-            price={product.price}
-            view={product.view}
-            timming={product.timming}
-            src={product.src}
-            width={product.width}
-            bidder={product.bidder}
-            postingDate={product.postingDate}
-            auctionMoney={product.auctionMoney}
-            buyNow={product.buyNow}
-            status={product?.status}
-          />
-        ))}
+   useEffect(() => {
+      const fetchData = async () => {
+         if (currentTab === "a") {
+            Promise.all([getAllSellProcessing(user.id)]).then((values) => {
+               setProducts(values[0]);
+               setIsLoading(false);
+            });
+         } else {
+            Promise.all([getAllSellSold(user.id)]).then((values) => {
+               setProducts(values[0]);
+               setIsLoading(false);
+            });
+         }
+      };
+      fetchData();
+   }, [user.id, currentTab]);
+
+   const onChangeTab = (e) => {
+      setIsLoading(true);
+      setCurrentTab(e.target.value);
+      console.log("radio checked", e.target.value);
+   };
+
+   return (
+      <div className={styles.container}>
+         <div className={styles.top}>
+            <Text.h3 title="Tôi đấu giá" />
+            <Radio.Group
+               defaultValue="a"
+               defaultValue="a"
+               value={currentTab}
+               style={{ marginTop: 16 }}
+               onChange={onChangeTab}
+            >
+               <Radio.Button value="a">
+                  <Text.caption title="Còn hạn" />
+               </Radio.Button>
+               <Radio.Button value="b">
+                  <Text.caption title="Hết hạn" />
+               </Radio.Button>
+            </Radio.Group>
+         </div>
+         {isLoading ? (
+            <LoadingPage />
+         ) : (
+            <div>
+               {products.length > 0 ? (
+                  <ul className={styles.list}>
+                     {products.map((product) => (
+                        <li className={styles.item}>
+                           <SellProductItem product={product} />
+                        </li>
+                     ))}
+                  </ul>
+               ) : (
+                  <Empty
+                     style={{
+                        top: "50%",
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                     }}
+                  />
+               )}
+            </div>
+         )}
       </div>
-    </div>
-  );
+   );
 }
