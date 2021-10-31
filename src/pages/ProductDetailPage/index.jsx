@@ -64,7 +64,7 @@ export default function ItemDetailPage({ data }) {
          const productRes = await get(productId);
          const currentCategory = await getById(productRes.categoryID);
          const allHistory = await getAllHistory(productId);
-         const allLike = await getByBidder(user.id);
+         const allLike = await getByBidder(user?.user.id);
          const likes = allLike.map((like) => like.productId);
          if (likes.includes(productRes.id)) {
             setIsLike(true);

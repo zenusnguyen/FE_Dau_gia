@@ -30,7 +30,7 @@ export default function ProductListPage() {
             getBySubCategory(subId, pageNumber),
             getAllCategory(),
             getCountBySub(subId),
-            getByBidder(user.id),
+            getByBidder(user?.user?.id),
          ]).then((values) => {
             const currentCategory = values[1].find(
                (category) => category.id === categoryId
