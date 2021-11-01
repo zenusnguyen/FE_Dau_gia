@@ -9,7 +9,7 @@ import { Empty } from "antd";
 import LoadingPage from "../LoadingPage";
 
 export default function LikePage() {
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
    const [products, setProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
 

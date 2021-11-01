@@ -12,7 +12,7 @@ import {
 } from "../../services/productApi";
 
 export default function SalePage() {
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
    const [isLoading, setIsLoading] = useState(true);
    const [products, setProducts] = useState([]);
 

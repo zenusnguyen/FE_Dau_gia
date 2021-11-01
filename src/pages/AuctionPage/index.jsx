@@ -13,7 +13,7 @@ import { getByBidder as getWatchByBidder } from "../../services/wathApi";
 import { getAllByBidder } from "../../services/priceHistoryApi";
 
 export default function AuctionPage() {
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
    const [currentTab, setCurrentTab] = useState("a");
    const [products, setProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
