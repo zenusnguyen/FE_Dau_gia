@@ -10,6 +10,7 @@ import {
 } from "../../services/productApi";
 import LoadingPage from "../LoadingPage";
 import { getByBidder as getWatchByBidder } from "../../services/wathApi";
+import { getAllByBidder } from "../../services/priceHistoryApi";
 
 export default function AuctionPage() {
    const { user } = useSelector((state) => state.user);
@@ -20,8 +21,15 @@ export default function AuctionPage() {
    useEffect(() => {
       const fetchData = async () => {
          if (currentTab === "a") {
+            const allAuction = await getAllByBidder(user.id);
+            var productsId;
+            if (allAuction.isArray) {
+               productsId = allAuction.map((auction) => auction.productId);
+            } else {
+               productsId = [allAuction.productId];
+            }
             Promise.all([
-               getAllAuctionProcessing(user.id),
+               getAllAuctionProcessing(productsId),
                getWatchByBidder(user.id),
             ]).then((values) => {
                const allLike = values[1].map((like) => like.productId);

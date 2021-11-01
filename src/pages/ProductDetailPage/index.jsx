@@ -6,10 +6,12 @@ import { Breadcrumb, Image, Divider, Tag, Collapse, Button } from "antd";
 import Text from "../../components/Text";
 import SlideProduct from "../../components/SlideProduct";
 import { HeartOutlined } from "@ant-design/icons";
-import { get, getAllHistory } from "../../services/productApi";
+import { get, getAllHistory, getTheSame } from "../../services/productApi";
 import { getById } from "../../services/categoryApi";
 import { getByBidder } from "../../services/wathApi";
+import { getById as getUserById } from "../../services/userApi";
 import { add as addWatch, del as delWatch } from "../../services/wathApi";
+import { getLastBidder, getAllByProduct } from "../../services/priceHistoryApi";
 import moment from "moment";
 import { BACKEND_DOMAIN } from "../../constants";
 import { Table } from "antd";
@@ -46,6 +48,9 @@ export default function ItemDetailPage({ data }) {
    const [histories, setHistories] = useState([]);
    const [breadcrumb, setBreadcrumb] = useState([]);
    const [isLike, setIsLike] = useState(false);
+   const [currentSeller, setCurrentSeller] = useState({});
+   const [currentBidder, setCurrentBidder] = useState({});
+   const [productsTheSame, setProductsTheSame] = useState([]);
 
    const SubImage = ({ src, index }) => {
       return (
@@ -62,16 +67,42 @@ export default function ItemDetailPage({ data }) {
    useEffect(() => {
       const fetchData = async () => {
          const productRes = await get(productId);
-         const currentCategory = await getById(productRes.categoryID);
-         const allHistory = await getAllHistory(productId);
-         const allLike = await getByBidder(user.id);
-         const likes = allLike.map((like) => like.productId);
-         if (likes.includes(productRes.id)) {
-            setIsLike(true);
-         } else {
-            setIsLike(false);
-         }
          setProduct(productRes);
+         Promise.all([
+            getUserById(productRes.sellerId),
+            getTheSame(productRes.id, productRes.subCategoryId),
+            getByBidder(user.id),
+            getAllHistory(productId),
+            getUserById(
+               productRes.currentBidderId ? productRes.currentBidderId : ""
+            ),
+         ]).then((values) => {
+            setCurrentSeller(values[0]);
+            setProductsTheSame(values[1]);
+            const likes = values[2].map((like) => like.productId);
+            setIsLike(likes.includes(productRes.id));
+            setHistories(
+               values[3].map((auction, i) => {
+                  return {
+                     key: i.toString(),
+                     time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
+                     bidder: auction.buyer.name,
+                     price: `${auction.price
+                        .toString()
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,
+                  };
+               })
+            );
+            if (!Array.isArray(values[4])) {
+               const currentBidder = values[4];
+               const nameSplit = currentBidder.fullName.split(" ");
+               currentBidder.fullName = `***${nameSplit[nameSplit.length - 1]}`;
+               setCurrentBidder(currentBidder);
+            }
+         });
+
+         const currentCategory = await getById(productRes.categoryID);
+
          const currentTime = moment();
          const endTime = moment(productRes.postingDate).add(5, "day");
          const minutes = endTime.diff(currentTime, "minutes");
@@ -92,21 +123,12 @@ export default function ItemDetailPage({ data }) {
                setTimeRemaining(`${day}d ${hours - 24 * day}h`);
             }
          } else {
-            setTimeRemaining(`${hours} hours left`);
+            if (hours === 0) {
+               setTimeRemaining(`${minutes} minutes left`);
+            } else {
+               setTimeRemaining(`${hours} hours left`);
+            }
          }
-
-         console.log(allHistory);
-
-         const historiesData = allHistory.map((history, i) => {
-            return {
-               key: i.toString(),
-               time: moment(history.time).format("DD-MM-YYYY HH:mm"),
-               bidder: history.buyer.name,
-               price: `${history.price
-                  .toString()
-                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,
-            };
-         });
 
          const currentSub = currentCategory.subCategory.find(
             (subCategory) => subCategory.id === productRes.subCategoryId
@@ -118,13 +140,11 @@ export default function ItemDetailPage({ data }) {
             productRes.title,
          ]);
 
-         setHistories(historiesData);
-
          setIsLoading(false);
       };
 
       fetchData();
-   }, [productId]);
+   }, [productId, user]);
 
    const onImageClick = (index) => {
       setCurrentImage(index);
@@ -222,16 +242,18 @@ export default function ItemDetailPage({ data }) {
                               className={styles.topAuctionConetnt}
                               style={{ marginTop: "5px" }}
                            >
-                              <Text.bodyHighlight
-                                 title={product.currentBidder.name}
-                              />
-                              <Tag className={styles.tag} color="#86b817">
-                                 <Text.caption
-                                    title={`${
-                                       product.currentBidder.score * 10
-                                    }%`}
+                              {currentBidder.fullName && (
+                                 <Text.bodyHighlight
+                                    title={currentBidder.fullName}
                                  />
-                              </Tag>
+                              )}
+                              {currentBidder.score && (
+                                 <Tag className={styles.tag} color="#86b817">
+                                    <Text.caption
+                                       title={`${currentBidder.score * 10}%`}
+                                    />
+                                 </Tag>
+                              )}
                            </div>
                         </div>
                         <div className={styles.collapsedWrapper}>
@@ -247,7 +269,7 @@ export default function ItemDetailPage({ data }) {
                               <Panel
                                  header={
                                     <Text.caption
-                                       title={`Lịch sử đấu giá (${product.view} lượt)`}
+                                       title={`Lịch sử đấu giá (${histories.length} lượt)`}
                                     />
                                  }
                                  key="2"
@@ -272,11 +294,11 @@ export default function ItemDetailPage({ data }) {
                               />
                               <div className={styles.topAuction}>
                                  <Text.bodyHighlight
-                                    title={product.seller.name}
+                                    title={currentSeller.fullName}
                                  />
                                  <Tag className={styles.tag} color="#86b817">
                                     <Text.caption
-                                       title={`${product.seller.score * 10}%`}
+                                       title={`${currentSeller.score * 10}%`}
                                     />
                                  </Tag>
                               </div>
@@ -344,7 +366,7 @@ export default function ItemDetailPage({ data }) {
                >
                   <SlideProduct
                      title="Sản phẩm tương tự"
-                     products={product.products}
+                     products={productsTheSame}
                   />
                </div>
             </div>

@@ -5,7 +5,7 @@ export const getByBidder = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/watches/bidder/${bidderId}`,
+         url: `${BACKEND_DOMAIN}/watches?bidderId=${bidderId}`,
       })
          .then((res) => {
             resolve(res?.data);

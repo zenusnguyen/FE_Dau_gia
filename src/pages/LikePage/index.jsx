@@ -4,6 +4,7 @@ import ProductItem from "../../components/ProductItem";
 import Text from "../../components/Text";
 import { useSelector } from "react-redux";
 import { getAllLike } from "../../services/productApi";
+import { getByBidder } from "../../services/wathApi";
 import { Empty } from "antd";
 import LoadingPage from "../LoadingPage";
 
@@ -14,8 +15,15 @@ export default function LikePage() {
 
    useEffect(() => {
       const fetchData = async () => {
-         const productsLike = await getAllLike(user.id);
-         setProducts(productsLike);
+         const likes = await getByBidder(user.id);
+         const productsLike = await getAllLike(
+            likes.map((like) => like.productId)
+         );
+         setProducts(
+            productsLike.map((productLike) => {
+               return { ...productLike, isLike: true };
+            })
+         );
          setIsLoading(false);
       };
       fetchData();
