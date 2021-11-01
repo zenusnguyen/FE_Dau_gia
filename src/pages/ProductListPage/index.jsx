@@ -56,6 +56,7 @@ export default function ProductListPage() {
             setCategoryOptions(values[1]);
             setItems(products);
             setToTalPage(values[2]);
+            console.log(values[2]);
             setIsLoading(false);
          });
       };
