@@ -1,1 +1,1 @@
-export const BACKEND_DOMAIN = "http://localhost:2020";
+export const BACKEND_DOMAIN = "http://localhost:1337";
