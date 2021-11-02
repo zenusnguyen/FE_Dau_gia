@@ -12,6 +12,7 @@ import {
    Input,
    Radio,
    Skeleton,
+   Form,
 } from "antd";
 import {
    HeartOutlined,
@@ -19,7 +20,7 @@ import {
    DislikeOutlined,
 } from "@ant-design/icons";
 import styles from "./styles.module.css";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
 import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import { getLastBidder } from "../../services/priceHistoryApi";
@@ -28,7 +29,9 @@ import moment from "moment";
 
 export default function ProductItem(props) {
    const { TextArea } = Input;
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
+   const history = useHistory();
+   const [form] = Form.useForm();
    const { product, callBackUnLike } = props;
    const [isLike, setIsLike] = useState(product.isLike);
    const [timeRemaining, setTimeRemaining] = useState("");
@@ -40,6 +43,9 @@ export default function ProductItem(props) {
    const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
+      form.setFieldsValue({
+         evaluate: "like",
+      });
       const fetchData = async () => {
          if (product.currentBidderId) {
             const currentBidder = await getUserById(product.currentBidderId);
@@ -81,18 +87,26 @@ export default function ProductItem(props) {
          "minutes"
       );
       if (minutesAgo >= 30) setIsNew(false);
-   }, [product]);
+   }, [product, form]);
 
    const onLikeClick = () => {
-      setIsLike(!isLike);
-      if (!isLike) {
-         addWatch(product.id, user.id);
-      } else {
-         delWatch(product.id, user.id);
-         if (callBackUnLike) {
-            callBackUnLike(product.id);
+      if (user) {
+         setIsLike(!isLike);
+         if (!isLike) {
+            addWatch(product.id, user.id);
+         } else {
+            delWatch(product.id, user.id);
+            if (callBackUnLike) {
+               callBackUnLike(product.id);
+            }
          }
+      } else {
+         history.push("/login");
       }
+   };
+
+   const onEvaluateClick = (values) => {
+      console.log(values);
    };
 
    const handleBuyClick = () => {};
@@ -347,29 +361,36 @@ export default function ProductItem(props) {
                <Modal
                   title={<Text.bodyHighlight title="Đánh giá người bán" />}
                   visible={isModalEvaluateVisible}
-                  onOk={() => {}}
+                  onOk={() => form.submit()}
                   onCancel={() => setIsModalEvaluateVisible(false)}
                   okText={<Text.caption title="Gửi đánh giá" />}
                   cancelText={<Text.caption title="Hủy" />}
                >
                   <Text.caption title="Bạn thích trải nghiệm mua hàng này chứ?" />
-                  <div>
-                     <Radio.Group
-                        defaultValue="a"
-                        style={{ marginTop: "8px", marginBottom: "28px" }}
-                     >
-                        <Radio.Button value="a" style={{ marginRight: "20px" }}>
-                           <LikeOutlined />
-                           <Text.caption title="  Thích (+1)" />
-                        </Radio.Button>
-                        <Radio.Button value="b">
-                           <DislikeOutlined />
-                           <Text.caption title="  Không thích (-1)" />
-                        </Radio.Button>
-                     </Radio.Group>
-                  </div>
-                  <Text.caption title="Nhận xét(không bắt buộc)" />
-                  <TextArea rows={4} style={{ marginTop: "8px" }} />
+                  <Form form={form} onFinish={onEvaluateClick}>
+                     <Form.Item name="evaluate">
+                        <Radio.Group
+                           defaultValue="like"
+                           style={{ marginTop: "8px" }}
+                        >
+                           <Radio.Button
+                              value="like"
+                              style={{ marginRight: "20px" }}
+                           >
+                              <LikeOutlined />
+                              <Text.caption title="  Thích (+1)" />
+                           </Radio.Button>
+                           <Radio.Button value="unlike">
+                              <DislikeOutlined />
+                              <Text.caption title="  Không thích (-1)" />
+                           </Radio.Button>
+                        </Radio.Group>
+                     </Form.Item>{" "}
+                     <Text.caption title="Nhận xét(không bắt buộc)" />
+                     <Form.Item name="comment">
+                        <TextArea rows={4} style={{ marginTop: "8px" }} />
+                     </Form.Item>
+                  </Form>
                </Modal>
             </div>
          )}

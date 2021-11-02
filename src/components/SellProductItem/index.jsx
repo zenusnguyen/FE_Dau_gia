@@ -7,13 +7,26 @@ import styles from "./styles.module.css";
 import { Link } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
 import moment from "moment";
+import { getById as getUserById } from "../../services/userApi";
 
 export default function SellProductItem(props) {
    const { product } = props;
    const [timeRemaining, setTimeRemaining] = useState("");
    const [isNew, setIsNew] = useState(true);
+   const [currentBidder, setCurrentBidder] = useState({});
+   const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
+      const fetchData = async () => {
+         if (product.currentBidderId) {
+            const currentBidder = await getUserById(product.currentBidderId);
+            const nameSplit = currentBidder.fullName.split(" ");
+            currentBidder.fullName = `***${nameSplit[nameSplit.length - 1]}`;
+            setCurrentBidder({ ...currentBidder });
+         }
+         setIsLoading(false);
+      };
+      fetchData();
       const currentTime = moment();
       const endTime = moment(product.postingDate).add(5, "day");
       const minutes = endTime.diff(currentTime, "minutes");
@@ -111,16 +124,21 @@ export default function SellProductItem(props) {
                   </div>
                   <div className={styles.infoCenterValue}>
                      <div className={styles.hightBidder}>
-                        <Text.bodyHighlight
-                           title={product.currentBidder.name}
-                        />
-                        {/* <p className={styles.percent}>
-                           <Text.caption title={``} style={{ color: "#fff" }} />
-                        </p> */}
+                        <Text.bodyHighlight title={currentBidder.fullName} />{" "}
+                        {currentBidder.score && (
+                           <p className={styles.percent}>
+                              <Text.caption
+                                 title={`${currentBidder.score * 10}%`}
+                                 style={{ color: "#fff" }}
+                              />
+                           </p>
+                        )}
                      </div>
-                     <div className={styles.view}>
-                        <Text.bodyHighlight title={`${product.view} Lượt`} />
-                     </div>
+                     {currentBidder && (
+                        <div className={styles.view}>
+                           <Text.bodyHighlight title={`${product.view} Lượt`} />
+                        </div>
+                     )}
                   </div>
                </div>
             </div>

@@ -16,14 +16,16 @@ export default function LikePage() {
    useEffect(() => {
       const fetchData = async () => {
          const likes = await getByBidder(user.id);
-         const productsLike = await getAllLike(
-            likes.map((like) => like.productId)
-         );
-         setProducts(
-            productsLike.map((productLike) => {
-               return { ...productLike, isLike: true };
-            })
-         );
+         if (likes.length > 0) {
+            const productsLike = await getAllLike(
+               likes.map((like) => like.productId)
+            );
+            setProducts(
+               productsLike.map((productLike) => {
+                  return { ...productLike, isLike: true };
+               })
+            );
+         }
          setIsLoading(false);
       };
       fetchData();

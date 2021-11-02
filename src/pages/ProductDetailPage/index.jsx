@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Breadcrumb, Image, Divider, Tag, Collapse, Button } from "antd";
 import Text from "../../components/Text";
 import SlideProduct from "../../components/SlideProduct";
 import { HeartOutlined } from "@ant-design/icons";
 import { get, getAllHistory, getTheSame } from "../../services/productApi";
 import { getById } from "../../services/categoryApi";
-import { getByBidder } from "../../services/wathApi";
+import { getByBidder as getWatchByBidder } from "../../services/wathApi";
 import { getById as getUserById } from "../../services/userApi";
 import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import { getLastBidder, getAllByProduct } from "../../services/priceHistoryApi";
@@ -40,6 +40,7 @@ const { Panel } = Collapse;
 
 export default function ItemDetailPage({ data }) {
    const { user } = useSelector((state) => state.user?.user);
+   const history = useHistory();
    const { productId } = useParams();
    const [product, setProduct] = useState({});
    const [currentImage, setCurrentImage] = useState(0);
@@ -72,13 +73,12 @@ export default function ItemDetailPage({ data }) {
          Promise.all([
             getUserById(productRes.sellerId),
             getTheSame(productRes.id, productRes.subCategoryId),
-            getByBidder(user.id),
+            getWatchByBidder(user?.id),
             getAllHistory(productId),
             getUserById(
                productRes.currentBidderId ? productRes.currentBidderId : ""
             ),
          ]).then((values) => {
-            console.log(values[0]);
             setCurrentSeller(values[0]);
             setProductsTheSame(values[1]);
             const likes = values[2].map((like) => like.productId);
@@ -155,11 +155,15 @@ export default function ItemDetailPage({ data }) {
    };
 
    const onLikeClick = () => {
-      setIsLike(!isLike);
-      if (!isLike) {
-         addWatch(productId, user?.user?.id);
+      if (user) {
+         setIsLike(!isLike);
+         if (!isLike) {
+            addWatch(productId, user?.id);
+         } else {
+            delWatch(productId, user?.id);
+         }
       } else {
-         delWatch(productId, user?.user?.id);
+         history.push("/login");
       }
    };
 

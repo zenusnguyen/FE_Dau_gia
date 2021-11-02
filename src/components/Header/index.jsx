@@ -21,6 +21,7 @@ export default function Header(props) {
 
    const dispatch = useDispatch();
    const history = useHistory();
+   console.log(Object.keys(user).length);
 
    useEffect(() => {
       const fetchData = async () => {
@@ -66,13 +67,7 @@ export default function Header(props) {
         </Link>
       </Menu.Item> */}
          <Menu.Item>
-            <a
-               onClick={() => {
-                  console.log("??");
-                  dispatch(logout());
-               }}
-               target="_blank"
-            >
+            <a onClick={() => dispatch(logout())} target="_blank">
                <Text.caption title="Đăng xuất" />
             </a>
          </Menu.Item>
@@ -102,7 +97,7 @@ export default function Header(props) {
                <div className={styles.search}>
                   <Search onSearch={onSearch}></Search>
                </div>
-               {isLogin() ? (
+               {Object.keys(user).length !== 0 ? (
                   <Dropdown overlay={menu} placement="bottomLeft" arrow>
                      <Button
                         style={{

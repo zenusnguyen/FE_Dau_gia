@@ -21,12 +21,12 @@ export default function SalePage() {
    useEffect(() => {
       const fetchData = async () => {
          if (currentTab === "a") {
-            Promise.all([getAllSellProcessing(user.id)]).then((values) => {
+            Promise.all([getAllSellProcessing(user?.id)]).then((values) => {
                setProducts(values[0]);
                setIsLoading(false);
             });
          } else {
-            Promise.all([getAllSellSold(user.id)]).then((values) => {
+            Promise.all([getAllSellSold(user?.id)]).then((values) => {
                setProducts(values[0]);
                setIsLoading(false);
             });
@@ -44,7 +44,7 @@ export default function SalePage() {
    return (
       <div className={styles.container}>
          <div className={styles.top}>
-            <Text.h3 title="Tôi đấu giá" />
+            <Text.h3 title="Tôi đang bán" />
             <Radio.Group
                defaultValue="a"
                defaultValue="a"

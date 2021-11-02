@@ -15,7 +15,6 @@ export default function SideMenu({
    currentKey,
    updateBreadcrumb,
 }) {
-   console.log(currentKey);
    const onChangeKey = (e) => {
       if (e.key === "1") {
          updateBreadcrumb(["Thông tin tài khoản"]);
@@ -35,7 +34,7 @@ export default function SideMenu({
    return (
       <Menu
          onClick={onChangeKey}
-         style={{ width: 256, minHeight: "60vh" }}
+         style={{ width: 250, minHeight: "60vh" }}
          defaultSelectedKeys={[currentKey]}
          mode="inline"
          //openKeys={[currentKey]}

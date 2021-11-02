@@ -22,15 +22,17 @@ export default function AuctionPage() {
       const fetchData = async () => {
          if (currentTab === "a") {
             const allAuction = await getAllByBidder(user.id);
-            var productsId;
-            if (allAuction.isArray) {
-               productsId = allAuction.map((auction) => auction.productId);
-            } else {
-               productsId = [allAuction.productId];
+            var productsId = [];
+            if (allAuction) {
+               if (Array.isArray(allAuction)) {
+                  productsId = allAuction.map((auction) => auction.productId);
+               } else {
+                  productsId = [allAuction.productId];
+               }
             }
             Promise.all([
                getAllAuctionProcessing(productsId),
-               getWatchByBidder(user.id),
+               getWatchByBidder(user?.id),
             ]).then((values) => {
                const allLike = values[1].map((like) => like.productId);
                const products = values[0].map((value) => {
@@ -46,18 +48,18 @@ export default function AuctionPage() {
                      };
                   }
                });
-               setProducts(products);
+               if (allAuction) setProducts(products);
                setIsLoading(false);
             });
          } else {
-            Promise.all([getAllAuctionSold(user.id)]).then((values) => {
+            Promise.all([getAllAuctionSold(user?.id)]).then((values) => {
                setProducts(values[0]);
                setIsLoading(false);
             });
          }
       };
       fetchData();
-   }, [user.id, currentTab]);
+   }, [user, currentTab]);
 
    const onChangeTab = (e) => {
       setIsLoading(true);
