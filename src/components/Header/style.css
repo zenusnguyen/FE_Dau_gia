@@ -43,14 +43,10 @@
    background: #e6f7ff !important;
 }
 
-.ant-cascader-picker-label {
+/* .ant-cascader-picker-label {
    display: none;
-}
+} */
 
 .ant-cascader-picker-clear {
    display: none !important;
-}
-
-.ant-cascader-menus {
-   top: 80px !important;
 }

@@ -172,11 +172,7 @@ export const getAllAuctionSold = (bidderId) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items?status=expired&currentBidderId=${bidderId}`,
-      })
-         .then((res) => {
-            resolve(res?.data);
-         })
-         .catch((err) => reject(err));
+      }).catch((err) => reject(err));
    });
 };
 
@@ -198,11 +194,7 @@ export const getAllSellSold = (sellerId) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items?status=expired&sellerId=${sellerId}`,
-      })
-         .then((res) => {
-            resolve(res?.data);
-         })
-         .catch((err) => reject(err));
+      }).catch((err) => reject(err));
    });
 };
 
@@ -211,6 +203,21 @@ export const getAllHistory = (productID) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/price-histories/product/${productID}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const createProduct = (product) => {
+   console.log("product: ", product);
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "POST",
+         url: `${BACKEND_DOMAIN}/items`,
+         data: product,
       })
          .then((res) => {
             resolve(res?.data);
