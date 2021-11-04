@@ -23,8 +23,9 @@ import styles from "./styles.module.css";
 import { Link, useHistory } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
 import { add as addWatch, del as delWatch } from "../../services/wathApi";
-import { getLastBidder } from "../../services/priceHistoryApi";
+import { add as addValuate } from "../../services/evaluateApi";
 import { getById as getUserById } from "../../services/userApi";
+import { getBySender } from "../../services/evaluateApi";
 import moment from "moment";
 
 export default function ProductItem(props) {
@@ -41,6 +42,7 @@ export default function ProductItem(props) {
    const [isModalEvaluateVisible, setIsModalEvaluateVisible] = useState(false);
    const [currentBidder, setCurrentBidder] = useState({});
    const [isLoading, setIsLoading] = useState(true);
+   const [isEvaluate, setIsEvaluate] = useState(product.isEvaluate);
 
    useEffect(() => {
       form.setFieldsValue({
@@ -107,6 +109,30 @@ export default function ProductItem(props) {
 
    const onEvaluateClick = (values) => {
       console.log(values);
+      const nameSplit = user.fullName.split(" ");
+      user.fullName = `***${nameSplit[nameSplit.length - 1]}`;
+      if (values.evaluate === "like") {
+         addValuate(
+            user?.id,
+            user.fullName,
+            product.sellerId,
+            values.content,
+            1,
+            moment(),
+            product.id
+         );
+      } else {
+         addValuate(
+            user?.id,
+            user.fullName,
+            product.sellerId,
+            values.content,
+            -1,
+            moment(),
+            product.id
+         );
+      }
+      setIsModalEvaluateVisible(false);
    };
 
    const handleBuyClick = () => {};
@@ -306,6 +332,7 @@ export default function ProductItem(props) {
                                  style={{
                                     height: "40px",
                                  }}
+                                 disabled={isEvaluate}
                               >
                                  <Text.bodyHighlight title="Đánh giá người bán" />
                               </Button>
@@ -387,7 +414,7 @@ export default function ProductItem(props) {
                         </Radio.Group>
                      </Form.Item>{" "}
                      <Text.caption title="Nhận xét(không bắt buộc)" />
-                     <Form.Item name="comment">
+                     <Form.Item name="content">
                         <TextArea rows={4} style={{ marginTop: "8px" }} />
                      </Form.Item>
                   </Form>

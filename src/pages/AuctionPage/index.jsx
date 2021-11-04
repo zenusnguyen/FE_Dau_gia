@@ -11,6 +11,7 @@ import {
 import LoadingPage from "../LoadingPage";
 import { getByBidder as getWatchByBidder } from "../../services/wathApi";
 import { getAllByBidder } from "../../services/priceHistoryApi";
+import { getAllBySender } from "../../services/evaluateApi";
 
 export default function AuctionPage() {
    const { user } = useSelector((state) => state.user?.user);
@@ -36,24 +37,30 @@ export default function AuctionPage() {
             ]).then((values) => {
                const allLike = values[1].map((like) => like.productId);
                const products = values[0].map((value) => {
-                  if (allLike.includes(value.id)) {
-                     return {
-                        ...value,
-                        isLike: true,
-                     };
-                  } else {
-                     return {
-                        ...value,
-                        isLike: false,
-                     };
-                  }
+                  return {
+                     ...value,
+                     isLike: allLike.includes(value.id),
+                  };
                });
                if (allAuction) setProducts(products);
+               else setProducts([]);
                setIsLoading(false);
             });
          } else {
-            Promise.all([getAllAuctionSold(user?.id)]).then((values) => {
-               setProducts(values[0]);
+            Promise.all([
+               getAllAuctionSold(user?.id),
+               getAllBySender(user?.id),
+            ]).then((values) => {
+               const allEvaluate = values[1].map(
+                  (evaluate) => evaluate.productId
+               );
+               const products = values[0].map((value) => {
+                  return {
+                     ...value,
+                     isEvaluate: allEvaluate.includes(value.id),
+                  };
+               });
+               setProducts(products);
                setIsLoading(false);
             });
          }
@@ -91,7 +98,7 @@ export default function AuctionPage() {
                {products.length > 0 ? (
                   <ul className={styles.list}>
                      {products.map((product) => (
-                        <li className={styles.item}>
+                        <li key={product.id} className={styles.item}>
                            <ProductItem product={product} />
                         </li>
                      ))}

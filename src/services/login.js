@@ -19,6 +19,8 @@ export async function login(data) {
 
    const result = await response.json();
 
+   console.log(result);
+
    localStorage.setItem("user", JSON.stringify(result));
 
    //  setTimeout(() => {

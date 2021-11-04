@@ -13,3 +13,32 @@ export const getById = (userId) => {
          .catch((err) => reject(err));
    });
 };
+
+export const updateInfo = (userId, data) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "PUT",
+         url: `${BACKEND_DOMAIN}/user-infos/${userId}`,
+         data,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const updatePassword = (userId, data) => {
+   console.log(data);
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "PUT",
+         url: `${BACKEND_DOMAIN}/user-infos?id=${userId}`,
+         data,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err.response));
+   });
+};
