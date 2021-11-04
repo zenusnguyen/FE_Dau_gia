@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import Text from "../../components/Text";
 import {
@@ -8,6 +8,7 @@ import {
   DatePicker,
   Upload,
   InputNumber,
+  Cascader,
   message,
 } from "antd";
 import { Editor } from "react-draft-wysiwyg";
@@ -17,6 +18,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { upLoadImages } from "../../services/uploadImage";
 import { createProduct } from "../../services/productApi";
 import { useSelector, useDispatch } from "react-redux";
+import { getAll as getAllCategory } from "../../services/categoryApi";
 
 export default function AddProductPage(props) {
   const [form] = Form.useForm();
@@ -27,11 +29,35 @@ export default function AddProductPage(props) {
   const [images, setImages] = useState([]);
   const [description, setDescription] = useState("");
   const { user } = useSelector((state) => state.user);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [category, setCategory] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allCategory = await getAllCategory();
+      const options = allCategory.map((category) => {
+        return {
+          value: category.id,
+          label: category.name,
+          children: category.subCategory.map((sub) => {
+            return { value: sub.id, label: sub.name };
+          }),
+        };
+      });
+      setCategoryOptions(options);
+      console.log("options: ", options);
+    };
+    fetchData();
+  }, []);
 
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
 
+  const onChangeCategory = (data) => {
+    console.log("data: ", data);
+    setCategory(data);
+  };
   const onPreview = async (file) => {
     let src = file.url;
     if (!src) {
@@ -68,6 +94,9 @@ export default function AddProductPage(props) {
         currentPrice: formData?.price,
         isAllUser,
         view: 0,
+        categoryID: category[0],
+        subCategoryId: category[1],
+        maxPrice: formData?.maxPrice || 0,
       };
 
       console.log("data: ", data);
@@ -200,6 +229,38 @@ export default function AddProductPage(props) {
                 />
               </Form.Item>
             </div>
+
+            <div>
+              <div style={{ marginBottom: "8px" }}>
+                <label className={styles.inputLabel}>
+                  <Text.caption title="Danh mục" />
+                </label>
+              </div>
+              <Form.Item
+                name="categoryId"
+                rules={[
+                  () => ({
+                    validator(_, value) {
+                      if (!value) {
+                        return Promise.reject("Danh mục không được trống.");
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <Cascader
+                  placeholder="Vui lòng chọn danh mục "
+                  options={categoryOptions}
+                  // onChange={(e) => {
+                  //   onChangeCategory(e);
+                  // }}
+                  className={styles.cascader}
+                  style={{ color: "#333" }}
+                />
+              </Form.Item>
+            </div>
+
             <div>
               <div style={{ marginBottom: "8px" }}>
                 <label className={styles.inputLabel}>
@@ -230,7 +291,7 @@ export default function AddProductPage(props) {
                 </label>
               </div>
               <Form.Item
-                name="priceBuy"
+                name="maxPrice"
                 rules={[
                   () => ({
                     validator(_, value) {
