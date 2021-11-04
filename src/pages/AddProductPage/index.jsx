@@ -252,9 +252,7 @@ export default function AddProductPage(props) {
                 <Cascader
                   placeholder="Vui lòng chọn danh mục "
                   options={categoryOptions}
-                  // onChange={(e) => {
-                  //   onChangeCategory(e);
-                  // }}
+                  onChange={onChangeCategory}
                   className={styles.cascader}
                   style={{ color: "#333" }}
                 />
