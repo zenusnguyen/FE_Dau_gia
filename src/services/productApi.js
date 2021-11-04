@@ -171,7 +171,7 @@ export const getAllAuctionSold = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=sold&currentBidderId=${bidderId}`,
+         url: `${BACKEND_DOMAIN}/items?status=expired&currentBidderId=${bidderId}`,
       })
          .then((res) => {
             resolve(res?.data);
@@ -197,7 +197,7 @@ export const getAllSellSold = (sellerId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=sold&sellerId=${sellerId}`,
+         url: `${BACKEND_DOMAIN}/items?status=expired&sellerId=${sellerId}`,
       })
          .then((res) => {
             resolve(res?.data);
