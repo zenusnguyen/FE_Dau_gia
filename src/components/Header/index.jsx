@@ -4,7 +4,6 @@ import { Button, Image, Cascader, Dropdown, Menu } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import Logo from "../../assets/Brand.png";
 import styles from "./styles.module.css";
-import "./style.css";
 import Search from "../SearchBar";
 import { SmileOutlined, ShoppingOutlined } from "@ant-design/icons";
 import Text from "../Text";
@@ -29,9 +28,12 @@ export default function Header(props) {
          const options = allCategory.map((category) => {
             return {
                value: category.id,
-               label: category.name,
+               label: <Text.caption title={category.name} />,
                children: category.subCategory.map((sub) => {
-                  return { value: sub.id, label: sub.name };
+                  return {
+                     value: sub.id,
+                     label: <Text.caption title={sub.name} />,
+                  };
                }),
             };
          });
@@ -81,7 +83,7 @@ export default function Header(props) {
                <Link to="/">
                   <Image preview={false} src={Logo}></Image>
                </Link>
-               <div className="cascader">
+               <div className={styles.cascaderContainer}>
                   <div className={styles.cascaderLabel}>
                      <Text.bodyHighlight title="Danh mục" />
                      <br />
@@ -92,6 +94,8 @@ export default function Header(props) {
                      onChange={onChange}
                      className={styles.cascader}
                      style={{ color: "#333" }}
+                     placeholder=""
+                     allowClear={false}
                   />
                </div>
                <div className={styles.search}>

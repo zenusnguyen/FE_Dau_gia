@@ -1,40 +1,59 @@
 .headerContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0 80px;
-  justify-content: space-between;
-  height: 100px;
-  width: 1440px;
-  
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   padding: 0 80px;
+   justify-content: space-between;
+   height: 100px;
+   width: 1440px;
 }
 
 .search {
-  margin: 0 10px 0 10px;
+   margin: 0 10px 0 10px;
+}
+
+.cascaderContainer {
+   position: relative;
 }
 
 .cascader {
-  color: #333 !important;
-  background: transparent !important;
-  width: 120px !important;
+   width: 120px;
+   height: 50px;
+   background: transparent !important;
+   color: #fff !important;
 }
 
-.headerContainer .cascader .ant-input {
-  border: none !important;
+.cascader input {
+   border: none !important;
+   outline: none !important;
+   background: transparent !important;
 }
+
+.cascader:focus input {
+   box-shadow: none !important;
+}
+
+.cascader input:focus {
+   box-shadow: none !important;
+}
+
+.cascader .ant-cascader-picker:focus .ant-cascader-input {
+   box-shadow: none !important;
+}
+
+.cascader span svg {
+   color: #333 !important;
+}
+
 .headerContainer .cascaderLabel {
-  position: absolute;
-  top: 50%;
-  right: 40px;
-  transform: translateY(-50%);
-  cursor: pointer;
+   position: absolute;
+   top: 50%;
+   right: 40px;
+   transform: translateY(-50%);
+   cursor: pointer;
 }
 
 .login {
-  display: flex;
-  align-items: center;
+   display: flex;
+   align-items: center;
 }
-
-
-
-
