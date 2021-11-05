@@ -5,7 +5,8 @@ import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import { login as reduxLogin } from "../../redux/actions/userActions";
 import { updateInfo, updatePassword } from "../../services/userApi";
-import { Divider, Form, Input, DatePicker, Modal, message } from "antd";
+import { add as addLicensing, getByBidder } from "../../services/licenceApi";
+import { Divider, Form, Input, DatePicker, Modal, message, Button } from "antd";
 
 export default function InfoAccountPage(props) {
    const [formInfo] = Form.useForm();
@@ -16,12 +17,19 @@ export default function InfoAccountPage(props) {
    const dispatch = useDispatch();
    const [isModalInfo, setIsModalInfo] = useState(false);
    const [isModalPassword, setIsModalPassword] = useState(false);
+   const [isModalLicence, setIsModalLicence] = useState(false);
+   const [isWaitingLicence, setIsWaitingLicence] = useState(false);
 
    useEffect(() => {
+      const fetchData = async () => {
+         const licence = await getByBidder(user.id);
+         if (licence) setIsWaitingLicence(true);
+      };
+      fetchData();
       formInfo.setFieldsValue({
          email: user?.email,
          fullName: user?.fullName || user?.username,
-         birthDay: moment(user?.dateOfBirth),
+         dateOfBirth: moment(user?.dateOfBirth),
       });
    }, [user, formInfo]);
 
@@ -33,6 +41,20 @@ export default function InfoAccountPage(props) {
    const onOkInfo = () => {
       setIsModalInfo(false);
       formInfo.submit();
+   };
+
+   const onOkLicensing = () => {
+      addLicensing({
+         bidderId: user.id,
+         time: moment(),
+         status: "waiting",
+      }).then(() => {
+         setIsModalLicence(false);
+         message.success(
+            "Xin phép bán hàng thành công chờ người quản lý duyệt.",
+            10
+         );
+      });
    };
 
    const onFinishInfo = (values) => {
@@ -126,7 +148,7 @@ export default function InfoAccountPage(props) {
                      </label>
                   </div>
                   <Form.Item
-                     name="birthDay"
+                     name="dateOfBirth"
                      rules={[
                         {
                            required: true,
@@ -142,13 +164,13 @@ export default function InfoAccountPage(props) {
                   </Form.Item>
                </div>
 
-               <button
+               <Button
                   className={styles.btn}
                   type="button"
                   onClick={() => setIsModalInfo(true)}
                >
                   <Text.bodyHighlight title="Cập nhật thông tin" />
-               </button>
+               </Button>
             </Form>
          </div>
          <Divider style={{ margin: "40px 0" }} />{" "}
@@ -221,23 +243,32 @@ export default function InfoAccountPage(props) {
                   <Input.Password placeholder="Nhập mật khẩu mới" />
                </Form.Item>
             </div>
-            <button
+            <Button
                className={styles.btn}
                type="button"
                onClick={() => setIsModalPassword(true)}
             >
                <Text.bodyHighlight title="Cập nhật mật khẩu" />
-            </button>
+            </Button>
          </Form>
          <Divider style={{ margin: "40px 0" }} />
          <div>
             <Text.h3 title="Trở thành người bán hàng" />
             <div className={styles.note}>
-               <Text.caption title="Bạn cần được quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
+               {isWaitingLicence ? (
+                  <Text.caption title="Bạn đang chờ quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
+               ) : (
+                  <Text.caption title="Bạn cần được quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
+               )}
             </div>
-            <button className={styles.btn}>
+            <Button
+               className={styles.btn}
+               type="button"
+               onClick={() => setIsModalLicence(true)}
+               disabled={isWaitingLicence}
+            >
                <Text.bodyHighlight title="Xin phép bán hàng" />
-            </button>
+            </Button>
          </div>
          <Modal
             title={<Text.bodyHighlight title="Xác nhận cập nhật thông tin" />}
@@ -258,6 +289,18 @@ export default function InfoAccountPage(props) {
             cancelText={<Text.caption title="Hủy" />}
          >
             <Text.caption title={`Bạn có muốn cập nhật mật khẩu?`} />
+         </Modal>
+         <Modal
+            title={
+               <Text.bodyHighlight title="Xác nhận xin được cấp phép bán hàng" />
+            }
+            visible={isModalLicence}
+            onOk={() => onOkLicensing()}
+            onCancel={() => setIsModalLicence(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.caption title={`Bạn có muốn xin phép bán hàng?`} />
          </Modal>
       </div>
    );

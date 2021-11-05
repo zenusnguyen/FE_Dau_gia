@@ -116,7 +116,12 @@ export default function ItemDetailPage({ data }) {
             if (day < 3) {
                if (day === 0) {
                   if (hours === 0) {
-                     setTimeRemaining(`${minutes} minutes left`);
+                     if (minutes > 0) {
+                        console.log(minutes);
+                        setTimeRemaining(`${minutes} minutes left`);
+                     } else {
+                        setTimeRemaining(`1 minutes left`);
+                     }
                   } else {
                      setTimeRemaining(`${hours} hours left`);
                   }
@@ -124,7 +129,11 @@ export default function ItemDetailPage({ data }) {
                   setTimeRemaining(`${day} days left`);
                }
             } else {
-               setTimeRemaining(`${hours} hours left`);
+               if (hours - 24 * day > 0) {
+                  setTimeRemaining(`${day}d ${hours - 24 * day}h`);
+               } else {
+                  setTimeRemaining(`${day - 1}d 23h`);
+               }
             }
          } else {
             if (hours === 0) {
