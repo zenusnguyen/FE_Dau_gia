@@ -7,6 +7,7 @@ import { login as reduxLogin } from "../../redux/actions/userActions";
 import { updateInfo, updatePassword } from "../../services/userApi";
 import { add as addLicensing, getByBidder } from "../../services/licenceApi";
 import { Divider, Form, Input, DatePicker, Modal, message, Button } from "antd";
+import LoadingPage from "../LoadingPage";
 
 export default function InfoAccountPage(props) {
    const [formInfo] = Form.useForm();
@@ -19,18 +20,20 @@ export default function InfoAccountPage(props) {
    const [isModalPassword, setIsModalPassword] = useState(false);
    const [isModalLicence, setIsModalLicence] = useState(false);
    const [isWaitingLicence, setIsWaitingLicence] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
       const fetchData = async () => {
          const licence = await getByBidder(user.id);
          if (licence) setIsWaitingLicence(true);
+         formInfo.setFieldsValue({
+            email: user?.email,
+            fullName: user?.fullName || user?.username,
+            dateOfBirth: moment(user?.dateOfBirth),
+         });
+         setIsLoading(false);
       };
       fetchData();
-      formInfo.setFieldsValue({
-         email: user?.email,
-         fullName: user?.fullName || user?.username,
-         dateOfBirth: moment(user?.dateOfBirth),
-      });
    }, [user, formInfo]);
 
    const onOkPassword = () => {
@@ -99,177 +102,204 @@ export default function InfoAccountPage(props) {
          <div>
             <Text.h3 title="Thông tin tài khoản" />
          </div>
-         <div className={styles.form}>
-            <Form
-               form={formInfo}
-               name="info"
-               onFinish={onFinishInfo}
-               onFinishFailed={onFinishFailed}
-               autoComplete="off"
-            >
-               <div>
-                  <div style={{ marginBottom: "8px" }}>
-                     <label>
-                        <Text.caption title="Email" />
-                     </label>
-                  </div>
-                  <Form.Item
-                     name="email"
-                     rules={[
-                        { required: true, message: "Email không được trống!" },
-                     ]}
+         {isLoading ? (
+            <LoadingPage />
+         ) : (
+            <div>
+               <div className={styles.form}>
+                  <Form
+                     form={formInfo}
+                     name="info"
+                     onFinish={onFinishInfo}
+                     onFinishFailed={onFinishFailed}
+                     autoComplete="off"
                   >
-                     <Input
-                        placeholder="Nhập email"
-                        disabled
-                        style={{ color: "#333" }}
-                     />
-                  </Form.Item>
-               </div>
-               <div>
-                  <div style={{ marginBottom: "8px" }}>
-                     <label htmlFor="fullName" className={styles.inputLabel}>
-                        <Text.caption title="Tên" />
-                     </label>
-                  </div>
-                  <Form.Item
-                     name="fullName"
-                     rules={[
-                        { required: true, message: "Tên không được trống!" },
-                     ]}
-                  >
-                     <Input placeholder="Nhập tên" />
-                  </Form.Item>
-               </div>
-               <div>
-                  <div style={{ marginBottom: "8px" }}>
-                     <label className={styles.inputLabel}>
-                        <Text.caption title="Ngày sinh" />
-                     </label>
-                  </div>
-                  <Form.Item
-                     name="dateOfBirth"
-                     rules={[
-                        {
-                           required: true,
-                           message: "Ngày sinh không được trống!",
-                        },
-                     ]}
-                  >
-                     <DatePicker
-                        format={dateFormat}
-                        style={{ width: "100%" }}
-                        placeholder="Chọn ngày sinh"
-                     />
-                  </Form.Item>
-               </div>
+                     <div>
+                        <div style={{ marginBottom: "8px" }}>
+                           <label>
+                              <Text.caption title="Email" />
+                           </label>
+                        </div>
+                        <Form.Item
+                           name="email"
+                           rules={[
+                              {
+                                 required: true,
+                                 message: "Email không được trống!",
+                              },
+                           ]}
+                        >
+                           <Input
+                              placeholder="Nhập email"
+                              disabled
+                              style={{ color: "#333" }}
+                           />
+                        </Form.Item>
+                     </div>
+                     <div>
+                        <div style={{ marginBottom: "8px" }}>
+                           <label
+                              htmlFor="fullName"
+                              className={styles.inputLabel}
+                           >
+                              <Text.caption title="Tên" />
+                           </label>
+                        </div>
+                        <Form.Item
+                           name="fullName"
+                           rules={[
+                              {
+                                 required: true,
+                                 message: "Tên không được trống!",
+                              },
+                           ]}
+                        >
+                           <Input placeholder="Nhập tên" />
+                        </Form.Item>
+                     </div>
+                     <div>
+                        <div style={{ marginBottom: "8px" }}>
+                           <label className={styles.inputLabel}>
+                              <Text.caption title="Ngày sinh" />
+                           </label>
+                        </div>
+                        <Form.Item
+                           name="dateOfBirth"
+                           rules={[
+                              {
+                                 required: true,
+                                 message: "Ngày sinh không được trống!",
+                              },
+                           ]}
+                        >
+                           <DatePicker
+                              format={dateFormat}
+                              style={{ width: "100%" }}
+                              placeholder="Chọn ngày sinh"
+                           />
+                        </Form.Item>
+                     </div>
 
-               <Button
-                  className={styles.btn}
-                  type="button"
-                  onClick={() => setIsModalInfo(true)}
-               >
-                  <Text.bodyHighlight title="Cập nhật thông tin" />
-               </Button>
-            </Form>
-         </div>
-         <Divider style={{ margin: "40px 0" }} />{" "}
-         <Form
-            form={formPassword}
-            name="password"
-            onFinish={onFinishPassword}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-         >
-            <div>
-               <div style={{ marginBottom: "8px" }}>
-                  <label htmlFor="oldPassword" className={styles.inputLabel}>
-                     <Text.caption title="Mật khẩu cũ" />
-                  </label>
+                     <Button
+                        className={styles.btn}
+                        type="button"
+                        onClick={() => setIsModalInfo(true)}
+                     >
+                        <Text.bodyHighlight title="Cập nhật thông tin" />
+                     </Button>
+                  </Form>
                </div>
-               <Form.Item
-                  name="oldPassword"
-                  rules={[{ required: true, message: "Mật khẩu củ trống!" }]}
+               <Divider style={{ margin: "40px 0" }} />{" "}
+               <Form
+                  form={formPassword}
+                  name="password"
+                  onFinish={onFinishPassword}
+                  onFinishFailed={onFinishFailed}
+                  autoComplete="off"
                >
-                  <Input.Password placeholder="Nhập mật khẩu cũ" />
-               </Form.Item>
-            </div>
-            <div>
-               <div style={{ marginBottom: "8px" }}>
-                  <label htmlFor="newPassword" className={styles.inputLabel}>
-                     <Text.caption title="Mật khẩu mới" />
-                  </label>
-               </div>
-               <Form.Item
-                  name="newPassword"
-                  rules={[{ required: true, message: "Mật khẩu mới trống!" }]}
-               >
-                  <Input.Password placeholder="Nhập mật khẩu mới" />
-               </Form.Item>
-            </div>
-            <div>
-               <div style={{ marginBottom: "8px" }}>
-                  <label
-                     htmlFor="confirmPassword"
-                     className={styles.inputLabel}
+                  <div>
+                     <div style={{ marginBottom: "8px" }}>
+                        <label
+                           htmlFor="oldPassword"
+                           className={styles.inputLabel}
+                        >
+                           <Text.caption title="Mật khẩu cũ" />
+                        </label>
+                     </div>
+                     <Form.Item
+                        name="oldPassword"
+                        rules={[
+                           { required: true, message: "Mật khẩu củ trống!" },
+                        ]}
+                     >
+                        <Input.Password placeholder="Nhập mật khẩu cũ" />
+                     </Form.Item>
+                  </div>
+                  <div>
+                     <div style={{ marginBottom: "8px" }}>
+                        <label
+                           htmlFor="newPassword"
+                           className={styles.inputLabel}
+                        >
+                           <Text.caption title="Mật khẩu mới" />
+                        </label>
+                     </div>
+                     <Form.Item
+                        name="newPassword"
+                        rules={[
+                           { required: true, message: "Mật khẩu mới trống!" },
+                        ]}
+                     >
+                        <Input.Password placeholder="Nhập mật khẩu mới" />
+                     </Form.Item>
+                  </div>
+                  <div>
+                     <div style={{ marginBottom: "8px" }}>
+                        <label
+                           htmlFor="confirmPassword"
+                           className={styles.inputLabel}
+                        >
+                           <Text.caption title="Nhập lại mật khẩu" />
+                        </label>
+                     </div>
+                     <Form.Item
+                        name="confirmPassword"
+                        dependencies={["newPassword"]}
+                        hasFeedback
+                        rules={[
+                           {
+                              required: true,
+                              message: "Mật khẩu xác nhận trống!",
+                           },
+                           ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                 if (
+                                    !value ||
+                                    getFieldValue("newPassword") === value
+                                 ) {
+                                    return Promise.resolve();
+                                 }
+                                 return Promise.reject(
+                                    new Error(
+                                       "Mật khẩu xác nhận không trùng khớp!"
+                                    )
+                                 );
+                              },
+                           }),
+                        ]}
+                     >
+                        <Input.Password placeholder="Nhập mật khẩu mới" />
+                     </Form.Item>
+                  </div>
+                  <Button
+                     className={styles.btn}
+                     type="button"
+                     onClick={() => setIsModalPassword(true)}
                   >
-                     <Text.caption title="Nhập lại mật khẩu" />
-                  </label>
+                     <Text.bodyHighlight title="Cập nhật mật khẩu" />
+                  </Button>
+               </Form>
+               <Divider style={{ margin: "40px 0" }} />
+               <div>
+                  <Text.h3 title="Trở thành người bán hàng" />
+                  <div className={styles.note}>
+                     {isWaitingLicence ? (
+                        <Text.caption title="Bạn đang chờ quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
+                     ) : (
+                        <Text.caption title="Bạn cần được quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
+                     )}
+                  </div>
+                  <Button
+                     className={styles.btn}
+                     type="button"
+                     onClick={() => setIsModalLicence(true)}
+                     disabled={isWaitingLicence}
+                  >
+                     <Text.bodyHighlight title="Xin phép bán hàng" />
+                  </Button>
                </div>
-               <Form.Item
-                  name="confirmPassword"
-                  dependencies={["newPassword"]}
-                  hasFeedback
-                  rules={[
-                     {
-                        required: true,
-                        message: "Mật khẩu xác nhận trống!",
-                     },
-                     ({ getFieldValue }) => ({
-                        validator(_, value) {
-                           if (
-                              !value ||
-                              getFieldValue("newPassword") === value
-                           ) {
-                              return Promise.resolve();
-                           }
-                           return Promise.reject(
-                              new Error("Mật khẩu xác nhận không trùng khớp!")
-                           );
-                        },
-                     }),
-                  ]}
-               >
-                  <Input.Password placeholder="Nhập mật khẩu mới" />
-               </Form.Item>
             </div>
-            <Button
-               className={styles.btn}
-               type="button"
-               onClick={() => setIsModalPassword(true)}
-            >
-               <Text.bodyHighlight title="Cập nhật mật khẩu" />
-            </Button>
-         </Form>
-         <Divider style={{ margin: "40px 0" }} />
-         <div>
-            <Text.h3 title="Trở thành người bán hàng" />
-            <div className={styles.note}>
-               {isWaitingLicence ? (
-                  <Text.caption title="Bạn đang chờ quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
-               ) : (
-                  <Text.caption title="Bạn cần được quản trị viên phê duyệt để có thể đăng bán sản phẩm." />
-               )}
-            </div>
-            <Button
-               className={styles.btn}
-               type="button"
-               onClick={() => setIsModalLicence(true)}
-               disabled={isWaitingLicence}
-            >
-               <Text.bodyHighlight title="Xin phép bán hàng" />
-            </Button>
-         </div>
+         )}
          <Modal
             title={<Text.bodyHighlight title="Xác nhận cập nhật thông tin" />}
             visible={isModalInfo}

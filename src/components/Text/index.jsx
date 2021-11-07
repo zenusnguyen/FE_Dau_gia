@@ -55,9 +55,9 @@ const caption = (props) => {
 };
 
 const underline = (props) => {
-   const { title } = props;
+   const { title, color } = props;
    return (
-      <span className={styles.underline} {...props}>
+      <span className={styles.underline} color={color} {...props}>
          {title}
       </span>
    );

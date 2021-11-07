@@ -1,23 +1,33 @@
 import React, { useState } from "react";
-import SideMenu from "../../components/SideMenu";
+import SideMenuAdmin from "../../components/SideMenuAdmin";
 import styles from "./styles.module.css";
 import SalePage from "../SalePage";
 import AuctionPage from "../AuctionPage";
 import LikePage from "../LikePage";
-import InfoAccountPage from "../InfoAccountPage";
 import EvaluatePage from "../EvaluatePage";
 import AddProductPage from "../AddProductPage";
 import { Breadcrumb } from "antd";
 import Text from "../../components/Text";
+import CategoryManagePage from "../CategoryManagePage";
+import SubCategoryManagePage from "../SubCategoryManagePage";
 
-export default function ProfileManagement() {
+export default function AdminManagement() {
    const [currentKey, setCurrentKey] = useState("1");
-   const [breadcrumb, setBreadcrumb] = useState(["Thông tin tài khoản"]);
+   const [breadcrumb, setBreadcrumb] = useState(["Quản lý danh mục"]);
+   const [currentCategory, setCurrentCategory] = useState(null);
+
+   const onDetailCategory = (key, category) => {
+      setCurrentKey(key);
+      setBreadcrumb(["Quản lý danh mục", category.name]);
+      setCurrentCategory(category.id);
+   };
 
    const renderComponent = () => {
       switch (currentKey) {
          case "1":
-            return <InfoAccountPage />;
+            return <CategoryManagePage viewDetail={onDetailCategory} />;
+         case "1.1":
+            return <SubCategoryManagePage categoryId={currentCategory} />;
          case "2":
             return <EvaluatePage />;
          case "5":
@@ -36,7 +46,7 @@ export default function ProfileManagement() {
       <div className={styles.container}>
          <Breadcrumb style={{ marginBottom: "30px" }}>
             <Breadcrumb.Item>
-               <Text.caption title="Trang chủ" />
+               <Text.caption title="Quản trị viên" />
             </Breadcrumb.Item>
             {breadcrumb.map((item) => (
                <Breadcrumb.Item>
@@ -45,11 +55,11 @@ export default function ProfileManagement() {
             ))}
          </Breadcrumb>
          <div className={styles.content}>
-            <SideMenu
+            <SideMenuAdmin
                handleClick={setCurrentKey}
                currentKey={currentKey}
                updateBreadcrumb={setBreadcrumb}
-            ></SideMenu>
+            ></SideMenuAdmin>
             {renderComponent()}
          </div>
       </div>

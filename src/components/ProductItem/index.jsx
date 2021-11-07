@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { useEffect, useState } from "react";
 import Text from "../Text";
-import "./style.css";
 import { useSelector } from "react-redux";
 import {
    Image,

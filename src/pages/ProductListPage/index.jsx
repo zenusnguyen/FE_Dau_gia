@@ -53,7 +53,14 @@ export default function ProductListPage() {
                }
             });
             setBreadcrumb([currentCategory.name, currentSub.name]);
-            setCategoryOptions(values[1]);
+            setCategoryOptions(
+               values[1].filter((category) => {
+                  if (category.subCategory) {
+                     return true;
+                  }
+                  return false;
+               })
+            );
             setItems(products);
             setToTalPage(values[2]);
             console.log(values[2]);

@@ -3,9 +3,8 @@ import { Menu } from "antd";
 import Text from "../Text";
 import {
    UserOutlined,
-   StarOutlined,
-   HeartOutlined,
    LogoutOutlined,
+   AppstoreOutlined,
    ShopOutlined,
 } from "@ant-design/icons";
 const { SubMenu } = Menu;
@@ -16,8 +15,9 @@ export default function SideMenu({
    updateBreadcrumb,
 }) {
    const onChangeKey = (e) => {
+      console.log(e.key);
       if (e.key === "1") {
-         updateBreadcrumb(["Thông tin tài khoản"]);
+         updateBreadcrumb(["Quản lý danh mục"]);
       } else if (e.key === "2") {
          updateBreadcrumb(["Điểm đánh giá"]);
       } else if (e.key === "5") {
@@ -37,33 +37,26 @@ export default function SideMenu({
          style={{ width: 250, minHeight: "60vh" }}
          defaultSelectedKeys={[currentKey]}
          mode="inline"
-         //openKeys={[currentKey]}
       >
-         <Menu.Item key="1" icon={<UserOutlined />}>
-            <Text.caption title="Thông tin tài khoản" />
+         <Menu.Item key="1" icon={<AppstoreOutlined />}>
+            <Text.caption title="Quản lý danh mục" />
          </Menu.Item>
-         <Menu.Item key="2" icon={<StarOutlined />}>
-            <Text.caption title="Điểm đánh giá" />
+         <Menu.Item key="2" icon={<ShopOutlined />}>
+            <Text.caption title="Quản lý sản phẩm" />
          </Menu.Item>
          <SubMenu
-            key="4"
-            icon={<ShopOutlined />}
-            title={<Text.caption title="Quản lý sản phẩm" />}
+            key="3"
+            icon={<UserOutlined />}
+            title={<Text.caption title="Quản lý người dùng" />}
          >
+            <Menu.Item key="4">
+               <Text.caption title="Thêm người dùng" />
+            </Menu.Item>
             <Menu.Item key="5">
-               <Text.caption title="Thêm sản phẩm" />
-            </Menu.Item>
-            <Menu.Item key="6">
-               <Text.caption title="Tôi đăng bán" />
-            </Menu.Item>
-            <Menu.Item key="7">
-               <Text.caption title="Tôi đấu giá" />
+               <Text.caption title="Tất cả người dùng" />
             </Menu.Item>
          </SubMenu>
-         <Menu.Item icon={<HeartOutlined />} key="8">
-            <Text.caption title="Danh sách yêu thích" />
-         </Menu.Item>
-         <Menu.Item icon={<LogoutOutlined />} key="9">
+         <Menu.Item icon={<LogoutOutlined />} key="6">
             <Text.caption title="Đăng xuất" />
          </Menu.Item>
       </Menu>

@@ -80,7 +80,6 @@ export default function AuctionPage() {
             <Radio.Group
                defaultValue="a"
                value={currentTab}
-               style={{ marginTop: 16 }}
                onChange={onChangeTab}
             >
                <Radio.Button value="a">

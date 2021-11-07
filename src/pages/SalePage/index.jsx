@@ -49,7 +49,6 @@ export default function SalePage() {
                defaultValue="a"
                defaultValue="a"
                value={currentTab}
-               style={{ marginTop: 16 }}
                onChange={onChangeTab}
             >
                <Radio.Button value="a">

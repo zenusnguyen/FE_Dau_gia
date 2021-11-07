@@ -25,18 +25,25 @@ export default function Header(props) {
    useEffect(() => {
       const fetchData = async () => {
          const allCategory = await getAllCategory();
-         const options = allCategory.map((category) => {
-            return {
-               value: category.id,
-               label: <Text.caption title={category.name} />,
-               children: category.subCategory.map((sub) => {
-                  return {
-                     value: sub.id,
-                     label: <Text.caption title={sub.name} />,
-                  };
-               }),
-            };
-         });
+         const options = allCategory
+            .filter((category) => {
+               if (category.subCategory) {
+                  return true;
+               }
+               return false;
+            })
+            .map((category) => {
+               return {
+                  value: category.id,
+                  label: <Text.caption title={category.name} />,
+                  children: category.subCategory?.map((sub) => {
+                     return {
+                        value: sub.id,
+                        label: <Text.caption title={sub.name} />,
+                     };
+                  }),
+               };
+            });
          setCategoryOptions(options);
          setIsLoading(false);
       };
@@ -58,16 +65,11 @@ export default function Header(props) {
                <Text.caption title="Thông tin tài khoản" />
             </Link>
          </Menu.Item>
-         {/* <Menu.Item>
-        <Link to="/">
-          <Text.caption title="Quản lý sản phẩm" />
-        </Link>
-      </Menu.Item>
-      <Menu.Item>
-        <Link to="/profile/like-list">
-          <Text.caption title="Danh sách yêu thích" />
-        </Link>
-      </Menu.Item> */}
+         <Menu.Item>
+            <Link to={`/admin/manage/`}>
+               <Text.caption title="Quản trị" />
+            </Link>
+         </Menu.Item>
          <Menu.Item>
             <a onClick={() => dispatch(logout())} target="_blank">
                <Text.caption title="Đăng xuất" />
