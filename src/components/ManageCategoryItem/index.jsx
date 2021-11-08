@@ -3,6 +3,7 @@ import styles from "./styles.module.css";
 import Text from "../Text";
 import { Modal, Form, Input, message } from "antd";
 import { del, update } from "../../services/categoryApi";
+import { getByCategory } from "../../services/productApi";
 
 export default function ManageCategoryItem(props) {
    const { category, callBackUpdate, viewDetail } = props;
@@ -10,15 +11,20 @@ export default function ManageCategoryItem(props) {
    const [isModalDel, setIsModalDel] = useState(false);
    const [isModalRename, setIsModalRename] = useState(false);
 
-   const onOkDel = () => {
-      del(category.id)
-         .then(() => {
-            callBackUpdate(true);
-            message.success("Xóa danh mục thành công", 10);
-         })
-         .catch(() => {
-            message.success("Xóa danh mục thất bại!", 10);
-         });
+   const onOkDel = async () => {
+      const products = await getByCategory(category.id);
+      if (products.length > 0) {
+         message.error("Xóa danh mục thất bại! Danh mục đã có sản phẩm", 10);
+      } else {
+         del(category.id)
+            .then(() => {
+               callBackUpdate(true);
+               message.success("Xóa danh mục thành công", 10);
+            })
+            .catch(() => {
+               message.success("Xóa danh mục thất bại!", 10);
+            });
+      }
       setIsModalDel(false);
    };
 

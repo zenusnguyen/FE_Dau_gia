@@ -55,6 +55,19 @@ export const getBySubCategory = (subId, pageNumber) => {
    });
 };
 
+export const getByCategory = (categoryId, pageNumber) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items?categoryID=${categoryId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const getCountBySub = (subId) => {
    return new Promise((resolve, reject) => {
       axios({
@@ -176,11 +189,11 @@ export const getAllAuctionSold = (bidderId) => {
    });
 };
 
-export const getAllSellProcessing = (sellerId) => {
+export const getAllSellProcessing = (ownerId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=processing&sellerId=${sellerId}`,
+         url: `${BACKEND_DOMAIN}/items?status=processing&ownerId=${ownerId}`,
       })
          .then((res) => {
             resolve(res?.data);
@@ -189,11 +202,11 @@ export const getAllSellProcessing = (sellerId) => {
    });
 };
 
-export const getAllSellSold = (sellerId) => {
+export const getAllSellSold = (ownerId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=expired&sellerId=${sellerId}`,
+         url: `${BACKEND_DOMAIN}/items?status=expired&ownerId=${ownerId}`,
       }).catch((err) => reject(err));
    });
 };

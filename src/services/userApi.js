@@ -14,6 +14,20 @@ export const getById = (userId) => {
    });
 };
 
+export const add = (data) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "POST",
+         url: `${BACKEND_DOMAIN}/user-infos`,
+         data,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const updateInfo = (userId, data) => {
    return new Promise((resolve, reject) => {
       axios({

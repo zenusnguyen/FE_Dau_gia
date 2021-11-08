@@ -37,11 +37,11 @@ export default function AddProductPage(props) {
          const options = allCategory.map((category) => {
             return {
                value: category.id,
-               label: <Text.caption title={category.name} />,
+               label: category.name,
                children: category.subCategory.map((sub) => {
                   return {
                      value: sub.id,
-                     label: <Text.caption title={sub.name} />,
+                     label: sub.name,
                   };
                }),
             };
@@ -81,13 +81,13 @@ export default function AddProductPage(props) {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-
       if (images.length < 3) {
-         message.error("Sản phẩm cần ít nhất 3 tấm ảnhÏ");
+         message.error("Sản phẩm cần ít nhất 3 tấm ảnh!");
       } else {
          const formData = await form.getFieldValue();
          const data = {
             ...formData,
+            title: formData.name,
             images: images,
             autoRenew,
             description,

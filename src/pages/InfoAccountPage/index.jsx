@@ -28,7 +28,7 @@ export default function InfoAccountPage(props) {
          if (licence) setIsWaitingLicence(true);
          formInfo.setFieldsValue({
             email: user?.email,
-            fullName: user?.fullName || user?.username,
+            username: user?.username || user?.username,
             dateOfBirth: moment(user?.dateOfBirth),
          });
          setIsLoading(false);
@@ -139,14 +139,14 @@ export default function InfoAccountPage(props) {
                      <div>
                         <div style={{ marginBottom: "8px" }}>
                            <label
-                              htmlFor="fullName"
+                              htmlFor="userame"
                               className={styles.inputLabel}
                            >
                               <Text.caption title="Tên" />
                            </label>
                         </div>
                         <Form.Item
-                           name="fullName"
+                           name="username"
                            rules={[
                               {
                                  required: true,

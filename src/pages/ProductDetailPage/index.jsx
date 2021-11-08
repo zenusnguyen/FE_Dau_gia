@@ -71,7 +71,7 @@ export default function ItemDetailPage({ data }) {
          const productRes = await get(productId);
          setProduct(productRes);
          Promise.all([
-            getUserById(productRes.sellerId),
+            getUserById(productRes.ownerId),
             getTheSame(productRes.id, productRes.subCategoryId),
             getWatchByBidder(user?.id),
             getAllHistory(productId),
@@ -79,6 +79,7 @@ export default function ItemDetailPage({ data }) {
                productRes.currentBidderId ? productRes.currentBidderId : ""
             ),
          ]).then((values) => {
+            console.log(values[0]);
             setCurrentSeller(values[0]);
             setProductsTheSame(values[1]);
             const likes = values[2].map((like) => like.productId);
@@ -97,8 +98,8 @@ export default function ItemDetailPage({ data }) {
             );
             if (!Array.isArray(values[4])) {
                const currentBidder = values[4];
-               const nameSplit = currentBidder.fullName.split(" ");
-               currentBidder.fullName = `***${nameSplit[nameSplit.length - 1]}`;
+               const nameSplit = currentBidder.username.split(" ");
+               currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
                setCurrentBidder(currentBidder);
             } else {
                setCurrentBidder({});
@@ -261,8 +262,8 @@ export default function ItemDetailPage({ data }) {
                            >
                               <Text.bodyHighlight
                                  title={
-                                    currentBidder.fullName
-                                       ? currentBidder.fullName
+                                    currentBidder.username
+                                       ? currentBidder.username
                                        : ""
                                  }
                               />
@@ -313,7 +314,7 @@ export default function ItemDetailPage({ data }) {
                               />
                               <div className={styles.topAuction}>
                                  <Text.bodyHighlight
-                                    title={currentSeller.fullName}
+                                    title={currentSeller.username}
                                  />
                                  <Tag className={styles.tag} color="#86b817">
                                     <Text.caption

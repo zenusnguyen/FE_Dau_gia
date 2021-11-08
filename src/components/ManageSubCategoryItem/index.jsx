@@ -20,18 +20,23 @@ export default function ManageSubCategoryItem(props) {
       fetchData();
    }, [subCategory]);
 
-   const onOkDel = () => {
-      const index = category.subCategory.indexOf(subCategory);
-      const newSubCategory = [...category.subCategory];
-      newSubCategory.splice(index, 1);
-      update(category.id, { subCategory: newSubCategory })
-         .then(() => {
-            callBackUpdate(true);
-            message.success("Xóa danh mục con thành công", 10);
-         })
-         .catch(() => {
-            message.success("Xóa danh mụccon thất bại!", 10);
-         });
+   const onOkDel = async () => {
+      const productCount = await getCountBySub(subCategory.id);
+      if (productCount > 0) {
+         message.error("Xóa danh mục thất bại! Danh mục đã có sản phẩm", 10);
+      } else {
+         const index = category.subCategory.indexOf(subCategory);
+         const newSubCategory = [...category.subCategory];
+         newSubCategory.splice(index, 1);
+         update(category.id, { subCategory: newSubCategory })
+            .then(() => {
+               callBackUpdate(true);
+               message.success("Xóa danh mục con thành công", 10);
+            })
+            .catch(() => {
+               message.success("Xóa danh mụccon thất bại!", 10);
+            });
+      }
       setIsModalDel(false);
    };
 

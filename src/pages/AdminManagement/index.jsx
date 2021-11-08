@@ -10,6 +10,7 @@ import { Breadcrumb } from "antd";
 import Text from "../../components/Text";
 import CategoryManagePage from "../CategoryManagePage";
 import SubCategoryManagePage from "../SubCategoryManagePage";
+import UserInfoPage from "../UserInfoPage";
 
 export default function AdminManagement() {
    const [currentKey, setCurrentKey] = useState("1");
@@ -30,6 +31,8 @@ export default function AdminManagement() {
             return <SubCategoryManagePage categoryId={currentCategory} />;
          case "2":
             return <EvaluatePage />;
+         case "4":
+            return <UserInfoPage isNew />;
          case "5":
             return <AddProductPage />;
          case "6":

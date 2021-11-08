@@ -20,6 +20,8 @@ export default function SideMenu({
          updateBreadcrumb(["Quản lý danh mục"]);
       } else if (e.key === "2") {
          updateBreadcrumb(["Điểm đánh giá"]);
+      } else if (e.key === "4") {
+         updateBreadcrumb(["Quản lý người dùng", "Thêm người dùng"]);
       } else if (e.key === "5") {
          updateBreadcrumb(["Quản lý sản phẩm", "Thêm sản phẩm"]);
       } else if (e.key === "6") {

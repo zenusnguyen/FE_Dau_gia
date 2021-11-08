@@ -20,8 +20,8 @@ export default function SellProductItem(props) {
       const fetchData = async () => {
          if (product.currentBidderId) {
             const currentBidder = await getUserById(product.currentBidderId);
-            const nameSplit = currentBidder.fullName.split(" ");
-            currentBidder.fullName = `***${nameSplit[nameSplit.length - 1]}`;
+            const nameSplit = currentBidder.username.split(" ");
+            currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
             setCurrentBidder({ ...currentBidder });
          }
          setIsLoading(false);
@@ -124,7 +124,7 @@ export default function SellProductItem(props) {
                   </div>
                   <div className={styles.infoCenterValue}>
                      <div className={styles.hightBidder}>
-                        <Text.bodyHighlight title={currentBidder.fullName} />{" "}
+                        <Text.bodyHighlight title={currentBidder.username} />{" "}
                         {currentBidder.score && (
                            <p className={styles.percent}>
                               <Text.caption
