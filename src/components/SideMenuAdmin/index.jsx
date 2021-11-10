@@ -23,7 +23,7 @@ export default function SideMenu({
       } else if (e.key === "4") {
          updateBreadcrumb(["Quản lý người dùng", "Thêm người dùng"]);
       } else if (e.key === "5") {
-         updateBreadcrumb(["Quản lý sản phẩm", "Thêm sản phẩm"]);
+         updateBreadcrumb(["Quản lý người dùng", "Tất cả người dùng"]);
       } else if (e.key === "6") {
          updateBreadcrumb(["Quản lý sản phẩm", "Tôi đăng bán"]);
       } else if (e.key === "7") {

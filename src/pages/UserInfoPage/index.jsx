@@ -4,6 +4,7 @@ import Text from "../../components/Text";
 import moment from "moment";
 import { login as reduxLogin } from "../../redux/actions/userActions";
 import {
+   getById,
    updateInfo,
    updatePassword,
    add as addUser,
@@ -23,72 +24,41 @@ import LoadingPage from "../LoadingPage";
 
 export default function UserInfoPage(props) {
    const { isNew, userId } = props;
+   const [formInfo] = Form.useForm();
    const dateFormat = "DD/MM/YYYY";
-   const [user, setUser] = useState({});
    const [isSeller, setIsSeller] = useState(true);
    const [isModalInfo, setIsModalInfo] = useState(false);
-   const [isModalPassword, setIsModalPassword] = useState(false);
-   const [isModalLicence, setIsModalLicence] = useState(false);
-   const [isWaitingLicence, setIsWaitingLicence] = useState(false);
    const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
+      formInfo.resetFields();
       const fetchData = async () => {
          if (!isNew) {
-            const user = await getByBidder(userId);
-            setUser(user);
+            const user = await getById(userId);
+            console.log(user);
+            formInfo.setFieldsValue({
+               email: user?.email,
+               username: user?.username,
+               dateOfBirth: moment(user?.dateOfBirth),
+            });
          }
          setIsLoading(false);
       };
       fetchData();
-   }, [isNew, userId]);
+   }, [isNew, userId, formInfo]);
 
-   const onOkLicensing = () => {
-      // addLicensing({
-      //    bidderId: user.id,
-      //    time: moment(),
-      //    status: "waiting",
-      // }).then(() => {
-      //    setIsModalLicence(false);
-      //    message.success(
-      //       "Xin phép bán hàng thành công chờ người quản lý duyệt.",
-      //       10
-      //    );
-      // });
+   const onOkInfo = () => {
+      const currentInfo = formInfo.getFieldsValue();
+      if (isNew) {
+         //Handle add user
+      } else {
+         if (!currentInfo.password) delete currentInfo.password; //Handle update user
+      }
+      setIsModalInfo(false);
    };
 
-   const onFinish = (values) => {
-      console.log(values);
-      // updateInfo(user?.id, values).then((userUpdate) => {
-      //    localStorage.setItem(
-      //       "user",
-      //       JSON.stringify({
-      //          jwt: jwt,
-      //          user: userUpdate,
-      //       })
-      //    );
-      //    dispatch(reduxLogin(userUpdate));
-      //    message.success("Cập nhật thông tin thành công", 10);
-      // });
-   };
-
-   const onFinishPassword = async (values) => {
-      // updatePassword(user.id, values)
-      //    .then((newUser) => {
-      //       console.log(newUser);
-      //       formPassword.resetFields();
-      //       message.success("Cập nhật mật khẩu thành công", 10);
-      //    })
-      //    .catch((error) => {
-      //       if (error.data.message[0].messages[0].field) {
-      //          formPassword.setFields([
-      //             {
-      //                name: "oldPassword",
-      //                errors: ["Mật khẩu hiện tại không chính xác!"],
-      //             },
-      //          ]);
-      //       }
-      //    });
+   const onFinish = () => {
+      setIsModalInfo(true);
    };
 
    const onFinishFailed = (errorInfo) => {
@@ -108,6 +78,7 @@ export default function UserInfoPage(props) {
             <div>
                <div className={styles.form}>
                   <Form
+                     form={formInfo}
                      name="info"
                      onFinish={onFinish}
                      onFinishFailed={onFinishFailed}
@@ -167,7 +138,7 @@ export default function UserInfoPage(props) {
                            name="dateOfBirth"
                            rules={[
                               {
-                                 required: true,
+                                 required: isNew,
                                  message: "Ngày sinh không được trống!",
                               },
                            ]}
@@ -192,7 +163,7 @@ export default function UserInfoPage(props) {
                            name="password"
                            rules={[
                               {
-                                 required: true,
+                                 required: isNew,
                                  message: "Mật khẩu trống!",
                               },
                            ]}
@@ -212,33 +183,37 @@ export default function UserInfoPage(props) {
                         type="primary"
                         htmlType="submit"
                      >
-                        <Text.bodyHighlight title="Thêm" />
+                        <Text.bodyHighlight
+                           title={isNew ? "Thêm" : "Cập nhật"}
+                        />
                      </Button>
                   </Form>
                </div>
             </div>
          )}
          <Modal
-            title={<Text.bodyHighlight title="Xác nhận cập nhật thông tin" />}
+            title={
+               <Text.bodyHighlight
+                  title={
+                     isNew
+                        ? "Xác nhận thêm người dùng"
+                        : "Xác nhận cập nhật thông tin"
+                  }
+               />
+            }
             visible={isModalInfo}
-            onOk={() => {}}
+            onOk={() => onOkInfo()}
             onCancel={() => setIsModalInfo(false)}
             okText={<Text.caption title="Đồng ý" />}
             cancelText={<Text.caption title="Hủy" />}
          >
-            <Text.caption title={`Bạn có muốn cập nhật thông tin tài khoản?`} />
-         </Modal>
-         <Modal
-            title={
-               <Text.bodyHighlight title="Xác nhận xin được cấp phép bán hàng" />
-            }
-            visible={isModalLicence}
-            onOk={() => onOkLicensing()}
-            onCancel={() => setIsModalLicence(false)}
-            okText={<Text.caption title="Đồng ý" />}
-            cancelText={<Text.caption title="Hủy" />}
-         >
-            <Text.caption title={`Bạn có muốn xin phép bán hàng?`} />
+            <Text.caption
+               title={
+                  isNew
+                     ? "Bạn có muốn thêm người dùng?"
+                     : "Bạn có muốn cập nhật thông tin người dùng?"
+               }
+            />
          </Modal>
       </div>
    );

@@ -11,16 +11,24 @@ import Text from "../../components/Text";
 import CategoryManagePage from "../CategoryManagePage";
 import SubCategoryManagePage from "../SubCategoryManagePage";
 import UserInfoPage from "../UserInfoPage";
+import UserManagePage from "../UserManagePage";
 
 export default function AdminManagement() {
    const [currentKey, setCurrentKey] = useState("1");
    const [breadcrumb, setBreadcrumb] = useState(["Quản lý danh mục"]);
    const [currentCategory, setCurrentCategory] = useState(null);
+   const [currentUser, setCurrentUser] = useState(null);
 
    const onDetailCategory = (key, category) => {
       setCurrentKey(key);
       setBreadcrumb(["Quản lý danh mục", category.name]);
       setCurrentCategory(category.id);
+   };
+
+   const onDetailUser = (key, userId) => {
+      setCurrentKey(key);
+      setBreadcrumb(["Quản lý người dùng", "Chỉnh sửa thông tin"]);
+      setCurrentUser(userId);
    };
 
    const renderComponent = () => {
@@ -34,7 +42,9 @@ export default function AdminManagement() {
          case "4":
             return <UserInfoPage isNew />;
          case "5":
-            return <AddProductPage />;
+            return <UserManagePage viewDetail={onDetailUser} />;
+         case "5.1":
+            return <UserInfoPage userId={currentUser} />;
          case "6":
             return <SalePage></SalePage>;
          case "7":

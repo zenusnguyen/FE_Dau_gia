@@ -1,0 +1,43 @@
+.container {
+   padding: 6px 30px;
+   width: 100%;
+   position: relative;
+}
+
+.container input {
+   height: 32px !important;
+}
+
+.top {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.list {
+   padding: 0;
+   margin-top: 20px;
+}
+
+.item {
+   margin-bottom: 16px;
+   list-style: none;
+}
+
+.btn {
+   cursor: pointer;
+   background-color: transparent;
+   border: none;
+}
+
+.refuse {
+   background-color: #e53238 !important;
+   border-color: #e53238 !important;
+   color: #fff !important;
+   margin: 20px 10px;
+}
+
+.refuse:hover {
+   background-color: #f3595e !important;
+   border-color: #f3595e !important;
+}
