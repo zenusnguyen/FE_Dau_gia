@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Menu } from "antd";
 import Text from "../Text";
 import {
-   MailOutlined,
    UserOutlined,
    StarOutlined,
    HeartOutlined,
    LogoutOutlined,
+   ShopOutlined,
 } from "@ant-design/icons";
 const { SubMenu } = Menu;
 
@@ -15,7 +15,6 @@ export default function SideMenu({
    currentKey,
    updateBreadcrumb,
 }) {
-   console.log(currentKey);
    const onChangeKey = (e) => {
       if (e.key === "1") {
          updateBreadcrumb(["Thông tin tài khoản"]);
@@ -35,7 +34,7 @@ export default function SideMenu({
    return (
       <Menu
          onClick={onChangeKey}
-         style={{ width: 256, minHeight: "60vh" }}
+         style={{ width: 250, minHeight: "60vh" }}
          defaultSelectedKeys={[currentKey]}
          mode="inline"
          //openKeys={[currentKey]}
@@ -48,7 +47,7 @@ export default function SideMenu({
          </Menu.Item>
          <SubMenu
             key="4"
-            icon={<MailOutlined />}
+            icon={<ShopOutlined />}
             title={<Text.caption title="Quản lý sản phẩm" />}
          >
             <Menu.Item key="5">

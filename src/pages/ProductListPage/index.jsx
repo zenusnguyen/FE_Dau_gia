@@ -14,7 +14,7 @@ import { getByBidder } from "../../services/wathApi";
 
 export default function ProductListPage() {
    const history = useHistory();
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
    const { categoryId, subId, pageNumber } = useParams();
    const { SubMenu } = Menu;
    const [categoryOptions, setCategoryOptions] = useState([]);
@@ -30,7 +30,7 @@ export default function ProductListPage() {
             getBySubCategory(subId, pageNumber),
             getAllCategory(),
             getCountBySub(subId),
-            getByBidder(user?.user?.id),
+            getByBidder(user?.id),
          ]).then((values) => {
             const currentCategory = values[1].find(
                (category) => category.id === categoryId
@@ -53,14 +53,22 @@ export default function ProductListPage() {
                }
             });
             setBreadcrumb([currentCategory.name, currentSub.name]);
-            setCategoryOptions(values[1]);
+            setCategoryOptions(
+               values[1].filter((category) => {
+                  if (category.subCategory) {
+                     return true;
+                  }
+                  return false;
+               })
+            );
             setItems(products);
             setToTalPage(values[2]);
+            console.log(values[2]);
             setIsLoading(false);
          });
       };
       fetchData();
-   }, [subId, categoryId, currentPage, pageNumber, user?.user?.id]);
+   }, [subId, categoryId, currentPage, pageNumber, user?.id]);
 
    const handleMenuClick = (e) => {
       setCurrentPage(1);
@@ -116,7 +124,7 @@ export default function ProductListPage() {
                            </SubMenu>
                         );
                      })}
-                  </Menu>{" "}
+                  </Menu>
                   {items.length > 0 ? (
                      <div className={styles.content}>
                         <ProductList products={items} />

@@ -1,0 +1,35 @@
+.SubCategoryManagePage {
+   padding: 6px 30px;
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+}
+
+.SubCategoryManagePage .top {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin-bottom: 20px;
+}
+
+.SubCategoryManagePage .topRight input {
+   font-family: "Work Sans", sans-serif;
+   font-style: normal;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 22px;
+   height: 32px !important;
+}
+
+.SubCategoryManagePage .topRight input::placeholder {
+   font-family: "Work Sans", sans-serif;
+   font-style: normal;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 22px;
+}
+
+.list {
+   list-style: none;
+   padding: 0;
+}

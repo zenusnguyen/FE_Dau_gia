@@ -1,0 +1,23 @@
+.item {
+   padding: 16px 24px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.itemRight {
+   display: flex;
+   align-items: center;
+}
+
+.item span {
+   margin-left: 16px;
+}
+
+.actions {
+   cursor: pointer;
+   background-color: transparent;
+   border: none;
+   padding: 0;
+}

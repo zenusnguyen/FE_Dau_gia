@@ -1,31 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import Text from "../../components/Text";
-import { Switch, Form, Input, DatePicker, Upload, InputNumber } from "antd";
+import {
+   Switch,
+   Form,
+   Input,
+   DatePicker,
+   Upload,
+   InputNumber,
+   Cascader,
+   message,
+} from "antd";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { upLoadImages } from "../../services/uploadImage";
+import { createProduct } from "../../services/productApi";
+import { useSelector, useDispatch } from "react-redux";
+import { getAll as getAllCategory } from "../../services/categoryApi";
 
 export default function AddProductPage(props) {
    const [form] = Form.useForm();
    const [autoRenew, setAutoRenew] = useState(false);
    const [isAllUser, setIsAllUser] = useState(true);
-   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-   const [fileList, setFileList] = useState([
-      {
-         uid: "-1",
-         name: "image.png",
-         status: "done",
-         url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-      },
-   ]);
+   const [fileList, setFileList] = useState([]);
    const dateFormat = "DD/MM/YYYY HH:mm:ss";
+   const [images, setImages] = useState([]);
+   const [description, setDescription] = useState("");
+   const { user } = useSelector((state) => state.user);
+   const [categoryOptions, setCategoryOptions] = useState([]);
+   const [category, setCategory] = useState({});
+   useEffect(() => {
+      const fetchData = async () => {
+         const allCategory = await getAllCategory();
+         const options = allCategory.map((category) => {
+            return {
+               value: category.id,
+               label: category.name,
+               children: category.subCategory.map((sub) => {
+                  return {
+                     value: sub.id,
+                     label: sub.name,
+                  };
+               }),
+            };
+         });
+         setCategoryOptions(options);
+         console.log("options: ", options);
+      };
+      fetchData();
+   }, []);
 
    const onChange = ({ fileList: newFileList }) => {
       setFileList(newFileList);
    };
 
+   const onChangeCategory = (data) => {
+      console.log("data: ", data);
+      setCategory(data);
+   };
    const onPreview = async (file) => {
       let src = file.url;
       if (!src) {
@@ -41,27 +75,66 @@ export default function AddProductPage(props) {
       imgWindow.document.write(image.outerHTML);
    };
 
-   const onEditorStateChange = (editorState) => {
-      setEditorState(editorState);
+   const onContentStateChange = (contentState) => {
+      setDescription(contentState?.blocks[0]?.text);
    };
 
-   const handleSubmit = () => {
-      form.submit();
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (images.length < 3) {
+         message.error("Sản phẩm cần ít nhất 3 tấm ảnh!");
+      } else {
+         const formData = await form.getFieldValue();
+         const data = {
+            ...formData,
+            title: formData.name,
+            images: images,
+            autoRenew,
+            description,
+            ownerId: user?.user?.id,
+            status: "processing",
+            currentPrice: formData?.price,
+            isAllUser,
+            view: 0,
+            categoryID: category[0],
+            subCategoryId: category[1],
+            maxPrice: formData?.maxPrice || 0,
+         };
+
+         console.log("data: ", data);
+         await createProduct(data)
+            .then((result) => {
+               message.success("Cập nhật thành công ");
+               form.resetFields();
+               setFileList([]);
+            })
+            .catch((error) => message.error(error.message));
+      }
    };
 
    const onFinish = (values) => {
-      console.log("Success:", values);
-      console.log(isAllUser);
-      console.log(autoRenew);
-      console.log(fileList);
-      console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-      console.log(values.endTime.format(dateFormat));
+      console.log("values: ", values);
+      // e.preventDefault();
+      //  console.log(isAllUser);
+      //  console.log(autoRenew);
+      //  console.log(fileList);
+      //  console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+      //  console.log(values.endTime.format(dateFormat));
    };
 
    const onFinishFailed = (errorInfo) => {
       console.log("Failed:", errorInfo);
    };
 
+   const handleUpload = async (data) => {
+      await upLoadImages(data)
+         .then((res) => {
+            setImages([...images, res[0]?.url]);
+         })
+         .catch((err) => {
+            console.log("err: ", err);
+         });
+   };
    return (
       <div className={styles.addProductPage}>
          <div>
@@ -70,10 +143,10 @@ export default function AddProductPage(props) {
          <div className={styles.content}>
             <div className={styles.left}>
                <Form
-                  form={form}
-                  name="basic"
                   onFinish={onFinish}
                   onFinishFailed={onFinishFailed}
+                  form={form}
+                  name="basic"
                   autoComplete="off"
                   initialValues={{
                      remember: true,
@@ -166,6 +239,38 @@ export default function AddProductPage(props) {
                         />
                      </Form.Item>
                   </div>
+
+                  <div>
+                     <div style={{ marginBottom: "8px" }}>
+                        <label className={styles.inputLabel}>
+                           <Text.caption title="Danh mục" />
+                        </label>
+                     </div>
+                     <Form.Item
+                        name="categoryId"
+                        rules={[
+                           () => ({
+                              validator(_, value) {
+                                 if (!value) {
+                                    return Promise.reject(
+                                       "Danh mục không được trống."
+                                    );
+                                 }
+                                 return Promise.resolve();
+                              },
+                           }),
+                        ]}
+                     >
+                        <Cascader
+                           placeholder="Vui lòng chọn danh mục "
+                           options={categoryOptions}
+                           onChange={onChangeCategory}
+                           className={styles.cascader}
+                           style={{ color: "#333" }}
+                        />
+                     </Form.Item>
+                  </div>
+
                   <div>
                      <div style={{ marginBottom: "8px" }}>
                         <label className={styles.inputLabel}>
@@ -196,7 +301,7 @@ export default function AddProductPage(props) {
                         </label>
                      </div>
                      <Form.Item
-                        name="priceBuy"
+                        name="maxPrice"
                         rules={[
                            () => ({
                               validator(_, value) {
@@ -237,7 +342,7 @@ export default function AddProductPage(props) {
                      </label>
                   </div>
                   <Upload
-                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                     action={handleUpload}
                      listType="picture-card"
                      fileList={fileList}
                      onChange={onChange}
@@ -254,19 +359,14 @@ export default function AddProductPage(props) {
                   </div>
                   <div className={styles.textEditor}>
                      <Editor
-                        editorState={editorState}
                         toolbarClassName={styles.toolbar}
                         wrapperClassName="wrapperClassName"
                         editorClassName={styles.editor}
-                        onEditorStateChange={onEditorStateChange}
+                        onContentStateChange={onContentStateChange}
                      />
                   </div>
                   <div className={styles.submit}>
-                     <button
-                        className={styles.btn}
-                        type="button"
-                        onClick={() => handleSubmit()}
-                     >
+                     <button className={styles.btn} onClick={handleSubmit}>
                         <Text.bodyHighlight title="Cập nhật" />
                      </button>
                   </div>

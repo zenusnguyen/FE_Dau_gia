@@ -1,0 +1,10 @@
+.ant-form-item-explain.ant-form-item-explain-error {
+   font-family: "Work Sans", sans-serif !important;
+   font-style: normal;
+   font-size: 14px !important;
+   line-height: 22px !important;
+}
+.ant-modal-content .ant-btn-primary {
+   background-color: #0064d2 !important;
+   border-color: #0064d2 !important;
+}

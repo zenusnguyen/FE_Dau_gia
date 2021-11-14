@@ -10,9 +10,11 @@ import {
 } from "../../services/productApi";
 import LoadingPage from "../LoadingPage";
 import { getByBidder as getWatchByBidder } from "../../services/wathApi";
+import { getAllByBidder } from "../../services/priceHistoryApi";
+import { getAllBySender } from "../../services/evaluateApi";
 
 export default function AuctionPage() {
-   const { user } = useSelector((state) => state.user);
+   const { user } = useSelector((state) => state.user?.user);
    const [currentTab, setCurrentTab] = useState("a");
    const [products, setProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(true);
@@ -20,36 +22,51 @@ export default function AuctionPage() {
    useEffect(() => {
       const fetchData = async () => {
          if (currentTab === "a") {
+            const allAuction = await getAllByBidder(user.id);
+            var productsId = [];
+            if (allAuction) {
+               if (Array.isArray(allAuction)) {
+                  productsId = allAuction.map((auction) => auction.productId);
+               } else {
+                  productsId = [allAuction.productId];
+               }
+            }
             Promise.all([
-               getAllAuctionProcessing(user.id),
-               getWatchByBidder(user.id),
+               getAllAuctionProcessing(productsId),
+               getWatchByBidder(user?.id),
             ]).then((values) => {
                const allLike = values[1].map((like) => like.productId);
                const products = values[0].map((value) => {
-                  if (allLike.includes(value.id)) {
-                     return {
-                        ...value,
-                        isLike: true,
-                     };
-                  } else {
-                     return {
-                        ...value,
-                        isLike: false,
-                     };
-                  }
+                  return {
+                     ...value,
+                     isLike: allLike.includes(value.id),
+                  };
                });
-               setProducts(products);
+               if (allAuction) setProducts(products);
+               else setProducts([]);
                setIsLoading(false);
             });
          } else {
-            Promise.all([getAllAuctionSold(user.id)]).then((values) => {
-               setProducts(values[0]);
+            Promise.all([
+               getAllAuctionSold(user?.id),
+               getAllBySender(user?.id),
+            ]).then((values) => {
+               const allEvaluate = values[1].map(
+                  (evaluate) => evaluate.productId
+               );
+               const products = values[0].map((value) => {
+                  return {
+                     ...value,
+                     isEvaluate: allEvaluate.includes(value.id),
+                  };
+               });
+               setProducts(products);
                setIsLoading(false);
             });
          }
       };
       fetchData();
-   }, [user.id, currentTab]);
+   }, [user, currentTab]);
 
    const onChangeTab = (e) => {
       setIsLoading(true);
@@ -63,7 +80,6 @@ export default function AuctionPage() {
             <Radio.Group
                defaultValue="a"
                value={currentTab}
-               style={{ marginTop: 16 }}
                onChange={onChangeTab}
             >
                <Radio.Button value="a">
@@ -81,7 +97,7 @@ export default function AuctionPage() {
                {products.length > 0 ? (
                   <ul className={styles.list}>
                      {products.map((product) => (
-                        <li className={styles.item}>
+                        <li key={product.id} className={styles.item}>
                            <ProductItem product={product} />
                         </li>
                      ))}

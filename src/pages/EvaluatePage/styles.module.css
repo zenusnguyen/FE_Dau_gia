@@ -1,5 +1,5 @@
 .evaluatePage {
-   padding: 20px 30px;
+   padding: 5px 30px;
    width: 100%;
 }
 
@@ -16,4 +16,8 @@
 
 .evaluatePage .table {
    padding-right: 80px;
+}
+
+.evaluatePage th:last-child {
+   text-align: center !important;
 }

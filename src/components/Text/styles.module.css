@@ -61,6 +61,13 @@
    font-size: 14px;
    line-height: 22px;
    /* identical to box height, or 157% */
-
    text-decoration-line: underline;
+}
+
+span[color="primary"] {
+   color: #0064d2;
+}
+
+span[color="gray"] {
+   color: #919293;
 }
