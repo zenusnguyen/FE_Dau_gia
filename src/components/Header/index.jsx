@@ -71,7 +71,7 @@ export default function Header(props) {
             </Link>
          </Menu.Item>
          <Menu.Item>
-            <a onClick={() => dispatch(logout())} target="_blank">
+            <a onClick={() => dispatch(logout())} >
                <Text.caption title="Đăng xuất" />
             </a>
          </Menu.Item>

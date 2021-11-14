@@ -248,7 +248,7 @@ export default function ItemDetailPage({ data }) {
         message.error(err.message);
       });
   };
-
+  console.log("user: ", user);
   const handleBuyClick = async () => {
     const data = {
       time: Date.now(),
@@ -404,6 +404,7 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.auction}
                       disabled={
+                        user?.id == undefined ||
                         user?.id === product?.ownerId ||
                         product?.status !== "processing" ||
                         product.currentPrice === 0 ||
@@ -424,6 +425,7 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.buyNow}
                       disabled={
+                        user?.id == undefined ||
                         user?.id === product?.ownerId ||
                         product?.status !== "processing"
                       }
@@ -438,6 +440,7 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.autoAuction}
                       disabled={
+                        user?.id == undefined ||
                         user?.id === product?.ownerId ||
                         product?.status !== "processing"
                       }
@@ -447,6 +450,7 @@ export default function ItemDetailPage({ data }) {
                     </Button>
                     <Button
                       disabled={
+                        user?.id == undefined ||
                         user?.id === product?.ownerId ||
                         product?.status !== "processing"
                       }
