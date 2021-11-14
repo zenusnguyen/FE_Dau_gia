@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-pascal-case */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 import { useParams, useHistory } from "react-router-dom";
 import {
@@ -26,6 +26,9 @@ import { Table } from "antd";
 import { useSelector } from "react-redux";
 import LoadingPage from "../LoadingPage";
 import { createAuctionTransaction } from "../../services/priceHistoryApi";
+import { createAutoAuctionTransaction } from "../../services/autoAuction";
+import { socket } from "../../services/socket";
+
 const columnsTable = [
   {
     title: "Thời gian",
@@ -51,8 +54,6 @@ export default function ItemDetailPage({ data }) {
   const history = useHistory();
   const { productId } = useParams();
   const [product, setProduct] = useState({});
-  console.log("product: ", product);
-
   const [currentImage, setCurrentImage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -60,9 +61,16 @@ export default function ItemDetailPage({ data }) {
   const [breadcrumb, setBreadcrumb] = useState([]);
   const [isLike, setIsLike] = useState(false);
   const [currentSeller, setCurrentSeller] = useState({});
+  const [isReload, setIsReload] = useState(false);
 
   const [currentBidder, setCurrentBidder] = useState({});
   const [productsTheSame, setProductsTheSame] = useState([]);
+
+  socket.on("priceChange", ({ data }) => {
+    if (data?.productId == product?.id) {
+      setProduct({ ...product, currentPrice: data?.price });
+    }
+  });
   const SubImage = ({ src, index }) => {
     return (
       <Image
@@ -75,7 +83,6 @@ export default function ItemDetailPage({ data }) {
     );
   };
 
-  console.log("currentSeller: ", currentSeller);
   useEffect(() => {
     setIsLoading(true);
     const fetchData = async () => {
@@ -91,7 +98,7 @@ export default function ItemDetailPage({ data }) {
             productRes.currentBidderId ? productRes.currentBidderId : ""
           ),
         ]).then((values) => {
-          console.log("values: ", values);
+          console.log("values: ", values[3]);
           setCurrentSeller(values[0]);
           setProductsTheSame(values[1]);
           const likes = values[2].map((like) => like.productId);
@@ -101,8 +108,8 @@ export default function ItemDetailPage({ data }) {
               return {
                 key: i.toString(),
                 time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
-                bidder: auction.buyerName,
-                price: `${auction.price
+                bidder: auction?.buyerName,
+                price: `${auction?.price
                   .toString()
                   .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,
               };
@@ -162,7 +169,7 @@ export default function ItemDetailPage({ data }) {
     };
 
     fetchData();
-  }, [productId, user]);
+  }, [productId, user, isReload]);
 
   const onImageClick = (index) => {
     setCurrentImage(index);
@@ -191,32 +198,41 @@ export default function ItemDetailPage({ data }) {
       buyerName: user?.username,
       type: "auction",
     };
-    await createAuctionTransaction(data)
+    if (product?.currentPrice + product?.priceStep === product.maxPrice) {
+      await handleBuyClick();
+    } else {
+      await createAuctionTransaction(data)
+        .then((res) => {
+          message.success("Đấu giá thành công");
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    }
+    setTimeout(() => {
+      setIsReload(!isReload);
+    }, 500);
+    socket.emit("priceChange", data, (error) => {
+      if (error) {
+        console.log("error: ", error);
+      }
+    });
+  };
+
+  const handleAutoAuctionClick = async () => {
+    const data = {
+      productId: product?.id,
+      buyerId: user?.id,
+      priceStep: product?.priceStep,
+      status: "processing",
+    };
+    await createAutoAuctionTransaction(data)
       .then((res) => {
-        message.success("Đấu giá thành công");
+        handleAuctionClick();
       })
       .catch((err) => {
         message.error(err.message);
       });
-  };
-
-  const handleAutoAuctionClick = async () => {
-    // const data = {
-    //   time: Date.now(),
-    //   price: product?.currentPrice + product?.priceStep,
-    //   buyer: user?.id,
-    //   bidderId: product?.ownerId,
-    //   productId: product?.id,
-    //   buyerName: user?.username,
-    //   type: "auto",
-    // };
-    // await createAuctionTransaction(data)
-    //   .then((res) => {
-    //     message.success("Đáu giá thành công");
-    //   })
-    //   .catch((err) => {
-    //     message.error(err.message);
-    //   });
   };
 
   const handleBuyClick = async () => {
@@ -236,6 +252,7 @@ export default function ItemDetailPage({ data }) {
       .catch((err) => {
         message.error(err.message);
       });
+    setIsReload(!isReload);
   };
   function callback(key) {}
   return (
@@ -287,7 +304,7 @@ export default function ItemDetailPage({ data }) {
                     </div>
                     <div className={styles.currentGroupItem}>
                       <Text.caption
-                        title="Kết thức sau"
+                        title="Kết thúc sau"
                         style={{ color: "#919293" }}
                       />
                     </div>
@@ -322,9 +339,7 @@ export default function ItemDetailPage({ data }) {
                     style={{ marginTop: "5px" }}
                   >
                     <Text.bodyHighlight
-                      title={
-                        currentBidder.fullName ? currentBidder.fullName : ""
-                      }
+                      title={currentBidder.fullName ? currentBidder.name : ""}
                     />
                     {currentBidder.score && (
                       <Tag className={styles.tag} color="#86b817">
@@ -376,13 +391,17 @@ export default function ItemDetailPage({ data }) {
                       className={styles.auction}
                       disabled={
                         user?.id === product?.ownerId ||
-                        product?.status !== "processing"
+                        product?.status !== "processing" ||
+                        product.currentPrice === 0 ||
+                        product.buyNow == product.currentPrice
                       }
                       onClick={handleAuctionClick}
                     >
                       <Text.bodyHighlight
-                        title={`Đấu giá - ${(
-                          product.currentPrice + product?.priceStep
+                        title={`Đấu giá - ${(product?.maxPrice ==
+                        product?.currentPrice
+                          ? product?.maxPrice
+                          : product?.currentPrice + product?.priceStep
                         )
                           .toString()
                           .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
