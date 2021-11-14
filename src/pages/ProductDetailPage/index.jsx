@@ -66,9 +66,23 @@ export default function ItemDetailPage({ data }) {
   const [currentBidder, setCurrentBidder] = useState({});
   const [productsTheSame, setProductsTheSame] = useState([]);
 
-  socket.on("priceChange", ({ data }) => {
+  socket.on("priceChange", async ({ data }) => {
     if (data?.productId == product?.id) {
-      setProduct({ ...product, currentPrice: data?.price });
+      const productRes = await get(productId);
+      setProduct(productRes);
+      const historyList = await getAllHistory(productId);
+      setHistories(
+        historyList.map((auction, i) => {
+          return {
+            key: i.toString(),
+            time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
+            bidder: auction?.buyerName,
+            price: `${auction?.price
+              .toString()
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,
+          };
+        })
+      );
     }
   });
   const SubImage = ({ src, index }) => {
@@ -98,7 +112,6 @@ export default function ItemDetailPage({ data }) {
             productRes.currentBidderId ? productRes.currentBidderId : ""
           ),
         ]).then((values) => {
-          console.log("values: ", values[3]);
           setCurrentSeller(values[0]);
           setProductsTheSame(values[1]);
           const likes = values[2].map((like) => like.productId);
@@ -213,6 +226,7 @@ export default function ItemDetailPage({ data }) {
       setIsReload(!isReload);
     }, 500);
     socket.emit("priceChange", data, (error) => {
+      console.log("data: ", data);
       if (error) {
         console.log("error: ", error);
       }
