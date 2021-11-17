@@ -359,6 +359,7 @@ export default function AddProductPage(props) {
                   </div>
                </Form>
             </div>
+
             <div className={styles.right}>
                <div className={styles.upload}>
                   <div style={{ marginBottom: "8px" }}>

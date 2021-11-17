@@ -18,7 +18,6 @@ import ProfileManagement from "./pages/ProfileManagement";
 import EvaluatePage from "./pages/EvaluatePage";
 import AdminManagement from "./pages/AdminManagement";
 
-const STRAPI_ENDPOINT = "http://localhost:1337";
 
 function App() {
    // useEffect(() => loadReCaptcha(), []);

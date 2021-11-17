@@ -125,11 +125,7 @@ export const search = (searchWord) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items?_q=${searchWord}`,
-      })
-         .then((res) => {
-            resolve(res?.data);
-         })
-         .catch((err) => reject(err));
+      }).catch((err) => reject(err));
    });
 };
 
@@ -207,7 +203,11 @@ export const getAllSellSold = (ownerId) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items?status=expired&ownerId=${ownerId}`,
-      }).catch((err) => reject(err));
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
    });
 };
 
