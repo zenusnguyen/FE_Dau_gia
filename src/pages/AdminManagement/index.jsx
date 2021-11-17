@@ -12,17 +12,26 @@ import CategoryManagePage from "../CategoryManagePage";
 import SubCategoryManagePage from "../SubCategoryManagePage";
 import UserInfoPage from "../UserInfoPage";
 import UserManagePage from "../UserManagePage";
+import ProductManagePage from "../ProductManagePage";
+import ProductInfoPage from "../ProductInfoPage";
 
 export default function AdminManagement() {
    const [currentKey, setCurrentKey] = useState("1");
    const [breadcrumb, setBreadcrumb] = useState(["Quản lý danh mục"]);
    const [currentCategory, setCurrentCategory] = useState(null);
    const [currentUser, setCurrentUser] = useState(null);
+   const [currentProduct, setCurrentProduct] = useState(null);
 
    const onDetailCategory = (key, category) => {
       setCurrentKey(key);
       setBreadcrumb(["Quản lý danh mục", category.name]);
       setCurrentCategory(category.id);
+   };
+
+   const onDetailProduct = (key, productId) => {
+      setCurrentKey(key);
+      setBreadcrumb(["Quản lý sản phẩm", "Chỉnh sửa thông tin sản phẩm"]);
+      setCurrentProduct(productId);
    };
 
    const onDetailUser = (key, userId) => {
@@ -38,7 +47,9 @@ export default function AdminManagement() {
          case "1.1":
             return <SubCategoryManagePage categoryId={currentCategory} />;
          case "2":
-            return <EvaluatePage />;
+            return <ProductManagePage viewDetail={onDetailProduct} />;
+         case "2.1":
+            return <ProductInfoPage productId={currentProduct} />;
          case "4":
             return <UserInfoPage isNew />;
          case "5":

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 import { useSelector } from "react-redux";
-import { Radio, Input, Table, Switch, Button } from "antd";
+import { Radio, Input, Table, Switch, Button, Modal } from "antd";
 import Text from "../../components/Text";
 import LoadingPage from "../LoadingPage";
 import { getAll as getAllUser, search } from "../../services/userApi";

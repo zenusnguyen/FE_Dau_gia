@@ -120,11 +120,11 @@ export const getPostDateAsc = () => {
    });
 };
 
-export const search = (keyWord, pageNumber) => {
+export const search = (searchWord) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items/search/${keyWord}/page/${pageNumber}`,
+         url: `${BACKEND_DOMAIN}/items?_q=${searchWord}`,
       })
          .then((res) => {
             resolve(res?.data);
@@ -231,6 +231,19 @@ export const createProduct = (product) => {
          method: "POST",
          url: `${BACKEND_DOMAIN}/items`,
          data: product,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const delProduct = (productId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "DELETE",
+         url: `${BACKEND_DOMAIN}/items/${productId}`,
       })
          .then((res) => {
             resolve(res?.data);
