@@ -17,10 +17,8 @@ export default function RegisterPage() {
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
-    console.log("values: ", values);
     try {
       const otp = localStorage.getItem("otp");
-      console.log("otp: ", otp);
       if (otp != values?.otp) {
         message.error("ma OTP không đúng vui lòng kiểm tra lại");
       } else {

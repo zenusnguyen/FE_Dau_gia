@@ -28,6 +28,12 @@ import LoadingPage from "../LoadingPage";
 import { createAuctionTransaction } from "../../services/priceHistoryApi";
 import { createAutoAuctionTransaction } from "../../services/autoAuction";
 import { socket } from "../../services/socket";
+import {
+  sendPreBidderNotification,
+  sendBidderNotification,
+  sendSellerNotification,
+  sendAuctionSuccessNotification
+} from "../../services/email";
 
 const columnsTable = [
   {
@@ -65,7 +71,6 @@ export default function ItemDetailPage({ data }) {
 
   const [currentBidder, setCurrentBidder] = useState({});
   const [productsTheSame, setProductsTheSame] = useState([]);
-
   socket.on("priceChange", async ({ data }) => {
     if (data?.productId == product?.id) {
       const productRes = await get(productId);
@@ -74,6 +79,7 @@ export default function ItemDetailPage({ data }) {
       setHistories(
         historyList.map((auction, i) => {
           return {
+            buyerId: auction?.buyer,
             key: i.toString(),
             time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
             bidder: auction?.buyerName,
@@ -119,6 +125,7 @@ export default function ItemDetailPage({ data }) {
           setHistories(
             values[3].map((auction, i) => {
               return {
+                buyerId: auction?.buyer,
                 key: i.toString(),
                 time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
                 bidder: auction?.buyerName,
@@ -214,8 +221,33 @@ export default function ItemDetailPage({ data }) {
     if (product?.currentPrice + product?.priceStep === product.maxPrice) {
       await handleBuyClick();
     } else {
+      await sendBidderNotification({ product, bidder: user?.email }).catch(
+        (err) => {
+          console.log("err: ", err);
+        }
+      );
+
+      await getUserById(product?.ownerId).then(async (res) => {
+        console.log("res: ", res);
+        await sendSellerNotification({
+          product,
+          seller: res?.email,
+        }).catch((err) => {
+          console.log("err: ", err);
+        });
+      });
+
+      await getUserById(histories[0]?.buyerId).then(async (res) => {
+        await sendPreBidderNotification({
+          product,
+          preBidder: res?.email,
+        }).catch((err) => {
+          console.log("err: ", err);
+        });
+      });
+
       await createAuctionTransaction(data)
-        .then((res) => {
+        .then(async (res) => {
           message.success("Đấu giá thành công");
         })
         .catch((err) => {
@@ -224,7 +256,7 @@ export default function ItemDetailPage({ data }) {
     }
     setTimeout(() => {
       setIsReload(!isReload);
-    }, 500);
+    }, 1000);
     socket.emit("priceChange", data, (error) => {
       if (error) {
         console.log("error: ", error);
@@ -257,6 +289,25 @@ export default function ItemDetailPage({ data }) {
       buyerName: user?.username,
       type: "buy",
     };
+    await getUserById(product?.ownerId).then(async (res) => {
+      await sendAuctionSuccessNotification({
+        product,
+        email: res?.email,
+      }).catch((err) => {
+        console.log("err: ", err);
+      });
+    });
+
+    await getUserById(histories[0]?.buyerId).then(async (res) => {
+      await sendAuctionSuccessNotification({
+        product,
+        email: res?.email,
+      }).catch((err) => {
+        console.log("err: ", err);
+      });
+    });
+
+
     await createAuctionTransaction(data)
       .then((res) => {
         message.success("Đấu giá thành công");
