@@ -12,6 +12,7 @@ import {
   Radio,
   Skeleton,
   Form,
+  message,
 } from "antd";
 import {
   HeartOutlined,
@@ -25,6 +26,9 @@ import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import { add as addValuate } from "../../services/evaluateApi";
 import { getById as getUserById } from "../../services/userApi";
 import { getBySender } from "../../services/evaluateApi";
+import { createAuctionTransaction } from "../../services/priceHistoryApi";
+import { socket } from "../../services/socket";
+
 import moment from "moment";
 
 export default function ProductItem(props) {
@@ -42,6 +46,12 @@ export default function ProductItem(props) {
   const [currentBidder, setCurrentBidder] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isEvaluate, setIsEvaluate] = useState(product.isEvaluate);
+
+  //   socket.on("priceChange", async ({ data }) => {
+  //     if (data?.productId == product?.id) {
+
+  //     }
+  //   });
 
   useEffect(() => {
     form.setFieldsValue({
@@ -130,10 +140,56 @@ export default function ProductItem(props) {
     setIsModalEvaluateVisible(false);
   };
 
-  const handleBuyClick = () => {};
+  const handleBuyClick = async () => {
+    const data = {
+      time: Date.now(),
+      price: product?.maxPrice,
+      buyer: user?.id,
+      bidderId: product?.ownerId,
+      productId: product?.id,
+      buyerName: user?.username,
+      type: "buy",
+    };
+    await createAuctionTransaction(data)
+      .then((res) => {
+        message.success("Đấu giá thành công");
+      })
+      .catch((err) => {
+        message.error(err.message);
+      });
+  };
 
-  const handleAuctionClick = () => {};
-  console.log("product: ", product);
+  const handleAuctionClick = async () => {
+    const data = {
+      time: Date.now(),
+      price: product?.currentPrice + product?.priceStep,
+      buyer: user?.id,
+      bidderId: product?.ownerId,
+      productId: product?.id,
+      buyerName: user?.username,
+      type: "auction",
+    };
+    if (product?.currentPrice + product?.priceStep === product.maxPrice) {
+      await handleBuyClick();
+    } else {
+      await createAuctionTransaction(data)
+        .then((res) => {
+          message.success("Đấu giá thành công");
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    }
+    setTimeout(() => {
+      // setIsReload(!isReload);
+    }, 500);
+    //  socket.emit("priceChange", data, (error) => {
+    //    console.log("data: ", data);
+    //    if (error) {
+    //      console.log("error: ", error);
+    //    }
+    //  });
+  };
 
   return (
     <div {...props} className={styles.productItemContainer}>
