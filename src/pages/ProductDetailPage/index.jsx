@@ -76,25 +76,25 @@ export default function ItemDetailPage({ data }) {
   const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
   const [isModalAutoAuctionVisible, setIsModalAutoAuctionVisible] =
     useState(false);
-
   socket.on("priceChange", async ({ data }) => {
-    if (data?.productId == product?.id) {
+    console.log("data: ", data);
+    if (data !== undefined && data?.productId == product?.id) {
       // const productRes = await get(productId);
       setProduct({ ...product, currentPrice: data?.price });
-      //    const historyList = await getAllHistory(productId);
-      //    setHistories(
-      //       historyList.map((auction, i) => {
-      //          return {
-      //             buyerId: auction?.buyer,
-      //             key: i.toString(),
-      //             time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
-      //             bidder: auction?.buyerName,
-      //             price: `${auction?.price
-      //                .toString()
-      //                .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,
-      //          };
-      //       })
-      //    );
+      // const historyList = await getAllHistory(productId);
+      // setHistories(
+      //   historyList.map((auction, i) => {
+      //     return {
+      //       buyerId: auction?.buyer,
+      //       key: i.toString(),
+      //       time: moment(auction.time).format("DD-MM-YYYY HH:mm"),
+      //       bidder: auction?.buyerName,
+      //       price: `${auction?.price
+      //         .toString()
+      //         .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`,aaaaa
+      //     };
+      //   })
+      // );
     }
   });
   const SubImage = ({ src, index }) => {
@@ -536,7 +536,9 @@ export default function ItemDetailPage({ data }) {
                             product.currentPrice === 0 ||
                             product.buyNow == product.currentPrice
                       }
-                      onClick={setIsModalAutoAuctionVisible(true)}
+                      onClick={() => {
+                        setIsModalAutoAuctionVisible(true);
+                      }}
                     >
                       <Text.bodyHighlight title="Đấu giá tự động" />
                     </Button>
