@@ -180,7 +180,7 @@ export const getAllAuctionSold = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=expired&currentBidderId=${bidderId}`,
+         url: `${BACKEND_DOMAIN}/items?status=sold&currentBidderId=${bidderId}`,
       }).catch((err) => reject(err));
    });
 };
