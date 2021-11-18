@@ -12,38 +12,36 @@ import {
    message,
 } from "antd";
 import { Editor } from "react-draft-wysiwyg";
-import {
-   EditorState,
-   convertToRaw,
-   ContentState,
-   convertFromRaw,
-   convertFromHTML,
-} from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { upLoadImages } from "../../services/uploadImage";
-import { createProduct } from "../../services/productApi";
+import { updateProduct } from "../../services/productApi";
 import { useSelector, useDispatch } from "react-redux";
 import { get } from "../../services/productApi";
-import { getAll as getAllCategory, getById } from "../../services/categoryApi";
+import { getAll as getAllCategory } from "../../services/categoryApi";
 import { BACKEND_DOMAIN } from "../../constants";
 import LoadingPage from "../LoadingPage";
+import { v4 as uuidv4 } from "uuid";
+import ReactHtmlParser from "react-html-parser";
 import moment from "moment";
 
 export default function ProductInfoPage(props) {
    const { productId } = props;
    const [form] = Form.useForm();
+   const [formDes] = Form.useForm();
    const [autoRenew, setAutoRenew] = useState(false);
    const [isAllUser, setIsAllUser] = useState(true);
    const [fileList, setFileList] = useState([]);
    const dateFormat = "DD/MM/YYYY HH:mm:ss";
    const [images, setImages] = useState([]);
-   const [description, setDescription] = useState("");
    const { user } = useSelector((state) => state.user);
    const [categoryOptions, setCategoryOptions] = useState([]);
-   const [category, setCategory] = useState([]);
    const [product, setProduct] = useState({});
+   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+   const [errorImages, setErrorImages] = useState(false);
+   const [errorDes, setErrorDes] = useState(false);
    const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
@@ -62,34 +60,25 @@ export default function ProductInfoPage(props) {
                }),
             };
          });
-         console.log(options);
          const files = resProduct.images.map((image, i) => {
             return {
-               uid: `-${i + 1}`,
+               uid: `${uuidv4()}`,
                name: "image.png",
                status: "done",
+               src: image,
                url: `${BACKEND_DOMAIN}${image}`,
             };
          });
          setFileList(files);
-         setCategory([resProduct.categoryID, resProduct.subCategoryId]);
-         // resProduct.description = EditorState.createWithContent(
-         //    ContentState.createFromBlockArray(
-         //       convertFromHTML(resProduct.description)
-         //    )
-         // );
-         const html = "<p>Your content</p>";
-         const contentBlock = htmlToDraft(html);
-         console.log(contentBlock);
-         // const contentState = ContentState.createFromBlockArray(
-         //    contentBlock.contentBlocks
-         // );
-         // resProduct.description = contentState;
-         //console.log(EditorState.createWithContent(contentState));
-         console.log(
+         setImages(
+            files.map((file) => {
+               return { key: file.uid, url: file.url, src: file.src };
+            })
+         );
+         setEditorState(
             EditorState.createWithContent(
                ContentState.createFromBlockArray(
-                  convertFromHTML("<p>My initial content.</p>")
+                  htmlToDraft(resProduct.description)
                )
             )
          );
@@ -97,15 +86,16 @@ export default function ProductInfoPage(props) {
             name: resProduct.title,
             price: resProduct.startPrice,
             priceStep: resProduct.priceStep,
+            currentPrice: resProduct.currentPrice,
             maxPrice: resProduct.maxPrice,
             endTime: moment(resProduct.endTime),
             category: [resProduct.categoryID, resProduct.subCategoryId],
-            // des: EditorState.createWithContent(
-            //    ContentState.createFromBlockArray(
-            //       convertFromHTML("<p>My initial content.</p>")
-            //    )
-            // ),
          });
+         formDes.setFieldsValue({
+            description: ReactHtmlParser(resProduct.description),
+         });
+         setIsAllUser(resProduct.isAllUser);
+         setAutoRenew(resProduct.autoRenew);
          setCategoryOptions(options);
          setProduct(resProduct);
          setIsLoading(false);
@@ -114,14 +104,16 @@ export default function ProductInfoPage(props) {
    }, [productId, form]);
 
    const onChange = ({ fileList: newFileList }) => {
-      console.log(newFileList);
+      if (fileList.length >= 3) {
+         setErrorImages(false);
+      }
       setFileList(newFileList);
    };
 
    const onChangeCategory = (data) => {
       console.log("data: ", data);
-      setCategory(data);
    };
+
    const onPreview = async (file) => {
       let src = file.url;
       if (!src) {
@@ -137,62 +129,76 @@ export default function ProductInfoPage(props) {
       imgWindow.document.write(image.outerHTML);
    };
 
-   const onContentStateChange = (contentState) => {
-      console.log(contentState);
-      setDescription(contentState?.blocks[0]?.text);
+   const onEditorStateChange = (editorState) => {
+      if (
+         !editorState.getCurrentContent().hasText() ||
+         editorState.getCurrentContent().getPlainText().trim() === ""
+      ) {
+         setErrorDes(true);
+      } else {
+         setErrorDes(false);
+      }
+      setEditorState(editorState);
    };
 
    const handleSubmit = async (e) => {
-      console.log(description);
-      // e.preventDefault();
-      // if (images.length < 3) {
-      //    message.error("Sản phẩm cần ít nhất 3 tấm ảnh!");
-      // } else {
-      //    const formData = await form.getFieldValue();
-      //    const data = {
-      //       ...formData,
-      //       title: formData.name,
-      //       images: images,
-      //       autoRenew,
-      //       description,
-      //       ownerId: user?.user?.id,
-      //       status: "processing",
-      //       currentPrice: formData?.price,
-      //       isAllUser,
-      //       view: 0,
-      //       categoryID: category[0],
-      //       subCategoryId: category[1],
-      //       maxPrice: formData?.maxPrice || 0,
-      //    };
-      //    console.log("data: ", data);
-      //    await createProduct(data)
-      //       .then((result) => {
-      //          message.success("Cập nhật thành công ");
-      //          form.resetFields();
-      //          setFileList([]);
-      //       })
-      //       .catch((error) => message.error(error.message));
-      // }
+      e.preventDefault();
+      if (fileList.length < 3) {
+         setErrorImages(true);
+      } else if (
+         !editorState.getCurrentContent().hasText() ||
+         editorState.getCurrentContent().getPlainText().trim() === ""
+      ) {
+         setErrorDes(true);
+      } else {
+         form.submit();
+      }
    };
 
    const onFinish = (values) => {
-      console.log("values: ", values);
-      // e.preventDefault();
-      //  console.log(isAllUser);
-      //  console.log(autoRenew);
-      //  console.log(fileList);
-      //  console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-      //  console.log(values.endTime.format(dateFormat));
+      const data = {
+         ...values,
+         title: values.name,
+         images: images.map((image) => image.src),
+         autoRenew,
+         description: draftToHtml(
+            convertToRaw(editorState.getCurrentContent())
+         ),
+         ownerId: product.ownerId,
+         status: "processing",
+         startPrice: values?.price,
+         currentPrice: values?.price,
+         isAllUser,
+         view: 0,
+         categoryID: values.category[0],
+         subCategoryId: values.category[1],
+         maxPrice: values?.maxPrice || 0,
+      };
+
+      updateProduct(productId, data)
+         .then((result) => {
+            message.success("Cập nhật sản phẩm thành công");
+         })
+         .catch((error) => message.error(error.message));
    };
 
    const onFinishFailed = (errorInfo) => {
       console.log("Failed:", errorInfo);
    };
 
+   const handleRemove = async (data) => {
+      console.log(data);
+      const newImage = images.filter((image) => image.key !== data.uid);
+      setImages(newImage);
+   };
+
    const handleUpload = async (data) => {
       await upLoadImages(data)
          .then((res) => {
-            setImages([...images, res[0]?.url]);
+            setImages([
+               ...images,
+               { key: data.uid, url: res[0]?.url, src: res[0]?.url },
+            ]);
          })
          .catch((err) => {
             console.log("err: ", err);
@@ -233,7 +239,12 @@ export default function ProductInfoPage(props) {
                               },
                            ]}
                         >
-                           <Input placeholder="Nhập tên sản phẩm" />
+                           <Input
+                              placeholder="Nhập tên sản phẩm"
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
+                           />
                         </Form.Item>
                      </div>
                      <div>
@@ -268,11 +279,32 @@ export default function ProductInfoPage(props) {
                            ]}
                         >
                            <InputNumber
+                              disabled={
+                                 product.currentPrice !== product.startPrice ||
+                                 product.status === "sold"
+                                    ? true
+                                    : false
+                              }
                               placeholder="Nhập giá khởi điểm"
-                              style={{ width: "100%" }}
+                              style={{ width: "100%", color: "#333" }}
                            />
                         </Form.Item>
                      </div>
+                     {product.currentPrice !== product.startPrice && (
+                        <div>
+                           <div style={{ marginBottom: "8px" }}>
+                              <label className={styles.inputLabel}>
+                                 <Text.caption title="Giá hiện tại" />
+                              </label>
+                           </div>
+                           <Form.Item name="currentPrice">
+                              <InputNumber
+                                 disabled
+                                 style={{ width: "100%", color: "#333" }}
+                              />
+                           </Form.Item>
+                        </div>
+                     )}
                      <div>
                         <div style={{ marginBottom: "8px" }}>
                            <label className={styles.inputLabel}>
@@ -300,8 +332,11 @@ export default function ProductInfoPage(props) {
                            ]}
                         >
                            <InputNumber
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
                               placeholder="Nhập bước giá "
-                              style={{ width: "100%" }}
+                              style={{ width: "100%", color: "#333" }}
                            />
                         </Form.Item>
                      </div>
@@ -328,6 +363,9 @@ export default function ProductInfoPage(props) {
                            ]}
                         >
                            <Cascader
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
                               placeholder="Vui lòng chọn danh mục "
                               options={categoryOptions}
                               onChange={onChangeCategory}
@@ -350,12 +388,25 @@ export default function ProductInfoPage(props) {
                                  required: true,
                                  message: "Thời hạn không được trống!",
                               },
+                              () => ({
+                                 validator(_, value) {
+                                    if (value < moment()) {
+                                       return Promise.reject(
+                                          "Thời hạn không được nhỏ hơn thời gian hiện tại."
+                                       );
+                                    }
+                                    return Promise.resolve();
+                                 },
+                              }),
                            ]}
                         >
                            <DatePicker
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
                               showTime
                               format={dateFormat}
-                              style={{ width: "100%" }}
+                              style={{ width: "100%", color: "#333" }}
                               placeholder="Chọn ngày giời"
                            />
                         </Form.Item>
@@ -379,45 +430,59 @@ export default function ProductInfoPage(props) {
                                     return Promise.resolve();
                                  },
                               }),
-                           ]}
-                        >
-                           <InputNumber
-                              placeholder="Nhập giá mua ngay "
-                              style={{ width: "100%" }}
-                           />
-                        </Form.Item>
-                        <Form.Item
-                           name="des"
-                           rules={[
-                              () => ({
+                              ({ getFieldValue }) => ({
                                  validator(_, value) {
-                                    if (value < 0) {
+                                    if (
+                                       !value ||
+                                       getFieldValue("price") >= value
+                                    ) {
                                        return Promise.reject(
-                                          "Giá mua ngay không hợp lệ."
+                                          new Error(
+                                             "Giá mua ngay không được ít hơn giá khởi điểm"
+                                          )
                                        );
+                                    } else if (
+                                       value <= getFieldValue("currentPrice")
+                                    ) {
+                                       return Promise.reject(
+                                          new Error(
+                                             "Giá mua ngay không được ít hơn giá hiện tại"
+                                          )
+                                       );
+                                    } else {
+                                       return Promise.resolve();
                                     }
-                                    return Promise.resolve();
                                  },
                               }),
                            ]}
                         >
-                           <Editor
-                              toolbarClassName={styles.toolbar}
-                              wrapperClassName="wrapperClassName"
-                              editorClassName={styles.editor}
-                              onContentStateChange={onContentStateChange}
+                           <InputNumber
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
+                              placeholder="Nhập giá mua ngay "
+                              style={{ width: "100%", color: "#333" }}
                            />
                         </Form.Item>
                         <div className={styles.toggle}>
                            <Text.caption title="Cho phép người chưa có đánh giá tham gia đấu giá" />
                            <Switch
-                              defaultChecked
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
+                              defaultChecked={isAllUser}
                               onClick={() => setIsAllUser(!isAllUser)}
                            />
                         </div>
                         <div className={styles.toggle}>
                            <Text.caption title="Tự động gia hạn 10 phút trước khi kết thúc đấu giá" />
-                           <Switch onClick={() => setAutoRenew(!autoRenew)} />
+                           <Switch
+                              disabled={
+                                 product.status === "sold" ? true : false
+                              }
+                              defaultChecked={autoRenew}
+                              onClick={() => setAutoRenew(!autoRenew)}
+                           />
                         </div>
                      </div>
                   </Form>
@@ -430,6 +495,9 @@ export default function ProductInfoPage(props) {
                         </label>
                      </div>
                      <Upload
+                        disabled={product.status === "sold" ? true : false}
+                        onRemove={handleRemove}
+                        className={styles.uploadAction}
                         action={handleUpload}
                         listType="picture-card"
                         fileList={fileList}
@@ -438,27 +506,52 @@ export default function ProductInfoPage(props) {
                      >
                         {fileList.length < 5 && "+ Upload"}
                      </Upload>
+                     {errorImages && (
+                        <span className={styles.errorMess}>
+                           Sản phẩm cần ít nhất 3 tấm ảnh!
+                        </span>
+                     )}
                   </div>
-                  <div>
-                     <div style={{ marginBottom: "8px" }}>
-                        <label className={styles.inputLabel}>
-                           <Text.caption title="Mô tả sản phẩm" />
-                        </label>
+                  {product.status === "sold" ? (
+                     <div>
+                        <div style={{ marginBottom: "8px" }}>
+                           <label className={styles.inputLabel}>
+                              <Text.caption title="Mô tả sản phẩm" />
+                           </label>
+                        </div>
+                        {ReactHtmlParser(product.description)}
                      </div>
-                     <div className={styles.textEditor}>
-                        <Editor
-                           toolbarClassName={styles.toolbar}
-                           wrapperClassName="wrapperClassName"
-                           editorClassName={styles.editor}
-                           onContentStateChange={onContentStateChange}
-                        />
+                  ) : (
+                     <div>
+                        <div style={{ marginBottom: "8px" }}>
+                           <label className={styles.inputLabel}>
+                              <Text.caption title="Mô tả sản phẩm" />
+                           </label>
+                        </div>
+                        <div className={styles.textEditor}>
+                           <Editor
+                              editorState={editorState}
+                              toolbarClassName={styles.toolbar}
+                              wrapperClassName="wrapperClassName"
+                              editorClassName={styles.editor}
+                              onEditorStateChange={onEditorStateChange}
+                           />
+                           {errorDes && (
+                              <span className={styles.errorMess}>
+                                 Mô tả sản phẩm trống!
+                              </span>
+                           )}
+                        </div>
+                        <div className={styles.submit}>
+                           <button
+                              className={styles.btn}
+                              onClick={handleSubmit}
+                           >
+                              <Text.bodyHighlight title="Cập nhật" />
+                           </button>
+                        </div>
                      </div>
-                     <div className={styles.submit}>
-                        <button className={styles.btn} onClick={handleSubmit}>
-                           <Text.bodyHighlight title="Cập nhật" />
-                        </button>
-                     </div>
-                  </div>
+                  )}
                </div>
             </div>
          )}
