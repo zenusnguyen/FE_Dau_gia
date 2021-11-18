@@ -15,7 +15,12 @@ import {
 import Text from "../../components/Text";
 import SlideProduct from "../../components/SlideProduct";
 import { HeartOutlined } from "@ant-design/icons";
-import { get, getAllHistory, getTheSame } from "../../services/productApi";
+import {
+  get,
+  getAllHistory,
+  getTheSame,
+  updateProduct,
+} from "../../services/productApi";
 import { getById } from "../../services/categoryApi";
 import { getByBidder as getWatchByBidder } from "../../services/wathApi";
 import { getById as getUserById } from "../../services/userApi";
@@ -231,6 +236,8 @@ export default function ItemDetailPage({ data }) {
   };
 
   const handleAuctionClick = async () => {
+    await updateProduct(product?.id, { currentBidderId: user.id });
+
     const data = {
       time: Date.now(),
       price: product?.currentPrice + product?.priceStep,
@@ -251,7 +258,6 @@ export default function ItemDetailPage({ data }) {
       );
 
       await getUserById(product?.ownerId).then(async (res) => {
-        console.log("res: ", res);
         await sendSellerNotification({
           product,
           seller: res?.email,
@@ -306,6 +312,7 @@ export default function ItemDetailPage({ data }) {
       });
   };
   const handleBuyClick = async () => {
+    await updateProduct(product?.id, { currentBidderId: user.id });
     const data = {
       time: Date.now(),
       price: product?.maxPrice,
