@@ -25,7 +25,10 @@ export default function InfoAccountPage(props) {
   useEffect(() => {
     const fetchData = async () => {
       const licence = await getByBidder(user.id);
-      if (licence) setIsWaitingLicence(true);
+      console.log("licence: ", licence);
+      if (licence?.length > 0) {
+        setIsWaitingLicence(true);
+      }
       formInfo.setFieldsValue({
         email: user?.email,
         username: user?.username || user?.username,
@@ -51,8 +54,11 @@ export default function InfoAccountPage(props) {
       bidderId: user.id,
       time: moment(),
       status: "waiting",
+      userName: user.username,
+      email: user.email,
     }).then(() => {
       setIsModalLicence(false);
+      setIsWaitingLicence(true);
       message.success(
         "Xin phép bán hàng thành công chờ người quản lý duyệt.",
         10

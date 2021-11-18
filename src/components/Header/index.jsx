@@ -14,13 +14,12 @@ import { isLogin } from "../../utilities/isLogin";
 import { getAll as getAllCategory } from "../../services/categoryApi";
 
 export default function Header(props) {
+  const history = useHistory();
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
-  const history = useHistory();
-  console.log("user: ", user);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +70,12 @@ export default function Header(props) {
         </Link>
       </Menu.Item>
       <Menu.Item>
-        <a onClick={() => dispatch(logout())}>
+        <a
+          onClick={() => {
+            dispatch(logout());
+            history.replace("/");
+          }}
+        >
           <Text.caption title="Đăng xuất" />
         </a>
       </Menu.Item>
@@ -138,7 +142,7 @@ export default function Header(props) {
             }}
           >
             <ShoppingOutlined style={{ fontSize: "27px" }} />
-            <Text.caption title="0 Sản phẩm" />
+            <Text.caption title="Đang đấu giá" />
           </Button>
         </div>
       )}

@@ -18,7 +18,7 @@ export const getByBidder = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/licensings?bidderId=${bidderId}?status=waiting`,
+         url: `${BACKEND_DOMAIN}/licensings?bidderId=${bidderId}&status=waiting`,
       })
          .then((res) => {
             resolve(res?.data);
