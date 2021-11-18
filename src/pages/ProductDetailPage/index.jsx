@@ -9,6 +9,7 @@ import {
    Tag,
    Collapse,
    Button,
+   Modal,
    message,
 } from "antd";
 import Text from "../../components/Text";
@@ -69,9 +70,13 @@ export default function ItemDetailPage({ data }) {
    const [isLike, setIsLike] = useState(false);
    const [currentSeller, setCurrentSeller] = useState({});
    const [isReload, setIsReload] = useState(false);
-
    const [currentBidder, setCurrentBidder] = useState({});
    const [productsTheSame, setProductsTheSame] = useState([]);
+   const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
+   const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
+   const [isModalAutoAuctionVisible, setIsModalAutoAuctionVisible] =
+      useState(false);
+
    socket.on("priceChange", async ({ data }) => {
       if (data?.productId == product?.id) {
          const productRes = await get(productId);
@@ -106,6 +111,7 @@ export default function ItemDetailPage({ data }) {
 
    useEffect(() => {
       setIsLoading(true);
+
       const fetchData = async () => {
          const productRes = await get(productId);
          setProduct(productRes);
@@ -209,6 +215,21 @@ export default function ItemDetailPage({ data }) {
       } else {
          history.push("/login");
       }
+   };
+
+   const onOkAuction = () => {
+      handleAuctionClick();
+      setIsModalAuctionVisible(false);
+   };
+
+   const onOkBuy = () => {
+      handleBuyClick();
+      setIsModalBuyVisible(false);
+   };
+
+   const onOkAuto = () => {
+      handleAutoAuctionClick();
+      setIsModalAutoAuctionVisible(false);
    };
 
    const handleAuctionClick = async () => {
@@ -491,7 +512,7 @@ export default function ItemDetailPage({ data }) {
                                          product.currentPrice === 0 ||
                                          product.buyNow == product.currentPrice
                                  }
-                                 onClick={handleAuctionClick}
+                                 onClick={() => setIsModalAuctionVisible(true)}
                               >
                                  <Text.bodyHighlight
                                     title={`Đấu giá - ${(product?.maxPrice ==
@@ -520,7 +541,7 @@ export default function ItemDetailPage({ data }) {
                                          product.currentPrice === 0 ||
                                          product.buyNow == product.currentPrice
                                  }
-                                 onClick={handleBuyClick}
+                                 onClick={() => setIsModalBuyVisible(true)}
                               >
                                  <Text.bodyHighlight
                                     title={`Mua ngay - ${product.maxPrice
@@ -544,7 +565,7 @@ export default function ItemDetailPage({ data }) {
                                          product.currentPrice === 0 ||
                                          product.buyNow == product.currentPrice
                                  }
-                                 onClick={handleAutoAuctionClick}
+                                 onClick={setIsModalAutoAuctionVisible(true)}
                               >
                                  <Text.bodyHighlight title="Đấu giá tự động" />
                               </Button>
@@ -601,6 +622,54 @@ export default function ItemDetailPage({ data }) {
                </div>
             </div>
          )}
+
+         <Modal
+            title={<Text.bodyHighlight title="Xác nhận mua hàng" />}
+            visible={isModalBuyVisible}
+            onOk={() => onOkBuy()}
+            onCancel={() => setIsModalBuyVisible(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            {product.maxPrice && (
+               <Text.caption
+                  title={`Bạn sẽ mua mặt hàng này với giá ${product.maxPrice
+                     .toString()
+                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ?`}
+               />
+            )}
+         </Modal>
+         <Modal
+            title={<Text.bodyHighlight title="Xác nhận ra giá" />}
+            visible={isModalAuctionVisible}
+            onOk={() => onOkAuction()}
+            onCancel={() => setIsModalAuctionVisible(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.caption
+               title={`Bạn sẽ ra giá ${(
+                  product.currentPrice + product.priceStep
+               )
+                  .toString()
+                  .replace(
+                     /(\d)(?=(\d{3})+(?!\d))/g,
+                     "$1."
+                  )}đ cho mặt hàng này?`}
+            />
+         </Modal>
+         <Modal
+            title={<Text.bodyHighlight title="Xác nhận tự động ra giá" />}
+            visible={isModalAutoAuctionVisible}
+            onOk={() => onOkAuto()}
+            onCancel={() => setIsModalAutoAuctionVisible(false)}
+            okText={<Text.caption title="Đồng ý" />}
+            cancelText={<Text.caption title="Hủy" />}
+         >
+            <Text.caption
+               title={`Bạn muốn bật tự động ra giá cho sản phẩm này?`}
+            />
+         </Modal>
       </div>
    );
 }
