@@ -284,16 +284,18 @@ export default function ProductItem(props) {
                                        title={currentBidder.username}
                                     />
                                  )}
-                                 <p className={styles.percent}>
-                                    <Text.caption
-                                       title={`${
-                                          currentBidder.score
-                                             ? currentBidder.score
-                                             : 0
-                                       }%`}
-                                       style={{ color: "#fff" }}
-                                    />
-                                 </p>
+                                 {currentBidder.score >= 0 ? (
+                                    <p className={styles.percent}>
+                                       <Text.caption
+                                          title={`${
+                                             currentBidder.score
+                                                ? currentBidder.score
+                                                : 0
+                                          }%`}
+                                          style={{ color: "#fff" }}
+                                       />
+                                    </p>
+                                 ) : null}
                               </div>
                               <div className={styles.view}>
                                  <Text.bodyHighlight

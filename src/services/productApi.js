@@ -218,7 +218,7 @@ export const getAllSellSold = (ownerId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=expired&ownerId=${ownerId}`,
+         url: `${BACKEND_DOMAIN}/items?status=sold&ownerId=${ownerId}`,
       })
          .then((res) => {
             resolve(res?.data);

@@ -23,15 +23,21 @@ export default function SalePage() {
       setIsLoading(true);
       const fetchData = async () => {
          if (currentTab === "a") {
-            Promise.all([getAllSellProcessing(user?.id)]).then((values) => {
-               if (Array.isArray(values[0])) setProducts(values[0]);
-               else setProducts([values[0]]);
+            getAllSellProcessing(user?.id).then((values) => {
+               if (Array.isArray(values)) setProducts(values);
+               else setProducts([values]);
+               setIsLoading(false);
+            });
+         } else if (currentTab === "b") {
+            getAllSellExpired(user?.id).then((values) => {
+               if (Array.isArray(values)) setProducts(values);
+               else setProducts([values]);
                setIsLoading(false);
             });
          } else {
-            getAllSellExpired(user?.id).then((values) => {
-               if (Array.isArray(values[0])) setProducts(values[0]);
-               else setProducts([values[0]]);
+            getAllSellSold(user?.id).then((values) => {
+               if (Array.isArray(values)) setProducts(values);
+               else setProducts([values]);
                setIsLoading(false);
             });
          }
@@ -57,6 +63,9 @@ export default function SalePage() {
                </Radio.Button>
                <Radio.Button value="b">
                   <Text.caption title="Hết hạn" />
+               </Radio.Button>
+               <Radio.Button value="c">
+                  <Text.caption title="Đã bán" />
                </Radio.Button>
             </Radio.Group>
          </div>
