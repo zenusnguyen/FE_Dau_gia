@@ -452,7 +452,7 @@ export default function ItemDetailPage({ data }) {
                     />
                     {currentBidder.score && (
                       <Tag className={styles.tag} color="#86b817">
-                        <Text.caption title={`${currentBidder.score * 10}%`} />
+                        <Text.caption title={`${currentBidder.score}%`} />
                       </Tag>
                     )}
                   </div>
