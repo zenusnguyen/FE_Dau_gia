@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { BACKEND_DOMAIN } from "../../constants";
 import moment from "moment";
 import { getById as getUserById } from "../../services/userApi";
+import { getAllHistory } from "../../services/productApi";
 import TimeCount from "../TimeCount";
 
 export default function SellProductItem(props) {
@@ -15,11 +16,14 @@ export default function SellProductItem(props) {
    const [isNew, setIsNew] = useState(true);
    const [currentBidder, setCurrentBidder] = useState({});
    const [isEndTime, setIsEndTime] = useState(false);
+   const [countAuction, setCountAuction] = useState(0);
 
    useEffect(() => {
       const fetchData = async () => {
          if (product.currentBidderId) {
             const currentBidder = await getUserById(product.currentBidderId);
+            const history = await getAllHistory(product.id);
+            setCountAuction(history.length);
             const nameSplit = currentBidder.username.split(" ");
             currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
             setCurrentBidder({ ...currentBidder });
@@ -130,7 +134,9 @@ export default function SellProductItem(props) {
                         {currentBidder && (
                            <div className={styles.view}>
                               <Text.bodyHighlight
-                                 title={`${product.view} Lượt`}
+                                 title={`${
+                                    countAuction ? countAuction : 0
+                                 } Lượt`}
                               />
                            </div>
                         )}

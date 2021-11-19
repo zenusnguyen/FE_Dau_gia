@@ -27,6 +27,7 @@ import { add as addValuate } from "../../services/evaluateApi";
 import { getById as getUserById } from "../../services/userApi";
 import { getBySender } from "../../services/evaluateApi";
 import { createAuctionTransaction } from "../../services/priceHistoryApi";
+import { getAllHistory } from "../../services/productApi";
 import { socket } from "../../services/socket";
 
 import moment from "moment";
@@ -47,6 +48,7 @@ export default function ProductItem(props) {
    const [isLoading, setIsLoading] = useState(true);
    const [isEvaluate, setIsEvaluate] = useState(product.isEvaluate);
    const [isEndTime, setIsEndTime] = useState(false);
+   const [countAuction, setCountAuction] = useState(0);
 
    //   socket.on("priceChange", async ({ data }) => {
    //     if (data?.productId == product?.id) {
@@ -61,6 +63,8 @@ export default function ProductItem(props) {
       const fetchData = async () => {
          if (product.currentBidderId) {
             const currentBidder = await getUserById(product.currentBidderId);
+            const history = await getAllHistory(product.id);
+            setCountAuction(history.length);
             const nameSplit = currentBidder.username.split(" ");
             currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
             setCurrentBidder({ ...currentBidder });
@@ -293,7 +297,9 @@ export default function ProductItem(props) {
                               </div>
                               <div className={styles.view}>
                                  <Text.bodyHighlight
-                                    title={`${product.view} Lượt`}
+                                    title={`${
+                                       countAuction ? countAuction : 0
+                                    } Lượt`}
                                  />
                               </div>
                            </div>

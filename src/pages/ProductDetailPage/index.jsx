@@ -117,8 +117,13 @@ export default function ItemDetailPage({ data }) {
    };
 
    useEffect(() => {
-      setIsLoading(true);
+      get(productId).then((product) => {
+         updateProduct(productId, { view: product.view + 1 });
+      });
+   }, [productId]);
 
+   useEffect(() => {
+      setIsLoading(true);
       const fetchData = async () => {
          const productRes = await get(productId);
          setProduct(productRes);
@@ -162,33 +167,6 @@ export default function ItemDetailPage({ data }) {
             });
 
             const currentCategory = await getById(productRes.categoryID);
-
-            const currentTime = moment();
-            const endTime = moment(productRes.postingDate).add(5, "day");
-            const minutes = endTime.diff(currentTime, "minutes");
-            const hours = endTime.diff(currentTime, "hours");
-            const day = endTime.diff(currentTime, "days");
-            if (day > 0) {
-               if (day < 3) {
-                  if (day === 0) {
-                     if (hours === 0) {
-                        setTimeRemaining(`${minutes} minutes left`);
-                     } else {
-                        setTimeRemaining(`${hours} hours left`);
-                     }
-                  } else {
-                     setTimeRemaining(`${day} days left`);
-                  }
-               } else {
-                  setTimeRemaining(`${hours} hours left`);
-               }
-            } else {
-               if (hours === 0) {
-                  setTimeRemaining(`${minutes} minutes left`);
-               } else {
-                  setTimeRemaining(`${hours} hours left`);
-               }
-            }
 
             const currentSub = currentCategory.subCategory.find(
                (subCategory) => subCategory.id === productRes.subCategoryId

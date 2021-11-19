@@ -29,7 +29,7 @@ export default function Item(props) {
                   .toString()
                   .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
             />
-            <Text.caption title={`[${product.view} lượt]`} />
+            <Text.caption title={`[${product.view} lượt xem]`} />
          </div>
          <div className={styles.time}>
             <div className={styles.timeItem}>
