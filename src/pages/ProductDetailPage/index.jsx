@@ -25,7 +25,11 @@ import { getById } from "../../services/categoryApi";
 import { getByBidder as getWatchByBidder } from "../../services/wathApi";
 import { getById as getUserById } from "../../services/userApi";
 import { add as addWatch, del as delWatch } from "../../services/wathApi";
-import { getLastBidder, getAllByProduct } from "../../services/priceHistoryApi";
+import {
+  getLastBidder,
+  getAllByProduct,
+  deletePriceHistory,
+} from "../../services/priceHistoryApi";
 import moment from "moment";
 import { BACKEND_DOMAIN } from "../../constants";
 import { Table } from "antd";
@@ -40,6 +44,7 @@ import {
   sendBidderNotification,
   sendSellerNotification,
   sendAuctionSuccessNotification,
+  sendRejectNotification,
 } from "../../services/email";
 import TimeCount from "../../components/TimeCount";
 
@@ -87,11 +92,44 @@ export default function ItemDetailPage({ data }) {
     }
   });
   const handleReject = async (data) => {
+    const black =
+      product?.blackList !== undefined
+        ? [...product?.blackList, data?.buyerId]
+        : [data?.buyerId];
     await updateProduct(product?.id, {
-      blackList: [...product?.blackList, data?.buyerId],
+      blackList: black,
     })
-      .then((res) => {
+      .then(async (res) => {
+        const bidderHistory = histories.filter(
+          (el) => el?.buyerId === data?.buyerId
+        );
+
+        // delete history
+        Promise.all(
+          bidderHistory?.map(async (el) => {
+            await deletePriceHistory(el?.id);
+          })
+        );
+        //update product
+
+        const newHistory = histories.filter(
+          (el) => el?.buyerId !== data?.buyerId
+        );
+
+        await updateProduct(product?.id, {
+          currentBidderId: newHistory[0]?.buyerId || null,
+          currentPrice:
+            newHistory[0]?.price || product?.currentPrice - product?.priceStep,
+        });
+        // sendEmailReject
+
+        const bidder = await getUserById(data?.buyerId);
+        await sendRejectNotification({
+          email: bidder?.email,
+          product: product,
+        });
         message.success("Thao tác thành công");
+        setIsReload(!isReload);
       })
       .catch((err) => {
         message.error("Thao tác thất bại");
@@ -171,6 +209,7 @@ export default function ItemDetailPage({ data }) {
           setHistories(
             values[3].map((auction, i) => {
               return {
+                id: auction.id,
                 buyerId: auction?.buyer,
                 key: i.toString(),
                 time: moment(auction.time).format("DD-MM-YYYY HH:mm"),

@@ -30,6 +30,7 @@ export const sendWinnerBidderMail = (data) => {
 };
 
 export const sendRejectNotification = (data) => {
+  console.log("data: ", data);
   return new Promise((resolve, reject) => {
     axios({
       method: "POST",
@@ -112,7 +113,6 @@ export const sendPreBidderNotification = (data) => {
       .catch((err) => reject(err));
   });
 };
-
 
 export const sendChangeDescriptionNotification = (data) => {
   return new Promise((resolve, reject) => {
