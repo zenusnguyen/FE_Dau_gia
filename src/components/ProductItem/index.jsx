@@ -180,12 +180,19 @@ export default function ProductItem(props) {
          ) : (
             <div>
                <Badge.Ribbon
-                  text="Sản phẩm mới"
+                  text={
+                     user.id === product.currentBidderId
+                        ? "Ra giá cao nhất"
+                        : "Sản phẩm mới"
+                  }
                   color="red"
                   placement="start"
                   style={{
                      fontFamily: "Work Sans, sans-serif",
-                     display: isNew ? "block" : "none",
+                     display:
+                        isNew || user.id === product.currentBidderId
+                           ? "block"
+                           : "none",
                   }}
                >
                   <div className={styles.productItem}>
@@ -311,7 +318,9 @@ export default function ProductItem(props) {
                         {product.status === "processing" ? (
                            <div>
                               <Button
-                                 disabled={isEndTime}
+                                 disabled={
+                                    isEndTime || product.ownerId === user.id
+                                 }
                                  onClick={() => setIsModalAuctionVisible(true)}
                                  type="primary"
                                  className={`${styles.action} ${styles.danger}`}
@@ -336,7 +345,9 @@ export default function ProductItem(props) {
                               </Button>
                               {product.maxPrice !== 0 && (
                                  <Button
-                                    disabled={isEndTime}
+                                    disabled={
+                                       isEndTime || product.ownerId === user.id
+                                    }
                                     onClick={() => setIsModalBuyVisible(true)}
                                     type="primary"
                                     className={`${styles.action} ${styles.primary}`}
