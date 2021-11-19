@@ -6,7 +6,7 @@ import { login as reduxLogin } from "../../redux/actions/userActions";
 import {
   getById,
   updateInfo,
-  updatePassword,
+  resetPassword,
   add as addUser,
 } from "../../services/userApi";
 import { add as addLicensing, getByBidder } from "../../services/licenceApi";
@@ -29,12 +29,15 @@ export default function UserInfoPage(props) {
   const [isSeller, setIsSeller] = useState(true);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
     formInfo.resetFields();
     const fetchData = async () => {
       if (!isNew) {
         const user = await getById(userId);
+        console.log("user: ", user);
+        setCurrentUser(user);
         formInfo.setFieldsValue({
           email: user?.email,
           username: user?.username,
@@ -46,12 +49,14 @@ export default function UserInfoPage(props) {
     fetchData();
   }, [isNew, userId, formInfo]);
 
-  const onOkInfo = () => {
+  const onOkInfo = async () => {
     const currentInfo = formInfo.getFieldsValue();
     if (isNew) {
       //Handle add user
     } else {
-      if (!currentInfo.password) delete currentInfo.password; //Handle update user
+      //Handle update user
+      await resetPassword(userId, { newPassword: currentInfo?.password });
+      message.success("Cập nhật thành công");
     }
     setIsModalInfo(false);
   };

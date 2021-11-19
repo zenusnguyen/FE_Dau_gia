@@ -8,6 +8,7 @@ import {
   getAll as getAllUser,
   search,
   updateInfo,
+  deleteUser,
 } from "../../services/userApi";
 import { getAll as getAllLicence } from "../../services/licenceApi";
 import moment from "moment";
@@ -123,6 +124,11 @@ export default function UserManagePage(props) {
         console.log("err: ", err);
       });
   };
+  const handleDeleteUser = async (userId) => {
+    console.log("userId: ", userId);
+
+    await deleteUser(userId);
+  };
 
   const columns = [
     {
@@ -155,9 +161,17 @@ export default function UserManagePage(props) {
       title: "Hành động",
       dataIndex: "actions",
       render: (value, row, index) => (
-        <button className={styles.btn} onClick={() => onViewDetail(row)}>
-          <Text.underline title="Chỉnh sữa" color="primary" />
-        </button>
+        <div>
+          <button className={styles.btn} onClick={() => onViewDetail(row)}>
+            <Text.underline title="Chỉnh sữa" color="primary" />
+          </button>
+          <button
+            className={styles.btn}
+            onClick={() => handleDeleteUser(row?.userId)}
+          >
+            <Text.underline title="Xoá" color="red" />
+          </button>
+        </div>
       ),
     },
   ];

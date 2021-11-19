@@ -19,7 +19,7 @@ export default function SearchPage() {
       setBreadcrumb(["Tiềm kiếm", searchWord]);
       console.log("searchWord: ", searchWord);
       await search(searchWord).then((res) => {
-         console.log('res: ', res);
+        console.log("res: ", res);
         setItems(res);
       });
     };
@@ -31,6 +31,20 @@ export default function SearchPage() {
     history.push(`/search/${searchWord}/page/${pageNumber}`);
   };
 
+  const handlerTimeSort = () => {
+    setItems(
+      items.sort(function (a, b) {
+        return a.createdAt - b.createdAt;
+      })
+    );
+  };
+  const handlerPriceSort = () => {
+    setItems(
+      items.sort((a, b) => {
+        return a.currentPrice - b.currentPrice;
+      })
+    );
+  };
   return (
     <div className={styles.searchPage}>
       <div className={styles.searchPageContainer}>
@@ -48,6 +62,9 @@ export default function SearchPage() {
           <div className={styles.contentTop}>
             <div className={styles.filter}>
               <Button
+                onClick={() => {
+                  handlerTimeSort();
+                }}
                 style={{
                   borderTopRightRadius: "0",
                   borderBottomRightRadius: "0",
@@ -56,6 +73,9 @@ export default function SearchPage() {
                 <Text.caption title="Thời gian kết thúc giảm dần" />
               </Button>
               <Button
+                onClick={() => {
+                  handlerPriceSort();
+                }}
                 style={{
                   borderTopLeftRadius: "0",
                   borderBottomLeftRadius: "0",

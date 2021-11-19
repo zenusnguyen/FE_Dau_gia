@@ -44,7 +44,7 @@ export const getAllByBidder = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/price-histories?bidderId=${bidderId}`,
+         url: `${BACKEND_DOMAIN}/price-histories?buyer=${bidderId}`,
       })
          .then((res) => {
             resolve(res?.data[0]);

@@ -49,7 +49,6 @@ export default function AuctionPage() {
          } else {
             Promise.all([getAllAuctionSold(user?.id), getAllBySender(user?.id)])
                .then((values) => {
-                  console.log(values);
                   const allEvaluate = values[1].map(
                      (evaluate) => evaluate.productId
                   );
@@ -70,6 +69,7 @@ export default function AuctionPage() {
 
    const onChangeTab = (e) => {
       //setIsLoading(true);
+      console.log("e.target.value: ", e.target.value);
       setCurrentTab(e.target.value);
    };
 
