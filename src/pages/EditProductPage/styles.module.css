@@ -1,0 +1,82 @@
+.addProductPage {
+   padding: 7px 30px;
+   width: 100%;
+}
+
+.addProductPage .content {
+   margin-top: 20px;
+   display: flex;
+}
+
+.addProductPage .left {
+   width: 420px;
+}
+
+.addProductPage .right {
+   margin-left: 30px;
+   flex: 1;
+}
+
+.addProductPage .toggle {
+   display: flex;
+   justify-content: space-between;
+   margin-bottom: 20px;
+}
+
+.addProductPage .upload {
+   margin-bottom: 20px;
+}
+
+.addProductPage .textEditor {
+   border: 1px solid #d9d9d9;
+   border-radius: 2px;
+}
+
+.addProductPage .editor {
+   border: 1px solid #f1f1f1;
+   height: 225px;
+   padding: 0px 20px;
+}
+
+.addProductPage .toolbar a {
+   color: #333 !important;
+}
+
+.addProductPage .submit {
+   margin-top: 30px;
+   text-align: right;
+}
+
+.addProductPage .btn {
+   cursor: pointer;
+   width: 240px;
+   height: 40px;
+   color: #fff;
+   background: #0064d2;
+   border: 1px solid #0064d2;
+   box-sizing: border-box;
+   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+   border-radius: 2px;
+}
+
+.inputLabel .cascader {
+   color: #333 !important;
+   background: transparent !important;
+   width: 420px !important;
+}
+
+.addProductPage .cascader .ant-cascader-picker-label {
+   display: inline-block !important;
+}
+
+.addProductPage .errorMess {
+   color: #ff4d4f;
+   font-family: "Work Sans", sans-serif;
+   font-style: normal;
+   font-size: 14px;
+   line-height: 22px;
+}
+
+.uploadAction .ant-upload-list-item-error {
+   border: none !important;
+}
