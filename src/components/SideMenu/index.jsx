@@ -22,6 +22,7 @@ export default function SideMenu({
 }) {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { user } = useSelector((state) => state.user);
   const onChangeKey = (e) => {
     if (e.key === "1") {
       updateBreadcrumb(["Thông tin tài khoản"]);
@@ -57,6 +58,7 @@ export default function SideMenu({
         <Text.caption title="Điểm đánh giá" />
       </Menu.Item>
       <SubMenu
+        hidden={user?.user?.appRole == "bidder"}
         key="4"
         icon={<ShopOutlined />}
         title={<Text.caption title="Quản lý sản phẩm" />}

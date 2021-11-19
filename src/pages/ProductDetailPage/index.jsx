@@ -43,24 +43,6 @@ import {
 } from "../../services/email";
 import TimeCount from "../../components/TimeCount";
 
-const columnsTable = [
-  {
-    title: "Thời gian",
-    dataIndex: "time",
-    key: "time",
-  },
-  {
-    title: "Người mua",
-    dataIndex: "bidder",
-    key: "bidder",
-  },
-  {
-    title: "Giá",
-    dataIndex: "price",
-    key: "price",
-  },
-];
-
 const { Panel } = Collapse;
 
 export default function ItemDetailPage({ data }) {
@@ -104,6 +86,51 @@ export default function ItemDetailPage({ data }) {
       // );
     }
   });
+  const handleReject = async (data) => {
+    await updateProduct(product?.id, {
+      blackList: [...product?.blackList, data?.buyerId],
+    })
+      .then((res) => {
+        message.success("Thao tác thành công");
+      })
+      .catch((err) => {
+        message.error("Thao tác thất bại");
+      });
+  };
+  const columnsTable = [
+    {
+      title: "Thời gian",
+      dataIndex: "time",
+      key: "time",
+    },
+    {
+      title: "Người mua",
+      dataIndex: "bidder",
+      key: "bidder",
+    },
+    {
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Hành động",
+      dataIndex: "price",
+      key: "price",
+      render: (_, values) => {
+        return (
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+          <a
+            onClick={() => {
+              handleReject(values);
+            }}
+          >
+            Từ chối
+          </a>
+        );
+      },
+    },
+  ];
   const SubImage = ({ src, index }) => {
     return (
       <Image
@@ -472,16 +499,12 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.auction}
                       disabled={
-                        product?.isAllUser === true
-                          ? false
-                          : user?.score < 80 ||
-                            user?.score === undefined ||
-                            user?.id == undefined ||
-                            user?.id === product?.ownerId ||
-                            product?.status !== "processing" ||
-                            product.currentPrice === 0 ||
-                            product.buyNow == product.currentPrice ||
-                            isEndTime
+                        user?.id == undefined ||
+                        user?.id === product?.ownerId ||
+                        product?.status !== "processing" ||
+                        product.currentPrice === 0 ||
+                        product.buyNow == product.currentPrice ||
+                        isEndTime
                       }
                       onClick={() => setIsModalAuctionVisible(true)}
                     >
@@ -501,16 +524,12 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.buyNow}
                       disabled={
-                        product?.isAllUser === true
-                          ? false
-                          : user?.score < 80 ||
-                            user?.score === undefined ||
-                            user?.id == undefined ||
-                            user?.id === product?.ownerId ||
-                            product?.status !== "processing" ||
-                            product.currentPrice === 0 ||
-                            product.buyNow == product.currentPrice ||
-                            isEndTime
+                        user?.id == undefined ||
+                        user?.id === product?.ownerId ||
+                        product?.status !== "processing" ||
+                        product.currentPrice === 0 ||
+                        product.buyNow == product.currentPrice ||
+                        isEndTime
                       }
                       onClick={() => setIsModalBuyVisible(true)}
                     >
@@ -526,16 +545,12 @@ export default function ItemDetailPage({ data }) {
                     <Button
                       className={styles.autoAuction}
                       disabled={
-                        product?.isAllUser === true
-                          ? false
-                          : user?.score < 80 ||
-                            user?.score === undefined ||
-                            user?.id == undefined ||
-                            user?.id === product?.ownerId ||
-                            product?.status !== "processing" ||
-                            product.currentPrice === 0 ||
-                            product.buyNow == product.currentPrice ||
-                            isEndTime
+                        user?.id == undefined ||
+                        user?.id === product?.ownerId ||
+                        product?.status !== "processing" ||
+                        product.currentPrice === 0 ||
+                        product.buyNow == product.currentPrice ||
+                        isEndTime
                       }
                       onClick={() => {
                         setIsModalAutoAuctionVisible(true);
@@ -550,16 +565,12 @@ export default function ItemDetailPage({ data }) {
                     </Button>
                     <Button
                       disabled={
-                        product?.isAllUser === true
-                          ? false
-                          : user?.score < 80 ||
-                            user?.score === undefined ||
-                            user?.id == undefined ||
-                            user?.id === product?.ownerId ||
-                            product?.status !== "processing" ||
-                            product.currentPrice === 0 ||
-                            product.buyNow == product.currentPrice ||
-                            isEndTime
+                        user?.id == undefined ||
+                        user?.id === product?.ownerId ||
+                        product?.status !== "processing" ||
+                        product.currentPrice === 0 ||
+                        product.buyNow == product.currentPrice ||
+                        isEndTime
                       }
                       onClick={() => onLikeClick()}
                       icon={<HeartOutlined />}
