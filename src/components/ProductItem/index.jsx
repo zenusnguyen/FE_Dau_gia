@@ -30,6 +30,7 @@ import { createAuctionTransaction } from "../../services/priceHistoryApi";
 import { socket } from "../../services/socket";
 
 import moment from "moment";
+import TimeCount from "../TimeCount";
 
 export default function ProductItem(props) {
    const { TextArea } = Input;
@@ -38,7 +39,6 @@ export default function ProductItem(props) {
    const [form] = Form.useForm();
    const { product, callBackUnLike } = props;
    const [isLike, setIsLike] = useState(product.isLike);
-   const [timeRemaining, setTimeRemaining] = useState("");
    const [isNew, setIsNew] = useState(true);
    const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
    const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
@@ -46,6 +46,7 @@ export default function ProductItem(props) {
    const [currentBidder, setCurrentBidder] = useState({});
    const [isLoading, setIsLoading] = useState(true);
    const [isEvaluate, setIsEvaluate] = useState(product.isEvaluate);
+   const [isEndTime, setIsEndTime] = useState(false);
 
    //   socket.on("priceChange", async ({ data }) => {
    //     if (data?.productId == product?.id) {
@@ -68,36 +69,8 @@ export default function ProductItem(props) {
       };
       fetchData();
       const currentTime = moment();
-      const endTime = moment(product.postingDate).add(5, "day");
-      const minutes = endTime.diff(currentTime, "minutes");
-      const hours = endTime.diff(currentTime, "hours");
-      const day = endTime.diff(currentTime, "days");
-      if (day > 0) {
-         if (day < 3) {
-            if (day === 0) {
-               if (hours === 0) {
-                  setTimeRemaining(`${minutes} minutes left`);
-               } else {
-                  setTimeRemaining(`${hours} hours left`);
-               }
-            } else {
-               setTimeRemaining(`${day} days left`);
-            }
-         } else {
-            setTimeRemaining(`${day}d ${hours - 24 * day}h`);
-         }
-      } else {
-         if (hours === 0) {
-            setTimeRemaining(`${minutes} minutes left`);
-         } else {
-            setTimeRemaining(`${hours} hours left`);
-         }
-      }
-      const minutesAgo = currentTime.diff(
-         moment(product.postingDate),
-         "minutes"
-      );
-      if (minutesAgo >= 30) setIsNew(false);
+      const dayPassed = currentTime.diff(moment(product.postingDate), "days");
+      if (dayPassed > 1) setIsNew(false);
    }, [product, form]);
 
    const onLikeClick = () => {
@@ -213,17 +186,22 @@ export default function ProductItem(props) {
                >
                   <div className={styles.productItem}>
                      <Image
+                        preview={false}
                         width={props?.width || 200}
                         src={`${BACKEND_DOMAIN}${product.images[0]}`}
                      />
                      <div className={styles.info}>
                         <div className={styles.name}>
-                           <Link
-                              to={`/product/${product.id}`}
-                              style={{ color: "#333" }}
-                           >
+                           {isEndTime ? (
                               <Text.h3 title={product.title}></Text.h3>
-                           </Link>
+                           ) : (
+                              <Link
+                                 to={`/product/${product.id}`}
+                                 style={{ color: "#333" }}
+                              >
+                                 <Text.h3 title={product.title}></Text.h3>
+                              </Link>
+                           )}
                         </div>
                         <Divider style={{ margin: "20px 0" }} />
                         <div className={styles.infoCenter}>
@@ -260,10 +238,14 @@ export default function ProductItem(props) {
                               </div>
                               <div>
                                  {product.status === "processing" ? (
-                                    <Text.h3
-                                       title={timeRemaining}
-                                       style={{ color: "red" }}
-                                    />
+                                    <TimeCount
+                                       productEndTime={product.endTime}
+                                       callBackTimeEnd={() =>
+                                          setIsEndTime(true)
+                                       }
+                                    >
+                                       <Text.h3 />
+                                    </TimeCount>
                                  ) : (
                                     <Text.h3 title="Đã kết thúc" />
                                  )}
@@ -298,14 +280,16 @@ export default function ProductItem(props) {
                                        title={currentBidder.username}
                                     />
                                  )}
-                                 {currentBidder.score && (
-                                    <p className={styles.percent}>
-                                       <Text.caption
-                                          title={`${currentBidder.score}%`}
-                                          style={{ color: "#fff" }}
-                                       />
-                                    </p>
-                                 )}
+                                 <p className={styles.percent}>
+                                    <Text.caption
+                                       title={`${
+                                          currentBidder.score
+                                             ? currentBidder.score
+                                             : 0
+                                       }%`}
+                                       style={{ color: "#fff" }}
+                                    />
+                                 </p>
                               </div>
                               <div className={styles.view}>
                                  <Text.bodyHighlight
@@ -319,6 +303,7 @@ export default function ProductItem(props) {
                         {product.status === "processing" ? (
                            <div>
                               <Button
+                                 disabled={isEndTime}
                                  onClick={() => setIsModalAuctionVisible(true)}
                                  type="primary"
                                  className={`${styles.action} ${styles.danger}`}
@@ -326,6 +311,7 @@ export default function ProductItem(props) {
                                     backgroundColor: "#E53238",
                                     borderColor: "#E53238",
                                     height: "40px",
+                                    color: isEndTime ? "#505050" : "#fff",
                                  }}
                               >
                                  <Text.bodyHighlight
@@ -342,6 +328,7 @@ export default function ProductItem(props) {
                               </Button>
                               {product.maxPrice !== 0 && (
                                  <Button
+                                    disabled={isEndTime}
                                     onClick={() => setIsModalBuyVisible(true)}
                                     type="primary"
                                     className={`${styles.action} ${styles.primary}`}
@@ -349,6 +336,7 @@ export default function ProductItem(props) {
                                        height: "40px",
                                        backgroundColor: "#0064D2",
                                        borderColor: "#0064D2",
+                                       color: isEndTime ? "#505050" : "#fff",
                                     }}
                                  >
                                     <Text.bodyHighlight
@@ -362,6 +350,7 @@ export default function ProductItem(props) {
                                  </Button>
                               )}
                               <Button
+                                 disabled={isEndTime}
                                  onClick={onLikeClick}
                                  className={
                                     isLike
