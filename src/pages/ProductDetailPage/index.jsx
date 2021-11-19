@@ -47,7 +47,7 @@ import {
   sendRejectNotification,
 } from "../../services/email";
 import TimeCount from "../../components/TimeCount";
-
+import { getByUser } from "../../services/evaluateApi";
 const { Panel } = Collapse;
 
 export default function ItemDetailPage({ data }) {
@@ -67,9 +67,31 @@ export default function ItemDetailPage({ data }) {
   const [productsTheSame, setProductsTheSame] = useState([]);
   const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
   const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
+  const [isModalReview, setIsModalReview] = useState(false);
   const [isEndTime, setIsEndTime] = useState(false);
   const [isModalAutoAuctionVisible, setIsModalAutoAuctionVisible] =
     useState(false);
+  const [evaluates, setEvaluates] = useState([]);
+  const [currentSelectedRow, setCurrentSelectedRow] = useState({});
+  useEffect(() => {
+    const fetchReview = async () => {
+      await getByUser(currentSelectedRow?.buyerId).then((values) => {
+        console.log("values: ", values);
+        const data = values.map((value, i) => {
+          return {
+            key: i,
+            assessor: value.senderName,
+            time: moment(value.time).format("DD-MM-YYYY HH:mm"),
+            score: value.score > 0 ? "+1" : "-1",
+            review: value.content,
+          };
+        });
+        setEvaluates(data);
+      });
+    };
+    fetchReview();
+  }, [currentSelectedRow]);
+
   socket.on("priceChange", async ({ data }) => {
     console.log("data: ", data);
     if (data !== undefined && data?.productId == product?.id) {
@@ -91,6 +113,28 @@ export default function ItemDetailPage({ data }) {
       // );
     }
   });
+  const columns = [
+    {
+      title: "Thời gian",
+      dataIndex: "time",
+      width: "158px",
+    },
+    {
+      title: "Người đánh giá",
+      dataIndex: "assessor",
+      width: "150px",
+    },
+    {
+      title: "Điểm",
+      dataIndex: "score",
+      width: "60px",
+    },
+    {
+      title: "Nhận xét",
+      dataIndex: "review",
+    },
+  ];
+
   const handleReject = async (data) => {
     const black =
       product?.blackList !== undefined
@@ -156,15 +200,26 @@ export default function ItemDetailPage({ data }) {
       dataIndex: "price",
       key: "price",
       render: (_, values) => {
+        console.log("values: ", values);
         return (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
-          <a
-            onClick={() => {
-              handleReject(values);
-            }}
-          >
-            Từ chối
-          </a>
+          <div className={styles.action}>
+            <a
+              onClick={() => {
+                handleReject(values);
+              }}
+            >
+              Từ chối
+            </a>
+            <a
+              onClick={() => {
+                setCurrentSelectedRow(values);
+                setIsModalReview(true);
+              }}
+            >
+              Xem đánh giá
+            </a>
+          </div>
         );
       },
     },
@@ -687,6 +742,16 @@ export default function ItemDetailPage({ data }) {
         cancelText={<Text.caption title="Hủy" />}
       >
         <Text.caption title={`Bạn muốn bật tự động ra giá cho sản phẩm này?`} />
+      </Modal>
+      <Modal
+        title={<Text.bodyHighlight title="Xác nhận tự động ra giá" />}
+        visible={isModalReview}
+        onOk={() => setIsModalReview(false)}
+        onCancel={() => setIsModalReview(false)}
+        // okText={<Text.caption title="Đồng ý" />}
+        cancelText={<Text.caption title="Hủy" />}
+      >
+        <Table columns={columns} dataSource={evaluates} />
       </Modal>
     </div>
   );

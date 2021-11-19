@@ -102,7 +102,6 @@ export default function LoginPage() {
                   </Button>
                </Form.Item>
             </Form>
-            <a>Tôi đã quên mật khẩu</a>
             <div>Hoặc</div>
             <div className={styles.socialWrapper}>
                <Button

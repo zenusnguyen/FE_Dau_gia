@@ -182,11 +182,7 @@ export default function ProductItem(props) {
           <Skeleton paragraph={{ rows: 6 }} />
         </div>
       ) : (
-        <div
-          onClick={() => {
-            handleOnClick();
-          }}
-        >
+        <div>
           <Badge.Ribbon
             text="Sản phẩm mới"
             color="red"
@@ -307,6 +303,17 @@ export default function ProductItem(props) {
               <div className={styles.actions}>
                 {product.status === "processing" ? (
                   <div>
+                    <Button
+                      onClick={() => {
+                        handleOnClick();
+                      }}
+                      className={styles.action}
+                      style={{
+                        height: "40px",
+                      }}
+                    >
+                      <Text.bodyHighlight title={`Xem sản phẩm`} />
+                    </Button>
                     <Button
                       disabled={isEndTime}
                       onClick={() => setIsModalAuctionVisible(true)}
