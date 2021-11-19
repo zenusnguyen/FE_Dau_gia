@@ -86,7 +86,6 @@ export const sendSellerNotification = (data) => {
 };
 
 export const sendBidderNotification = (data) => {
-  console.log("data: ", data);
   return new Promise((resolve, reject) => {
     axios({
       method: "POST",
@@ -105,6 +104,21 @@ export const sendPreBidderNotification = (data) => {
     axios({
       method: "POST",
       url: `${BACKEND_DOMAIN}/sendPreBidderNotification`,
+      data: data,
+    })
+      .then((res) => {
+        resolve(res?.data);
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+
+export const sendChangeDescriptionNotification = (data) => {
+  return new Promise((resolve, reject) => {
+    axios({
+      method: "POST",
+      url: `${BACKEND_DOMAIN}/sendChangeDescriptionNotification`,
       data: data,
     })
       .then((res) => {

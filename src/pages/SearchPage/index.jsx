@@ -37,7 +37,6 @@ export default function SearchPage() {
         return a.createdAt - b.createdAt;
       })
     );
-    console.log("items: ", items);
   };
   const handlerPriceSort = () => {
     setItems(
@@ -45,7 +44,6 @@ export default function SearchPage() {
         return a.currentPrice - b.currentPrice;
       })
     );
-    console.log("items: ", items);
   };
   return (
     <div className={styles.searchPage}>

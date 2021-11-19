@@ -17,10 +17,12 @@ import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { upLoadImages } from "../../services/uploadImage";
-import { createProduct } from "../../services/productApi";
+import { updateProduct, get } from "../../services/productApi";
 import { useSelector } from "react-redux";
 import { getAll as getAllCategory } from "../../services/categoryApi";
+import ReactHtmlParser from "react-html-parser";
 import { BACKEND_DOMAIN } from "../../constants";
+import { sendChangeDescriptionNotification } from "../../services/email";
 
 export default function EditProductPage(props) {
   const [form] = Form.useForm();
@@ -35,8 +37,14 @@ export default function EditProductPage(props) {
   const [errorImages, setErrorImages] = useState(false);
   const [errorDes, setErrorDes] = useState(false);
   const { product } = props;
-  console.log("product: ", product);
+  const [currentProd, setCurrentProd] = useState(props?.product);
+  const [isReload, setIsReload] = useState(false);
 
+  useEffect(() => {
+    get(product?.id).then((product) => {
+      setCurrentProd(product);
+    });
+  }, [isReload]);
   useEffect(() => {
     const fetchData = async () => {
       const allCategory = await getAllCategory();
@@ -56,35 +64,6 @@ export default function EditProductPage(props) {
     };
     fetchData();
   }, []);
-
-  const onChange = ({ fileList: newFileList }) => {
-    if (fileList.length >= 3) {
-      setErrorImages(false);
-    }
-    setFileList(newFileList);
-  };
-
-  const onChangeCategory = (data) => {
-    console.log("data: ", data);
-  };
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow.document.write(image.outerHTML);
-  };
-
-  // const onContentStateChange = (contentState) => {
-  //    setDescription(contentState?.blocks[0]?.text);
-  // };
 
   const onEditorStateChange = (editorState) => {
     if (
@@ -113,59 +92,34 @@ export default function EditProductPage(props) {
   };
 
   const onFinish = (values) => {
+    console.log("???");
     const data = {
-      ...values,
-      title: values.name,
-      images: images.map((image) => image.url),
-      autoRenew,
-      description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
-      ownerId: user?.user?.id,
-      status: "processing",
-      startPrice: values?.price,
-      currentPrice: values?.price,
-      isAllUser,
-      view: 0,
-      categoryID: values.categoryId[0],
-      subCategoryId: values.categoryId[1],
-      maxPrice: values?.maxPrice || 0,
+      description:
+        product?.description +
+        "\n" +
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
     };
 
-    createProduct(data)
-      .then((result) => {
-        message.success("Thêm sản phẩm thành công");
+    updateProduct(product?.id, data)
+      .then(async (result) => {
+        message.success("Cập nhật sản phẩm thành công");
         form.resetFields();
         setImages([]);
         setFileList([]);
         setEditorState(EditorState.createEmpty());
+        setIsReload(!isReload);
+
+        await sendChangeDescriptionNotification({
+          product: props?.product,
+        });
       })
       .catch((error) => message.error(error.message));
-
-    console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo) => {};
 
-  const handleRemove = async (data) => {
-    const newImage = images.filter((image) => image.key !== data.uid);
-    setImages(newImage);
-  };
-
-  const handleUpload = async (data) => {
-    await upLoadImages(data)
-      .then((res) => {
-        setImages([...images, { key: data.uid, url: res[0]?.url }]);
-      })
-      .catch((err) => {
-        console.log("err: ", err);
-      });
-  };
   return (
     <div className={styles.addProductPage}>
-      <div>
-        <Text.h3 title="Thêm sản phẩm" />
-      </div>
       <div className={styles.content}>
         <div className={styles.left}>
           <Form
@@ -282,17 +236,6 @@ export default function EditProductPage(props) {
                   style={{ width: "100%" }}
                 />
               </Form.Item>
-              {/* <div className={styles.toggle}>
-                <Text.caption title="Cho phép người chưa có đánh giá tham gia đấu giá" />
-                <Switch
-                  defaultChecked
-                  onClick={() => setIsAllUser(!isAllUser)}
-                />
-              </div>
-              <div className={styles.toggle}>
-                <Text.caption title="Tự động gia hạn 10 phút trước khi kết thúc đấu giá" />
-                <Switch onClick={() => setAutoRenew(!autoRenew)} />
-              </div> */}
             </div>
           </Form>
         </div>
@@ -322,9 +265,7 @@ export default function EditProductPage(props) {
               </label>
             </div>
             <div className={styles.textEditor}>
-              <textarea id="w3review" name="w3review" rows="4" cols="70">
-                {product?.description}
-              </textarea>
+              <div>{ReactHtmlParser(currentProd.description)}</div>
               <Editor
                 editorState={editorState}
                 toolbarClassName={styles.toolbar}
@@ -338,8 +279,8 @@ export default function EditProductPage(props) {
               <span className={styles.errorMess}>Mô tả sản phẩm trống!</span>
             )}
             <div className={styles.submit}>
-              <button className={styles.btn} onClick={handleSubmit}>
-                <Text.bodyHighlight title="Thêm" />
+              <button className={styles.btn} onClick={() => onFinish()}>
+                <Text.bodyHighlight title="Cập nhật" />
               </button>
             </div>
           </div>
