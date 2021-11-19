@@ -50,9 +50,9 @@ export default function SideMenu({
         icon={<UserOutlined />}
         title={<Text.caption title="Quản lý người dùng" />}
       >
-        <Menu.Item key="4">
+        {/* <Menu.Item key="4">
           <Text.caption title="Thêm người dùng" />
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="5">
           <Text.caption title="Tất cả người dùng" />
         </Menu.Item>

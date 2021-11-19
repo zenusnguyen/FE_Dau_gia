@@ -81,3 +81,28 @@ export const updatePassword = (userId, data) => {
       .catch((err) => reject(err.response));
   });
 };
+
+export const resetPassword = (userId, data) => {
+  return new Promise((resolve, reject) => {
+    axios({
+      method: "PUT",
+      url: `${BACKEND_DOMAIN}/user-infos/resetPassword/${userId}`,
+      data,
+    })
+      .then((res) => {
+        resolve(res?.data);
+      })
+      .catch((err) => reject(err.response));
+  });
+};
+
+export const deleteUser = (userId) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(`${BACKEND_DOMAIN}/user-infos`, { params: { id: userId } })
+      .then((res) => {
+        resolve(res?.data);
+      })
+      .catch((err) => reject(err));
+  });
+};
