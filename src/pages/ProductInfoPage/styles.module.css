@@ -76,7 +76,3 @@
    font-size: 14px;
    line-height: 22px;
 }
-
-.uploadAction .ant-upload-list-item-error {
-   border: none !important;
-}

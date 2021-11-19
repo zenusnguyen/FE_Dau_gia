@@ -6,23 +6,11 @@ import { Image } from "antd";
 import styles from "./styles.module.css";
 import { BACKEND_DOMAIN } from "../../constants";
 import moment from "moment";
+import TimeCount from "../TimeCount";
 
 export default function Item(props) {
    const { product } = props;
-   const [timeRemaining, setTimeRemaining] = useState("");
-
-   useEffect(() => {
-      const currentTime = moment();
-      const endTime = moment(product.postingDate).add(5, "day");
-      const hours = endTime.diff(currentTime, "hours");
-      const minutes = endTime.diff(currentTime, "minutes");
-      const day = endTime.diff(currentTime, "days");
-      if (day > 0) {
-         setTimeRemaining(`${day}d ${hours - 24 * day}h`);
-      } else {
-         setTimeRemaining(`${hours}h ${minutes - 60 * hours}m`);
-      }
-   }, [product]);
+   const [isEndTime, setIsEndTime] = useState(false);
 
    return (
       <div {...props} className={styles.ItemContainer}>
@@ -41,11 +29,23 @@ export default function Item(props) {
                   .toString()
                   .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
             />
-            <Text.caption title={`[${product.view} lượt]`} />
+            <Text.caption title={`[${product.view} lượt xem]`} />
          </div>
-         <div>
-            <Text.caption title="Kết thúc sau: " style={{ color: "#919293" }} />
-            <Text.caption title={timeRemaining} style={{ color: "red" }} />
+         <div className={styles.time}>
+            <div className={styles.timeItem}>
+               <Text.caption
+                  title="Kết thúc sau: "
+                  style={{ color: "#919293" }}
+               />
+            </div>
+            <div className={styles.timeItem}>
+               <TimeCount
+                  productEndTime={product.endTime}
+                  callBackTimeEnd={() => setIsEndTime(true)}
+               >
+                  <Text.caption />
+               </TimeCount>
+            </div>
          </div>
       </div>
    );

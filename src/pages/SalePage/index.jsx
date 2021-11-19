@@ -9,6 +9,7 @@ import LoadingPage from "../LoadingPage";
 import {
    getAllSellProcessing,
    getAllSellSold,
+   getAllSellExpired,
 } from "../../services/productApi";
 
 export default function SalePage() {
@@ -19,26 +20,27 @@ export default function SalePage() {
    const [currentTab, setCurrentTab] = useState("a");
 
    useEffect(() => {
+      setIsLoading(true);
       const fetchData = async () => {
          if (currentTab === "a") {
             Promise.all([getAllSellProcessing(user?.id)]).then((values) => {
-               setProducts(values[0]);
+               if (Array.isArray(values[0])) setProducts(values[0]);
+               else setProducts([values[0]]);
                setIsLoading(false);
             });
          } else {
-            Promise.all([getAllSellSold(user?.id)]).then((values) => {
-               setProducts(values[0]);
+            getAllSellExpired(user?.id).then((values) => {
+               if (Array.isArray(values[0])) setProducts(values[0]);
+               else setProducts([values[0]]);
                setIsLoading(false);
             });
          }
       };
       fetchData();
-   }, [user.id, currentTab]);
+   }, [currentTab, user]);
 
    const onChangeTab = (e) => {
-      setIsLoading(true);
       setCurrentTab(e.target.value);
-      console.log("radio checked", e.target.value);
    };
 
    return (
@@ -46,7 +48,6 @@ export default function SalePage() {
          <div className={styles.top}>
             <Text.h3 title="Tôi đang bán" />
             <Radio.Group
-               defaultValue="a"
                defaultValue="a"
                value={currentTab}
                onChange={onChangeTab}
@@ -63,7 +64,7 @@ export default function SalePage() {
             <LoadingPage />
          ) : (
             <div>
-               {products.length > 0 ? (
+               {products?.length > 0 ? (
                   <ul className={styles.list}>
                      {products.map((product) => (
                         <li className={styles.item}>

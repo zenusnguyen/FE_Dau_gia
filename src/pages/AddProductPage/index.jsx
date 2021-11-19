@@ -17,7 +17,7 @@ import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { upLoadImages } from "../../services/uploadImage";
 import { createProduct } from "../../services/productApi";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { getAll as getAllCategory } from "../../services/categoryApi";
 
 export default function AddProductPage(props) {
@@ -27,10 +27,12 @@ export default function AddProductPage(props) {
    const [fileList, setFileList] = useState([]);
    const dateFormat = "DD/MM/YYYY HH:mm:ss";
    const [images, setImages] = useState([]);
-   const [description, setDescription] = useState("");
+   const [editorState, setEditorState] = useState(EditorState.createEmpty());
    const { user } = useSelector((state) => state.user);
    const [categoryOptions, setCategoryOptions] = useState([]);
-   const [category, setCategory] = useState({});
+   const [errorImages, setErrorImages] = useState(false);
+   const [errorDes, setErrorDes] = useState(false);
+
    useEffect(() => {
       const fetchData = async () => {
          const allCategory = await getAllCategory();
@@ -47,18 +49,19 @@ export default function AddProductPage(props) {
             };
          });
          setCategoryOptions(options);
-         console.log("options: ", options);
       };
       fetchData();
    }, []);
 
    const onChange = ({ fileList: newFileList }) => {
+      if (fileList.length >= 3) {
+         setErrorImages(false);
+      }
       setFileList(newFileList);
    };
 
    const onChangeCategory = (data) => {
       console.log("data: ", data);
-      setCategory(data);
    };
    const onPreview = async (file) => {
       let src = file.url;
@@ -75,61 +78,83 @@ export default function AddProductPage(props) {
       imgWindow.document.write(image.outerHTML);
    };
 
-   const onContentStateChange = (contentState) => {
-      setDescription(contentState?.blocks[0]?.text);
+   // const onContentStateChange = (contentState) => {
+   //    setDescription(contentState?.blocks[0]?.text);
+   // };
+
+   const onEditorStateChange = (editorState) => {
+      if (
+         !editorState.getCurrentContent().hasText() ||
+         editorState.getCurrentContent().getPlainText().trim() === ""
+      ) {
+         setErrorDes(true);
+      } else {
+         setErrorDes(false);
+      }
+      setEditorState(editorState);
    };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-      if (images.length < 3) {
-         message.error("Sản phẩm cần ít nhất 3 tấm ảnh!");
+      if (fileList.length < 3) {
+         setErrorImages(true);
+      } else if (
+         !editorState.getCurrentContent().hasText() ||
+         editorState.getCurrentContent().getPlainText().trim() === ""
+      ) {
+         setErrorDes(true);
       } else {
-         const formData = await form.getFieldValue();
-         const data = {
-            ...formData,
-            title: formData.name,
-            images: images,
-            autoRenew,
-            description,
-            ownerId: user?.user?.id,
-            status: "processing",
-            currentPrice: formData?.price,
-            isAllUser,
-            view: 0,
-            categoryID: category[0],
-            subCategoryId: category[1],
-            maxPrice: formData?.maxPrice || 0,
-         };
-
-         console.log("data: ", data);
-         await createProduct(data)
-            .then((result) => {
-               message.success("Cập nhật thành công ");
-               form.resetFields();
-               setFileList([]);
-            })
-            .catch((error) => message.error(error.message));
+         form.submit();
       }
    };
 
    const onFinish = (values) => {
-      console.log("values: ", values);
-      // e.preventDefault();
-      //  console.log(isAllUser);
-      //  console.log(autoRenew);
-      //  console.log(fileList);
-      //  console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-      //  console.log(values.endTime.format(dateFormat));
+      const data = {
+         ...values,
+         title: values.name,
+         images: images.map((image) => image.url),
+         autoRenew,
+         description: draftToHtml(
+            convertToRaw(editorState.getCurrentContent())
+         ),
+         ownerId: user?.user?.id,
+         status: "processing",
+         startPrice: values?.price,
+         currentPrice: values?.price,
+         isAllUser,
+         view: 0,
+         categoryID: values.categoryId[0],
+         subCategoryId: values.categoryId[1],
+         maxPrice: values?.maxPrice || 0,
+      };
+
+      createProduct(data)
+         .then((result) => {
+            message.success("Thêm sản phẩm thành công");
+            form.resetFields();
+            setImages([]);
+            setFileList([]);
+            setEditorState(EditorState.createEmpty());
+         })
+         .catch((error) => message.error(error.message));
+
+      console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())));
    };
 
    const onFinishFailed = (errorInfo) => {
       console.log("Failed:", errorInfo);
    };
 
+   const handleRemove = async (data) => {
+      console.log(data);
+      const newImage = images.filter((image) => image.key !== data.uid);
+      setImages(newImage);
+   };
+
    const handleUpload = async (data) => {
       await upLoadImages(data)
          .then((res) => {
-            setImages([...images, res[0]?.url]);
+            setImages([...images, { key: data.uid, url: res[0]?.url }]);
          })
          .catch((err) => {
             console.log("err: ", err);
@@ -334,6 +359,7 @@ export default function AddProductPage(props) {
                   </div>
                </Form>
             </div>
+
             <div className={styles.right}>
                <div className={styles.upload}>
                   <div style={{ marginBottom: "8px" }}>
@@ -342,6 +368,8 @@ export default function AddProductPage(props) {
                      </label>
                   </div>
                   <Upload
+                     onRemove={handleRemove}
+                     className={styles.uploadAction}
                      action={handleUpload}
                      listType="picture-card"
                      fileList={fileList}
@@ -350,6 +378,11 @@ export default function AddProductPage(props) {
                   >
                      {fileList.length < 5 && "+ Upload"}
                   </Upload>
+                  {errorImages && (
+                     <span className={styles.errorMess}>
+                        Sản phẩm cần ít nhất 3 tấm ảnh!
+                     </span>
+                  )}
                </div>
                <div>
                   <div style={{ marginBottom: "8px" }}>
@@ -359,15 +392,22 @@ export default function AddProductPage(props) {
                   </div>
                   <div className={styles.textEditor}>
                      <Editor
+                        editorState={editorState}
                         toolbarClassName={styles.toolbar}
                         wrapperClassName="wrapperClassName"
                         editorClassName={styles.editor}
-                        onContentStateChange={onContentStateChange}
+                        onEditorStateChange={onEditorStateChange}
+                        //onContentStateChange={onContentStateChange}
                      />
                   </div>
+                  {errorDes && (
+                     <span className={styles.errorMess}>
+                        Mô tả sản phẩm trống!
+                     </span>
+                  )}
                   <div className={styles.submit}>
                      <button className={styles.btn} onClick={handleSubmit}>
-                        <Text.bodyHighlight title="Cập nhật" />
+                        <Text.bodyHighlight title="Thêm" />
                      </button>
                   </div>
                </div>

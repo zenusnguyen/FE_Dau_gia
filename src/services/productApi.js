@@ -120,15 +120,14 @@ export const getPostDateAsc = () => {
    });
 };
 
-export const search = (keyWord, pageNumber) => {
+export const search = (searchWord) => {
+   console.log("searchWord: ", searchWord);
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items/search/${keyWord}/page/${pageNumber}`,
+         url: `${BACKEND_DOMAIN}/items/search/${searchWord}`,
       })
-         .then((res) => {
-            resolve(res?.data);
-         })
+         .then((res) => resolve(res?.data))
          .catch((err) => reject(err));
    });
 };
@@ -184,7 +183,7 @@ export const getAllAuctionSold = (bidderId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
-         url: `${BACKEND_DOMAIN}/items?status=expired&currentBidderId=${bidderId}`,
+         url: `${BACKEND_DOMAIN}/items?status=sold&currentBidderId=${bidderId}`,
       }).catch((err) => reject(err));
    });
 };
@@ -202,12 +201,29 @@ export const getAllSellProcessing = (ownerId) => {
    });
 };
 
+export const getAllSellExpired = (ownerId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "GET",
+         url: `${BACKEND_DOMAIN}/items?status=expired&ownerId=${ownerId}`,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
 export const getAllSellSold = (ownerId) => {
    return new Promise((resolve, reject) => {
       axios({
          method: "GET",
          url: `${BACKEND_DOMAIN}/items?status=expired&ownerId=${ownerId}`,
-      }).catch((err) => reject(err));
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
    });
 };
 
@@ -231,6 +247,33 @@ export const createProduct = (product) => {
          method: "POST",
          url: `${BACKEND_DOMAIN}/items`,
          data: product,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const updateProduct = (id, data) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "PUT",
+         url: `${BACKEND_DOMAIN}/items/${id}`,
+         data,
+      })
+         .then((res) => {
+            resolve(res?.data);
+         })
+         .catch((err) => reject(err));
+   });
+};
+
+export const delProduct = (productId) => {
+   return new Promise((resolve, reject) => {
+      axios({
+         method: "DELETE",
+         url: `${BACKEND_DOMAIN}/items/${productId}`,
       })
          .then((res) => {
             resolve(res?.data);

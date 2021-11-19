@@ -7,21 +7,28 @@ import Brand from "../../assets/Brand.png";
 // import { loadReCaptcha, ReCaptcha } from "react-recaptcha-google";
 import ReCAPTCHA from "react-grecaptcha";
 import { useHistory } from "react-router-dom";
+import { getOtp } from "../../services/email";
 
 export default function RegisterPage() {
   // useEffect(() => {
   //   loadReCaptcha();
   // }, []);
   const history = useHistory();
+  const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     try {
-      const res = await register(values);
-      if (res.jwt) {
-        message.success("Đăng ký thành công");
-        setTimeout(() => {
-          history.push("/home");
-        }, 1000);
+      const otp = localStorage.getItem("otp");
+      if (otp != values?.otp) {
+        message.error("ma OTP không đúng vui lòng kiểm tra lại");
+      } else {
+        const res = await register(values);
+        if (res.jwt) {
+          message.success("Đăng ký thành công");
+          setTimeout(() => {
+            history.push("/home");
+          }, 1000);
+        }
       }
     } catch (err) {
       message.warn(err.message);
@@ -38,6 +45,25 @@ export default function RegisterPage() {
 
   const handleExpiredCallback = (e) => {
     console.log("e: ", e);
+  };
+
+  const handleOtp = async () => {
+    const formData = await form.getFieldValue();
+
+    if (!formData?.email) {
+      message.error("Vui lòng nhập email");
+    } else {
+    }
+    await getOtp(formData?.email)
+      .then(async (res) => {
+        console.log("res: ", res);
+        await localStorage.setItem("otp", JSON.stringify(res));
+        message.success("Gửi mã thành công");
+      })
+      .catch((err) => {
+        message.error("Gửi mã thất bại");
+        console.log("err: ", err);
+      });
   };
 
   const formLayout = "vertical";
@@ -85,6 +111,7 @@ export default function RegisterPage() {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
+          form={form}
         >
           <Form.Item
             label="Tên của bạn"
@@ -138,7 +165,14 @@ export default function RegisterPage() {
           >
             <div className={styles.otpWrapper}>
               <Input />
-              <Button className={styles.otpBtn}>Gửi mã</Button>
+              <Button
+                onClick={() => {
+                  handleOtp();
+                }}
+                className={styles.otpBtn}
+              >
+                Gửi mã
+              </Button>
             </div>
           </Form.Item>
 

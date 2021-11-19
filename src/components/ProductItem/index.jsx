@@ -12,6 +12,7 @@ import {
    Radio,
    Skeleton,
    Form,
+   message,
 } from "antd";
 import {
    HeartOutlined,
@@ -25,7 +26,12 @@ import { add as addWatch, del as delWatch } from "../../services/wathApi";
 import { add as addValuate } from "../../services/evaluateApi";
 import { getById as getUserById } from "../../services/userApi";
 import { getBySender } from "../../services/evaluateApi";
+import { createAuctionTransaction } from "../../services/priceHistoryApi";
+import { getAllHistory } from "../../services/productApi";
+import { socket } from "../../services/socket";
+
 import moment from "moment";
+import TimeCount from "../TimeCount";
 
 export default function ProductItem(props) {
    const { TextArea } = Input;
@@ -34,7 +40,6 @@ export default function ProductItem(props) {
    const [form] = Form.useForm();
    const { product, callBackUnLike } = props;
    const [isLike, setIsLike] = useState(product.isLike);
-   const [timeRemaining, setTimeRemaining] = useState("");
    const [isNew, setIsNew] = useState(true);
    const [isModalBuyVisible, setIsModalBuyVisible] = useState(false);
    const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
@@ -42,6 +47,14 @@ export default function ProductItem(props) {
    const [currentBidder, setCurrentBidder] = useState({});
    const [isLoading, setIsLoading] = useState(true);
    const [isEvaluate, setIsEvaluate] = useState(product.isEvaluate);
+   const [isEndTime, setIsEndTime] = useState(false);
+   const [countAuction, setCountAuction] = useState(0);
+
+   //   socket.on("priceChange", async ({ data }) => {
+   //     if (data?.productId == product?.id) {
+
+   //     }
+   //   });
 
    useEffect(() => {
       form.setFieldsValue({
@@ -50,6 +63,8 @@ export default function ProductItem(props) {
       const fetchData = async () => {
          if (product.currentBidderId) {
             const currentBidder = await getUserById(product.currentBidderId);
+            const history = await getAllHistory(product.id);
+            setCountAuction(history.length);
             const nameSplit = currentBidder.username.split(" ");
             currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
             setCurrentBidder({ ...currentBidder });
@@ -58,36 +73,8 @@ export default function ProductItem(props) {
       };
       fetchData();
       const currentTime = moment();
-      const endTime = moment(product.postingDate).add(5, "day");
-      const minutes = endTime.diff(currentTime, "minutes");
-      const hours = endTime.diff(currentTime, "hours");
-      const day = endTime.diff(currentTime, "days");
-      if (day > 0) {
-         if (day < 3) {
-            if (day === 0) {
-               if (hours === 0) {
-                  setTimeRemaining(`${minutes} minutes left`);
-               } else {
-                  setTimeRemaining(`${hours} hours left`);
-               }
-            } else {
-               setTimeRemaining(`${day} days left`);
-            }
-         } else {
-            setTimeRemaining(`${day}d ${hours - 24 * day}h`);
-         }
-      } else {
-         if (hours === 0) {
-            setTimeRemaining(`${minutes} minutes left`);
-         } else {
-            setTimeRemaining(`${hours} hours left`);
-         }
-      }
-      const minutesAgo = currentTime.diff(
-         moment(product.postingDate),
-         "minutes"
-      );
-      if (minutesAgo >= 30) setIsNew(false);
+      const dayPassed = currentTime.diff(moment(product.postingDate), "days");
+      if (dayPassed > 1) setIsNew(false);
    }, [product, form]);
 
    const onLikeClick = () => {
@@ -107,7 +94,6 @@ export default function ProductItem(props) {
    };
 
    const onEvaluateClick = (values) => {
-      console.log(values);
       const nameSplit = user.username.split(" ");
       user.username = `***${nameSplit[nameSplit.length - 1]}`;
       if (values.evaluate === "like") {
@@ -134,9 +120,56 @@ export default function ProductItem(props) {
       setIsModalEvaluateVisible(false);
    };
 
-   const handleBuyClick = () => {};
+   const handleBuyClick = async () => {
+      const data = {
+         time: Date.now(),
+         price: product?.maxPrice,
+         buyer: user?.id,
+         bidderId: product?.ownerId,
+         productId: product?.id,
+         buyerName: user?.username,
+         type: "buy",
+      };
+      await createAuctionTransaction(data)
+         .then((res) => {
+            message.success("Đấu giá thành công");
+         })
+         .catch((err) => {
+            message.error(err.message);
+         });
+   };
 
-   const handleAuctionClick = () => {};
+   const handleAuctionClick = async () => {
+      const data = {
+         time: Date.now(),
+         price: product?.currentPrice + product?.priceStep,
+         buyer: user?.id,
+         bidderId: product?.ownerId,
+         productId: product?.id,
+         buyerName: user?.username,
+         type: "auction",
+      };
+      if (product?.currentPrice + product?.priceStep === product.maxPrice) {
+         await handleBuyClick();
+      } else {
+         await createAuctionTransaction(data)
+            .then((res) => {
+               message.success("Đấu giá thành công");
+            })
+            .catch((err) => {
+               message.error(err.message);
+            });
+      }
+      setTimeout(() => {
+         // setIsReload(!isReload);
+      }, 500);
+      //  socket.emit("priceChange", data, (error) => {
+      //    console.log("data: ", data);
+      //    if (error) {
+      //      console.log("error: ", error);
+      //    }
+      //  });
+   };
 
    return (
       <div {...props} className={styles.productItemContainer}>
@@ -157,17 +190,22 @@ export default function ProductItem(props) {
                >
                   <div className={styles.productItem}>
                      <Image
+                        preview={false}
                         width={props?.width || 200}
                         src={`${BACKEND_DOMAIN}${product.images[0]}`}
                      />
                      <div className={styles.info}>
                         <div className={styles.name}>
-                           <Link
-                              to={`/product/${product.id}`}
-                              style={{ color: "#333" }}
-                           >
+                           {isEndTime ? (
                               <Text.h3 title={product.title}></Text.h3>
-                           </Link>
+                           ) : (
+                              <Link
+                                 to={`/product/${product.id}`}
+                                 style={{ color: "#333" }}
+                              >
+                                 <Text.h3 title={product.title}></Text.h3>
+                              </Link>
+                           )}
                         </div>
                         <Divider style={{ margin: "20px 0" }} />
                         <div className={styles.infoCenter}>
@@ -204,10 +242,14 @@ export default function ProductItem(props) {
                               </div>
                               <div>
                                  {product.status === "processing" ? (
-                                    <Text.h3
-                                       title={timeRemaining}
-                                       style={{ color: "red" }}
-                                    />
+                                    <TimeCount
+                                       productEndTime={product.endTime}
+                                       callBackTimeEnd={() =>
+                                          setIsEndTime(true)
+                                       }
+                                    >
+                                       <Text.h3 />
+                                    </TimeCount>
                                  ) : (
                                     <Text.h3 title="Đã kết thúc" />
                                  )}
@@ -242,18 +284,22 @@ export default function ProductItem(props) {
                                        title={currentBidder.username}
                                     />
                                  )}
-                                 {currentBidder.score && (
-                                    <p className={styles.percent}>
-                                       <Text.caption
-                                          title={`${currentBidder.score * 10}%`}
-                                          style={{ color: "#fff" }}
-                                       />
-                                    </p>
-                                 )}
+                                 <p className={styles.percent}>
+                                    <Text.caption
+                                       title={`${
+                                          currentBidder.score
+                                             ? currentBidder.score
+                                             : 0
+                                       }%`}
+                                       style={{ color: "#fff" }}
+                                    />
+                                 </p>
                               </div>
                               <div className={styles.view}>
                                  <Text.bodyHighlight
-                                    title={`${product.view} Lượt`}
+                                    title={`${
+                                       countAuction ? countAuction : 0
+                                    } Lượt`}
                                  />
                               </div>
                            </div>
@@ -263,6 +309,7 @@ export default function ProductItem(props) {
                         {product.status === "processing" ? (
                            <div>
                               <Button
+                                 disabled={isEndTime}
                                  onClick={() => setIsModalAuctionVisible(true)}
                                  type="primary"
                                  className={`${styles.action} ${styles.danger}`}
@@ -270,11 +317,13 @@ export default function ProductItem(props) {
                                     backgroundColor: "#E53238",
                                     borderColor: "#E53238",
                                     height: "40px",
+                                    color: isEndTime ? "#505050" : "#fff",
                                  }}
                               >
                                  <Text.bodyHighlight
                                     title={`Đấu giá - ${(
-                                       product.currentPrice + product.rating
+                                       product.currentPrice +
+                                       (product.priceStep || 0)
                                     )
                                        .toString()
                                        .replace(
@@ -283,8 +332,9 @@ export default function ProductItem(props) {
                                        )}đ`}
                                  />
                               </Button>
-                              {product.maxPrice && (
+                              {product.maxPrice !== 0 && (
                                  <Button
+                                    disabled={isEndTime}
                                     onClick={() => setIsModalBuyVisible(true)}
                                     type="primary"
                                     className={`${styles.action} ${styles.primary}`}
@@ -292,6 +342,7 @@ export default function ProductItem(props) {
                                        height: "40px",
                                        backgroundColor: "#0064D2",
                                        borderColor: "#0064D2",
+                                       color: isEndTime ? "#505050" : "#fff",
                                     }}
                                  >
                                     <Text.bodyHighlight
@@ -305,6 +356,7 @@ export default function ProductItem(props) {
                                  </Button>
                               )}
                               <Button
+                                 disabled={isEndTime}
                                  onClick={onLikeClick}
                                  className={
                                     isLike
@@ -375,7 +427,7 @@ export default function ProductItem(props) {
                >
                   <Text.caption
                      title={`Bạn sẽ ra giá ${(
-                        product.currentPrice + product.rating
+                        product.currentPrice + product.priceStep
                      )
                         .toString()
                         .replace(

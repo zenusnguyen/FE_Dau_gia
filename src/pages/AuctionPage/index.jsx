@@ -47,29 +47,29 @@ export default function AuctionPage() {
                setIsLoading(false);
             });
          } else {
-            Promise.all([
-               getAllAuctionSold(user?.id),
-               getAllBySender(user?.id),
-            ]).then((values) => {
-               const allEvaluate = values[1].map(
-                  (evaluate) => evaluate.productId
-               );
-               const products = values[0].map((value) => {
-                  return {
-                     ...value,
-                     isEvaluate: allEvaluate.includes(value.id),
-                  };
-               });
-               setProducts(products);
-               setIsLoading(false);
-            });
+            Promise.all([getAllAuctionSold(user?.id), getAllBySender(user?.id)])
+               .then((values) => {
+                  console.log(values);
+                  const allEvaluate = values[1].map(
+                     (evaluate) => evaluate.productId
+                  );
+                  const products = values[0].map((value) => {
+                     return {
+                        ...value,
+                        isEvaluate: allEvaluate.includes(value.id),
+                     };
+                  });
+                  setProducts(products);
+                  setIsLoading(false);
+               })
+               .catch((error) => console.log(error));
          }
       };
       fetchData();
    }, [user, currentTab]);
 
    const onChangeTab = (e) => {
-      setIsLoading(true);
+      //setIsLoading(true);
       setCurrentTab(e.target.value);
    };
 
