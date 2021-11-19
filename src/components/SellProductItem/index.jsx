@@ -23,8 +23,10 @@ import { getAllHistory } from "../../services/productApi";
 import { add as addValuate } from "../../services/evaluateApi";
 import TimeCount from "../TimeCount";
 import EditProductPage from "../../pages/EditProductPage";
+import { useHistory } from "react-router-dom";
 
 export default function SellProductItem(props) {
+  const history = useHistory();
   const { product } = props;
   const { TextArea } = Input;
   const { user } = useSelector((state) => state.user?.user);
@@ -104,10 +106,20 @@ export default function SellProductItem(props) {
     setOpenEdit(true);
   };
 
+  const handleOnClick = () => {
+    history.push(`/product/${product?.id}`);
+  };
+
   return openEdit ? (
     <EditProductPage product={product}></EditProductPage>
   ) : (
-    <div {...props} className={styles.productItemContainer}>
+    <div
+      onClick={() => {
+        handleOnClick();
+      }}
+      {...props}
+      className={styles.productItemContainer}
+    >
       <Badge.Ribbon
         text="Sản phẩm mới"
         color="red"
