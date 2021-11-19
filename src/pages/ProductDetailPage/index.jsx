@@ -76,7 +76,6 @@ export default function ItemDetailPage({ data }) {
   useEffect(() => {
     const fetchReview = async () => {
       await getByUser(currentSelectedRow?.buyerId).then((values) => {
-        console.log("values: ", values);
         const data = values.map((value, i) => {
           return {
             key: i,
@@ -582,11 +581,22 @@ export default function ItemDetailPage({ data }) {
                         marginBottom: "4px",
                       }}
                     />
+
                     <div className={styles.topAuction}>
                       <Text.bodyHighlight title={currentSeller.username} />
                       <Tag className={styles.tag} color="#86b817">
                         <Text.caption title={`${currentSeller.score}%`} />
                       </Tag>
+                      <a
+                        onClick={() => {
+                          setCurrentSelectedRow({
+                            buyerId: user?.user?.id,
+                          });
+                          setIsModalReview(true);
+                        }}
+                      >
+                        Xem đánh giá
+                      </a>
                     </div>
                   </div>
                   <div className={styles.buttonGroup}>
