@@ -92,9 +92,7 @@ export default function ItemDetailPage({ data }) {
   }, [currentSelectedRow]);
 
   socket.on("priceChange", async ({ data }) => {
-    console.log("data: ", data);
     if (data !== undefined && data?.productId == product?.id) {
-      // const productRes = await get(productId);
       setProduct({ ...product, currentPrice: data?.price });
       // const historyList = await getAllHistory(productId);
       // setHistories(
@@ -276,8 +274,13 @@ export default function ItemDetailPage({ data }) {
           );
           if (!Array.isArray(values[4])) {
             const currentBidder = values[4];
-            const nameSplit = currentBidder.username.split(" ");
-            currentBidder.username = `***${nameSplit[nameSplit.length - 1]}`;
+            // const nameSplit = currentBidder.username.split(" ");
+            console.log("currentBidder.username: ", currentBidder.username);
+            currentBidder.username = `***${currentBidder.username.substr(
+              1,
+              3
+            )}***`;
+
             setCurrentBidder(currentBidder);
           } else {
             setCurrentBidder({});
