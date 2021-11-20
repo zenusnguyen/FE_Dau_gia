@@ -147,7 +147,9 @@ export default function EditProductPage(props) {
                   },
                 ]}
               >
-                <Input placeholder={product?.title} />
+                <Input
+                disabled={true} 
+                placeholder={product?.title} />
               </Form.Item>
             </div>
             <div>
@@ -178,6 +180,7 @@ export default function EditProductPage(props) {
                 ]}
               >
                 <InputNumber
+                 disabled={true} 
                   placeholder={product?.startPrice}
                   style={{ width: "100%" }}
                 />
@@ -206,6 +209,7 @@ export default function EditProductPage(props) {
                 ]}
               >
                 <InputNumber
+                 disabled={true} 
                   placeholder={product?.priceStep}
                   style={{ width: "100%" }}
                 />
@@ -232,6 +236,7 @@ export default function EditProductPage(props) {
                 ]}
               >
                 <InputNumber
+                 disabled={true} 
                   placeholder={product?.maxPrice}
                   style={{ width: "100%" }}
                 />
@@ -251,7 +256,7 @@ export default function EditProductPage(props) {
               return (
                 <Image
                   width={props?.width || 100}
-                  src={`${BACKEND_DOMAIN}${product.images[0]}`}
+                  src={`${BACKEND_DOMAIN}${el}`}
                   alt={product.title}
                   preview={false}
                 />
