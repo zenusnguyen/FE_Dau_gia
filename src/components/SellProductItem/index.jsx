@@ -113,13 +113,7 @@ export default function SellProductItem(props) {
    return openEdit ? (
       <EditProductPage product={product}></EditProductPage>
    ) : (
-      <div
-         onClick={() => {
-            handleOnClick();
-         }}
-         {...props}
-         className={styles.productItemContainer}
-      >
+      <div {...props} className={styles.productItemContainer}>
          <Badge.Ribbon
             text="Sản phẩm mới"
             color="red"
@@ -258,6 +252,18 @@ export default function SellProductItem(props) {
                                  title={`Đánh giá người thắng`}
                               />
                            </Button>
+                           <Button
+                              onClick={() => {
+                                 handleOnClick();
+                              }}
+                              className={styles.action}
+                              style={{
+                                 height: "40px",
+                              }}
+                           >
+                              <Text.bodyHighlight title={`Xem sản phẩm`} />
+                           </Button>
+
                            {/* <Button
                     onClick={() => setIsModalCancelTransaction(true)}
                     className={styles.action}
@@ -277,7 +283,7 @@ export default function SellProductItem(props) {
                         style={{ color: "#919293", marginBottom: "6px" }}
                      />
                      <Text.bodyHighlight
-                        title={`${moment(product.postingDate).format(
+                        title={`${moment(product.createdAt).format(
                            "DD-MM-YYYY HH:mm"
                         )}`}
                      />

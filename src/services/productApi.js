@@ -111,7 +111,7 @@ export const getPostDateAsc = () => {
   return new Promise((resolve, reject) => {
     axios({
       method: "GET",
-      url: `${BACKEND_DOMAIN}/items?status=processing&_sort=postingDate:ASC&_limit=5`,
+      url: `${BACKEND_DOMAIN}/items?status=processing&_sort=endTime:ASC&_limit=5`,
     })
       .then((res) => {
         resolve(res?.data);
@@ -121,7 +121,6 @@ export const getPostDateAsc = () => {
 };
 
 export const search = (searchWord) => {
-  console.log("searchWord: ", searchWord);
   return new Promise((resolve, reject) => {
     axios({
       method: "GET",
