@@ -62,7 +62,7 @@ export default function EvaluatePage(props) {
             <div>
                <Text.h3 title="Điểm đánh giá" />
                <div className={styles.percent}>
-                  <Text.h1 title={`${currentUser.score * 10}%`} />
+                  <Text.h1 title={`${currentUser.score}%`} />
                </div>
                <div className={styles.table}>
                   <Table columns={columns} dataSource={evaluates} />

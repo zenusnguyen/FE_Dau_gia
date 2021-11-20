@@ -11,7 +11,7 @@ export default function index(props) {
          <Search
             placeholder={placeholder || "Hãy nhập sản phẩm hoặc danh mục"}
             allowClear
-            enterButton="Tiềm kiếm"
+            enterButton="Tìm kiếm"
             size="large"
             onSearch={onSearch}
          ></Search>
