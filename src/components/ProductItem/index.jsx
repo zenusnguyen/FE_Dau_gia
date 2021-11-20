@@ -314,7 +314,7 @@ export default function ProductItem(props) {
                     >
                       <Text.bodyHighlight title={`Xem sản phẩm`} />
                     </Button>
-                    <Button
+                    {/* <Button
                       disabled={isEndTime}
                       onClick={() => setIsModalAuctionVisible(true)}
                       type="primary"
@@ -353,7 +353,7 @@ export default function ProductItem(props) {
                             .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}đ`}
                         />
                       </Button>
-                    )}
+                    )} */}
                     <Button
                       disabled={isEndTime}
                       onClick={onLikeClick}
