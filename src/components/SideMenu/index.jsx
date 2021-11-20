@@ -63,21 +63,21 @@ export default function SideMenu({
             icon={<ShopOutlined />}
             title={<Text.caption title="Quản lý sản phẩm" />}
          >
+            {(user?.user?.appRole === "admin" ||
+               user?.user?.appRole === "seller") && (
+               <Menu.Item key="5">
+                  <Text.caption title="Thêm sản phẩm" />
+               </Menu.Item>
+            )}
+            {(user?.user?.appRole === "admin" ||
+               user?.user?.appRole === "seller") && (
+               <Menu.Item key="6">
+                  <Text.caption title="Tôi đăng bán" />
+               </Menu.Item>
+            )}{" "}
             <Menu.Item key="7">
                <Text.caption title="Tôi đấu giá" />
             </Menu.Item>
-
-            {user?.appRole === "admin" ||
-               (user?.appRole === "seller" && (
-                  <div>
-                     <Menu.Item key="6">
-                        <Text.caption title="Tôi đăng bán" />
-                     </Menu.Item>
-                     <Menu.Item key="5">
-                        <Text.caption title="Thêm sản phẩm" />
-                     </Menu.Item>
-                  </div>
-               ))}
          </SubMenu>
          <Menu.Item icon={<HeartOutlined />} key="8">
             <Text.caption title="Danh sách yêu thích" />
