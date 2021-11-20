@@ -162,6 +162,7 @@ export const getAllLike = (productsId) => {
 };
 
 export const getAllAuctionProcessing = (productsId) => {
+  console.log('productsId: ', productsId);
   var query = "";
   productsId.map((productId) => {
     return (query = query + `id_in=${productId}&`);
