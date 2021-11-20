@@ -11,6 +11,8 @@ import {
   Button,
   Modal,
   message,
+  Input,
+  InputNumber,
 } from "antd";
 import Text from "../../components/Text";
 import SlideProduct from "../../components/SlideProduct";
@@ -69,6 +71,8 @@ export default function ItemDetailPage({ data }) {
   const [isModalAuctionVisible, setIsModalAuctionVisible] = useState(false);
   const [isModalReview, setIsModalReview] = useState(false);
   const [isEndTime, setIsEndTime] = useState(false);
+
+  const [maxAutoPrice, setMaxAutoPrice] = useState();
   const [isModalAutoAuctionVisible, setIsModalAutoAuctionVisible] =
     useState(false);
   const [evaluates, setEvaluates] = useState([]);
@@ -338,6 +342,10 @@ export default function ItemDetailPage({ data }) {
     setIsModalAutoAuctionVisible(false);
   };
 
+  const handleChangeMaxPrice = (e) => {
+    console.log("e: ", e.target.value);
+  };
+
   const handleAuctionClick = async () => {
     await updateProduct(product?.id, { currentBidderId: user.id });
 
@@ -400,19 +408,25 @@ export default function ItemDetailPage({ data }) {
   };
 
   const handleAutoAuctionClick = async () => {
-    const data = {
-      productId: product?.id,
-      buyerId: user?.id,
-      priceStep: product?.priceStep,
-      status: "processing",
-    };
-    await createAutoAuctionTransaction(data)
-      .then((res) => {
-        handleAuctionClick();
-      })
-      .catch((err) => {
-        message.error(err.message);
-      });
+    console.log("maxAutoPrice: ", maxAutoPrice);
+    if (!maxAutoPrice || maxAutoPrice < product.currentPrice) {
+      message.error("Giá nhập vào không đúng !");
+    } else {
+      const data = {
+        productId: product?.id,
+        buyerId: user?.id,
+        priceStep: product?.priceStep,
+        status: "processing",
+        maxPrice: maxAutoPrice,
+      };
+      await createAutoAuctionTransaction(data)
+        .then((res) => {
+          handleAuctionClick();
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    }
   };
   const handleBuyClick = async () => {
     await updateProduct(product?.id, { currentBidderId: user.id });
@@ -754,10 +768,18 @@ export default function ItemDetailPage({ data }) {
         okText={<Text.caption title="Đồng ý" />}
         cancelText={<Text.caption title="Hủy" />}
       >
-        <Text.caption title={`Bạn muốn bật tự động ra giá cho sản phẩm này?`} />
+        <Text.caption title={`Nhập giá tối đa `} />
+        <Input
+          onChange={(e) => {
+            console.log("e?.target?.value): ", e?.target?.value);
+            setMaxAutoPrice(e?.target?.value);
+          }}
+          placeholder="1000.000đ"
+          style={{ width: "180px" }}
+        ></Input>
       </Modal>
       <Modal
-        title={<Text.bodyHighlight title="Xác nhận tự động ra giá" />}
+        title={<Text.bodyHighlight title="Đánh giá" />}
         visible={isModalReview}
         onOk={() => setIsModalReview(false)}
         onCancel={() => setIsModalReview(false)}
