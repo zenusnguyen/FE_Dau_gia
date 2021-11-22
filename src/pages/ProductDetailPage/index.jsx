@@ -285,7 +285,7 @@ export default function ItemDetailPage({ data }) {
             const currentBidder = values[4];
             // const nameSplit = currentBidder.username.split(" ");
             console.log("currentBidder.username: ", currentBidder.username);
-            currentBidder.username = `***${currentBidder.username.substr(
+            currentBidder.username = `${currentBidder.username.substr(
               1,
               3
             )}***`;
