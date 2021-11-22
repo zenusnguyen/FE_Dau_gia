@@ -23,9 +23,10 @@ export default function AuctionPage() {
     const fetchData = async () => {
       if (currentTab === "a") {
         const allAuction = await getAllByBidder(user.id);
-        console.log('allAuction: ', allAuction);
+        console.log("allAuction: ", allAuction);
         var productsId = [];
-        if (allAuction) {
+        if (allAuction?.length > 0) {
+          console.log("allAuction?.length: ", allAuction?.length);
           if (Array.isArray(allAuction)) {
             productsId = allAuction.map((auction) => auction.productId);
           } else {
@@ -43,8 +44,9 @@ export default function AuctionPage() {
               isLike: allLike.includes(value.id),
             };
           });
-          if (allAuction) setProducts(products);
-          else setProducts([]);
+          if (allAuction?.length > 0) {
+            setProducts(products);
+          } else setProducts([]);
           setIsLoading(false);
         });
       } else {
